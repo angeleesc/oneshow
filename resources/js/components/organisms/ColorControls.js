@@ -68,8 +68,6 @@ class ColorControls extends React.Component {
     clearTimeout(this.timeout);
     
     this.props.endRunningShow('color');
-
-    this.props.submitCommand(`REM,0,${this.step},COL`);
   }
 
   startCommand () {

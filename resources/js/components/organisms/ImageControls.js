@@ -79,8 +79,6 @@ class ImageControls extends React.Component {
     clearTimeout(this.timeout);
     
     this.props.endRunningShow('image');
-
-    this.props.submitCommand(`REM,0,${this.step},IMG`);
   }
 
   handleImageSelect (imageId) {

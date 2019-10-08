@@ -64,8 +64,6 @@ class AudioControls extends React.Component {
     clearInterval(this.interval);
 
     this.props.endRunningShow('audio');
-
-    this.props.submitCommand(`REM,0,1,AUD`);
   }
 
   startCommand () {

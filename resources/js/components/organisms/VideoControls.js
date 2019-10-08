@@ -67,8 +67,6 @@ class VideoControls extends React.Component {
     clearInterval(this.interval);
 
     this.props.endRunningShow('video');
-
-    this.props.submitCommand(`REM,0,1,VID`);
   }
 
   startCommand () {

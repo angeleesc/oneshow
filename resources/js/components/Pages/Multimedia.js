@@ -75,20 +75,15 @@ class Multimedia extends Component {
       // Fetching event
       const { usuario, api_token } = this.state;
 
-      this.setState({ isLoading: true });
-
       this.props.getCompanies()
         .then(() => this.setState({ isLoading: false }));
-
-      // this.props.getEvents(usuario._id, api_token)
-      //   .then(() => this.setState({ isLoading: false }));
 
       // Subscribing to broker
       this.mqttClient.connect({
         useSSL: process.env.NODE_ENV === 'development' ? false : true,
         onSuccess: () => console.log('Connected!!'),
         onFailure: e => console.log(e)
-      })
+      });
     }
 
     componentWillUnmount () {
