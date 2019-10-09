@@ -93,7 +93,7 @@
                                             <br><br>
 
                                             <div style="text-align: center">
-                                                <a id="boton" shape="rect" href="{{ route('form-reset-password', $token) }}" target="_blank">
+                                                <a id="boton" shape="rect" href="{{ url('user/change/password', [$token]) }}" target="_blank">
                                                     Cambiar Contraseña
                                                 </a>
                                             </div>

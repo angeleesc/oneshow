@@ -49,10 +49,9 @@ export default class Header extends Component {
             }
             return (
                 <header className="top-header">
-                    <a href="#" className="top-header-logo">
+                    <Link to="/welcome" className="top-header-logo">
                         <img className="logo-inside" src={logo} />
-                    </a>
-
+                    </Link>
                     <nav
                         id="navbar-principal"
                         className="navbar navbar-default"

@@ -5,7 +5,16 @@ use Illuminate\Http\Request;
 
 Route::post('/login', 'LoginController@login');
 Route::post('/logout', 'LoginController@logout');
+
+/**
+ * Recover password endpoints
+ */
+Route::post('/user/recover/password', 'RecoveryPasswordController@requestPasswordRecover');
+Route::get('/user/recover/password/{token}', 'RecoveryPasswordController@checkTokenValidity');
+Route::post('/user/recover/password/{token}', 'RecoveryPasswordController@changePassword');
+
 Route::get('/download/{filename}', 'BibliotecaController@downloadTorrent');
+
 /**
  * Rutas API orientadas al controlador de USUARIOS UsuarioController
  */
@@ -14,6 +23,7 @@ Route::group(['middleware'=>'api_token','prefix' => 'usuarios'], function() {
     Route::post('/delete','UsuarioController@deleteUsuario');
     Route::post('/edit','UsuarioController@editUsuario');
     Route::get('/infoEdit/{id}','UsuarioController@getInfoEdit');
+    Route::post('/change/password', 'ChangePasswordController@changePassword');
     
     Route::get('/','UsuarioController@getUsuarios');
     Route::get('/selects','UsuarioController@getSelectUsuario');

@@ -11,8 +11,8 @@ npm-debug.log
 yarn-error.log
 
 # Compilation generated files
-/public/js/app.js
-/public/js/vendor.js
-/public/css/vendor.css
-/public/css/main.css
-/public/webfonts
+# /public/js/app.js
+# /public/js/vendor.js
+# /public/css/vendor.css
+# /public/css/main.css
+# /public/webfonts
