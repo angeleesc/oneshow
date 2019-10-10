@@ -25,6 +25,7 @@ class Scenes extends React.Component {
     };
 
     // Refs
+    this.nameRef = React.createRef();
     this.colorRef = React.createRef();
     this.flashRef = React.createRef();
     this.audioRef = React.createRef();
@@ -55,7 +56,8 @@ class Scenes extends React.Component {
     const audioConf = this.audioRef.current.getConfiguration();
     const videoConf = this.videoRef.current.getConfiguration();
     const imageConf = this.imageRef.current.getConfiguration();
-    const { name, color, icon } = this.state;
+    const name = this.nameRef.current.value;
+    const { color, icon } = this.state;
 
     if (colorConf.failure || flashConf.failure || audioConf.failure || videoConf.failure || imageConf.failure) {
       return;
@@ -131,9 +133,8 @@ class Scenes extends React.Component {
               <input 
                 type="text"
                 name="name"
-                value={this.state.name}
+                ref={this.nameRef}
                 className="form-control"
-                onChange={this.handleChange}
               />
             </div>
           </div>

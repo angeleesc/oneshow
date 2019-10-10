@@ -1,29 +1,14 @@
 import React, { useState } from 'react';
-import { useSpring, animated } from 'react-spring';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import classnames from 'classnames';
-import icons from './../../data/icons';
+import IconSelector from './../atoms/IconSelector';
 
 function DropdownIconSelector (props) {
   const [ isOpen, setOpen ] = useState(false);
-  
-  const style = useSpring({
-    height: isOpen ? '200px' : '0px',
-  });
 
-  const iconItem = icons.map((icon, i) => (
-    <div key={i} className="icon-dropdown-item text-center">
-      <FontAwesomeIcon
-        icon={icon}
-        color={props.color}
-        onClick={() => props.onChange(icon)}
-      />
-    </div>
-  ));
-
-  const dropdownListClass = classnames('icon-dropdown-list', 'rounded', {
-    'py-2': isOpen
-  }, 'mt-1', 'bg-light')
+  const handleChange = (icon) => {
+    props.onChange(icon);
+    setOpen(false);
+  }
 
   return (
     <div className="icon-dropdown rounded">
@@ -36,9 +21,11 @@ function DropdownIconSelector (props) {
           icon={props.icon}
         />
       </div>
-      <animated.div style={style} className={dropdownListClass}>
-        {iconItem}
-      </animated.div>
+      <IconSelector 
+        open={isOpen}
+        color="#5e72e4"
+        onChange={handleChange}
+      />
     </div>
   );
 }

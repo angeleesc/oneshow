@@ -73,8 +73,6 @@ class Multimedia extends Component {
 
     componentDidMount () {
       // Fetching event
-      const { usuario, api_token } = this.state;
-
       this.props.getCompanies()
         .then(() => this.setState({ isLoading: false }));
 
