@@ -4776,14 +4776,21 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover {
   overflow-x: auto;
 }
 
+.fullscreen.fullscreen-enabled {
+  overflow-y: auto;
+}
+
 /* width */
 .color-list::-webkit-scrollbar,
+.fullscreen.fullscreen-enabled::-webkit-scrollbar,
 .row-fluid::-webkit-scrollbar {
-  height: 5px;
+  height: 7px;
+  width: 7px;
 }
 
 /* Track */
 .color-list::-webkit-scrollbar-track,
+.fullscreen.fullscreen-enabled::-webkit-scrollbar-track,
 .row-fluid::-webkit-scrollbar-track {
   border-radius: 5px;
   background: #f1f1f1; 
@@ -4791,6 +4798,7 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover {
  
 /* Handle */
 .color-list::-webkit-scrollbar-thumb,
+.fullscreen.fullscreen-enabled::-webkit-scrollbar-thumb,
 .row-fluid::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background: #888; 
@@ -4798,6 +4806,7 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover {
 
 /* Gap between handle and actual track */
 .color-list::-webkit-scrollbar-track-piece,
+.fullscreen.fullscreen-enabled::-webkit-scrollbar-track-piece,
 .row-fluid::-webkit-scrollbar-track-piece {
   background: #555;
 }

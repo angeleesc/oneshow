@@ -88,7 +88,7 @@ class BPM extends React.Component {
                       textTransform: 'uppercase' 
                     }}
                   >
-                    OFF
+                    Apagado
                   </p>
                 </div>
               }

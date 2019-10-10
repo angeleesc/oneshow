@@ -1,5 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
+import { connect } from 'react-redux';
 
 class TabNavigation extends React.Component {
   constructor (props) {
@@ -19,6 +20,7 @@ class TabNavigation extends React.Component {
   render () {
     const navItems = this.props.items.map((item, i) => {
       let classNames = classnames('nav-item', {
+        'd-none': this.props.fullscreen && i === 1,
         active: this.state.selected === i,
         show: this.state.selected === i
       });
@@ -56,4 +58,8 @@ class TabNavigation extends React.Component {
   }
 }
 
-export default TabNavigation;
+const mapStateToProps = state => ({
+  fullscreen: state.app.fullscreen,
+});
+
+export default connect(mapStateToProps)(TabNavigation);

@@ -9,6 +9,7 @@ import Scenes from './../organisms/Scenes';
 import EmptyMultimedia from "../components/Multimedia/EmptyMultimedia";
 import TabNavigation from './../organisms/TabNavigation';
 import { connect } from 'react-redux';
+import { toggleFullscreen, setFullscreenState } from './../../redux/actions/app';
 import { 
   getEventos, 
   getCompanies, 
@@ -347,9 +348,7 @@ class Multimedia extends Component {
                 <div className="col-md-1 text-center">
                   <span style={{ cursor: 'pointer' }}>
                     <FontAwesomeIcon
-                      onClick={() => this.setState(state => ({
-                        isFull: !state.isFull,
-                      }))}
+                      onClick={() => this.props.toggleFullscreen()}
                       icon="expand-arrows-alt"
                       color="#fff" 
                     />
@@ -359,8 +358,8 @@ class Multimedia extends Component {
             </div>
           </header>
           <Fullscreen 
-            enabled={this.state.isFull}
-            onChange={isFull => this.setState({ isFull })}
+            enabled={this.props.fullscreen}
+            onChange={isFull => this.props.setFullscreenState(isFull)}
           >
             <div id="sweet" className="container-fluid">
               {this.props.eventId === '' ? (
@@ -382,6 +381,7 @@ class Multimedia extends Component {
 }
 
 const mapStateToProps = state => ({
+  fullscreen: state.app.fullscreen,
   companyId: state.multimedia.companyId,
   eventId: state.multimedia.eventId,
   companies: state.multimedia.companies,
@@ -392,6 +392,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  toggleFullscreen: () => dispatch(toggleFullscreen()),
+  setFullscreenState: (state) => dispatch(setFullscreenState(state)),
   setCompany: (companyId) => dispatch(setCompany(companyId)),
   setEvent: (eventId) => dispatch(setEvent(eventId)),
   getCompanies: () => dispatch(getCompanies()),

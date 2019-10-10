@@ -117,8 +117,12 @@ class Scenes extends React.Component {
       'rounded': this.state.error !== ''
     })
 
+    const containerStyle = classnames({
+      'full-screen-container': this.props.fullscreen
+    });
+
     return (
-      <div>
+      <div className={containerStyle}>
         <div className={rowStyle}>
           {this.state.error !== '' &&
             <p className="text-center text-danger my-1" style={{ fontSize: '12px', width: '100%' }}>
@@ -205,6 +209,7 @@ class Scenes extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  fullscreen: state.app.fullscreen,
   areScenesCreated: state.show.scenes.items.length === 0 ? false : true,
 })
 
