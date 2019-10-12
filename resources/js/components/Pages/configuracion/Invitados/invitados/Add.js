@@ -228,7 +228,7 @@ export default class Add extends Component {
                                     <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Evento</label>
                                             <div className="col-sm-4">
-                                                <select className="form-control form-control-sm" id="evento" name="evento" value={this.state.evento} onChange={this.handleEvento} >
+                                                <select className="form-control form-control-sm" id="evento" name="evento" value={this.state.evento} onChange={this.handleEvento} required>
                                                 {this.state.eventos.map(
                                                     (e, index) => {
                                                         return (
@@ -243,35 +243,70 @@ export default class Add extends Component {
                                         <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Nombre</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="nombre" name="nombre" placeholder="Ingrese el nombre" value={this.state.nombre} onChange={this.handleChange} />
+                                                <input
+                                                  type="text"
+                                                  className="form-control form-control-sm"
+                                                  id="nombre"
+                                                  name="nombre"
+                                                  placeholder="Ingrese el nombre"
+                                                  value={this.state.nombre}
+                                                  onChange={this.handleChange}
+                                                  required
+                                                />
                                             </div>
                                         </div>
 
                                         <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Apellido</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="apellido" name="apellido" placeholder="Ingrese el apellido" value={this.state.apellido} onChange={this.handleChange} />
+                                                <input 
+                                                  type="text" 
+                                                  className="form-control form-control-sm" 
+                                                  id="apellido" 
+                                                  name="apellido" 
+                                                  placeholder="Ingrese el apellido" 
+                                                  value={this.state.apellido} 
+                                                  onChange={this.handleChange} 
+                                                  required
+                                                />
                                             </div>
                                         </div>
 
                                         <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Correo</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="correo" name="correo" placeholder="Ingrese el correo" value={this.state.correo} onChange={this.handleChange}/>
+                                                <input 
+                                                  type="text" 
+                                                  className="form-control form-control-sm" 
+                                                  id="correo" 
+                                                  name="correo" 
+                                                  placeholder="Ingrese el correo" 
+                                                  value={this.state.correo} 
+                                                  onChange={this.handleChange}
+                                                  required
+                                                />
                                             </div>
                                         </div>
 
                                         <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Teléfono</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="telefono" name="telefono" placeholder="Ingrese el telefono" value={this.state.telefono} onChange={this.handleChange}/>
+                                                <input 
+                                                  type="text" 
+                                                  className="form-control form-control-sm" 
+                                                  id="telefono" 
+                                                  name="telefono" 
+                                                  placeholder="Ingrese el telefono" 
+                                                  value={this.state.telefono} 
+                                                  onChange={this.handleChange}
+                                                />
                                             </div>
                                         </div>
 
                                         <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Grupo de invitados</label>
                                             <div className="col-sm-4">
-                                                <select className="form-control form-control-sm" id="grupo" name="grupo" value={this.state.grupo} onChange={this.handleChange}>
+                                                <select className="form-control form-control-sm" id="grupo" name="grupo" value={this.state.grupo} onChange={this.handleChange} required>
                                                     <option value="">-Seleccione-</option>
                                                     {this.state.grupos.map((e, index) => {
                                                         return (
@@ -301,20 +336,37 @@ export default class Add extends Component {
                                         </div>
 
                                         <div className="form-group row">
-                                        <label htmlFor="example-number-input" className="col-4 col-form-label">invitados adicionales:</label>
+                                          <label htmlFor="example-number-input" className="col-4 col-form-label">invitados adicionales:</label>
                                         </div>
-
                                         <div className="form-group row">
                                             <label htmlFor="example-number-input" className="col-4 col-form-label">Mayores</label>
                                             <div className="col-4">
-                                                <input className="form-control" type="number" name="invitadosAdicionalesMayores" value={this.state.invitadosAdicionalesMayores} id="invitadosAdicionalesMayores" onChange={this.handleChange} min="0"/>
+                                                <input 
+                                                  className="form-control" 
+                                                  type="number" 
+                                                  name="invitadosAdicionalesMayores" 
+                                                  value={this.state.invitadosAdicionalesMayores} 
+                                                  id="invitadosAdicionalesMayores" 
+                                                  onChange={this.handleChange} 
+                                                  min="0"
+                                                  required
+                                                />
                                             </div>
                                         </div>
 
                                         <div className="form-group row">
                                             <label htmlFor="example-number-input" className="col-4 col-form-label">Menores(12 años)</label>
                                             <div className="col-4">
-                                                <input className="form-control" type="number" name="invitadosAdicionalesMenores" value={this.state.invitadosAdicionalesMenores} id="invitadosAdicionalesMenores" onChange={this.handleChange} min="0"/>
+                                              <input 
+                                                className="form-control" 
+                                                type="number" 
+                                                name="invitadosAdicionalesMenores" 
+                                                value={this.state.invitadosAdicionalesMenores} 
+                                                id="invitadosAdicionalesMenores" 
+                                                onChange={this.handleChange} 
+                                                min="0"
+                                                required
+                                              />
                                             </div>
                                         </div>
 
@@ -326,7 +378,6 @@ export default class Add extends Component {
                                 <div className="form-group row">
                                     <div className="col-sm-4">
                                         <button type="submit" id="save-invitado" className="btn btn-sm btn-dark mr-2">Guardar</button>
-
                                         <Link to="/invitados"><button type="button" className="btn btn-sm btn-dark">Volver</button></Link>
                                     </div>
                                 </div>

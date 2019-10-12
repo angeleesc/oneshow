@@ -4,23 +4,18 @@ import Header from "../components/Header";
 
 export default class Welcome extends Component {
     constructor(props) {
-        super(props);
-        console.log(props.location.state);
-        this.state = {
-            url: "",
-            correo: "",
-            password: "",
-            opcion: "Dashboard",
-            footer: "Footer",
-            user: this.props.location.state.usuario,
-            api_token: this.props.location.state.api_token,
-            isLoading: false
-        };
-        localStorage.setItem(
-            "usuario",
-            JSON.stringify(this.props.location.state.usuario)
-        );
-        localStorage.setItem("api_token", this.props.location.state.api_token);
+      super(props);
+      
+      this.state = {
+          url: "",
+          correo: "",
+          password: "",
+          opcion: "Dashboard",
+          footer: "Footer",
+          user: JSON.parse(localStorage.getItem('usuario')),
+          api_token: JSON.parse(localStorage.getItem('usuario')),
+          isLoading: false
+      };
     }
 
     componentWillMount() {

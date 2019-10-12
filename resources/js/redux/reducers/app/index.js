@@ -1,10 +1,12 @@
 import { 
+  TOGGLE_SIDEBAR,
   TOGGLE_FULLSCREEN,
   SET_FULLSCREEN_STATE
 } from './../../actions/app/types';
 
 const initialState = {
-  fullscreen: false
+  fullscreen: false,
+  isSidebarOpen: true,
 };
 
 export default function (state = initialState, action) {
@@ -18,6 +20,11 @@ export default function (state = initialState, action) {
       return {
         ...state,
         fullscreen: action.payload.state
+      }
+    case TOGGLE_SIDEBAR:
+      return {
+        ...state,
+        isSidebarOpen: !state.isSidebarOpen
       }
     default:
       return state;

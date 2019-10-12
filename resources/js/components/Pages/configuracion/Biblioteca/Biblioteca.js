@@ -135,7 +135,7 @@ export default class Biblioteca extends Component {
                             <div className="row">
                                 <div className="offset-6">
                                     <h3>
-                                        <i class="fa fa-spinner fa-spin" />{" "}
+                                        <i className="fa fa-spinner fa-spin" />{" "}
                                         Cargando
                                     </h3>
                                 </div>
@@ -263,7 +263,7 @@ export default class Biblioteca extends Component {
                                 <tbody>
                                     {this.state.isLoadingEmpresa ? (
                                         <h3>
-                                            <i class="fa fa-spinner fa-spin" />{" "}
+                                            <i className="fa fa-spinner fa-spin" />{" "}
                                             Cargando
                                         </h3>
                                     ) : (

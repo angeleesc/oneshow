@@ -158,7 +158,7 @@ export default class Show extends React.Component {
                             <div className="row">
                                 <div className="offset-6">
                                     <h3>
-                                        <i class="fa fa-spinner fa-spin" />{" "}
+                                        <i className="fa fa-spinner fa-spin" />{" "}
                                         Cargando
                                     </h3>
                                 </div>
@@ -314,8 +314,8 @@ export default class Show extends React.Component {
                                     ) : (
                                         <tbody>
                                             <tr>
-                                                <td className="text-center ml-4">
-                                                    <i class="fas fa-exclamation-triangle" />{" "}
+                                                <td className="text-center" colSpan="4">
+                                                    <i className="fas fa-exclamation-triangle" />{" "}
                                                     No hay archivos asociados a
                                                     este evento
                                                 </td>

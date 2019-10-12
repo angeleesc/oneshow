@@ -53,50 +53,44 @@ export default class AddEmpresas extends Component {
     }
 
     
-        handleChange(event) {
-            const target = event.target;
-            const value = target.type === 'checkbox' ? target.checked : target.value;
-            const name = target.name;
-        
-            this.setState({
-              [name]: value
-            })
-
-          }
+    handleChange(event) {
+      const target = event.target;
+      const value = target.type === 'checkbox' ? target.checked : target.value;
+      const name = target.name;
+  
+      this.setState({
+        [name]: value
+      });
+    }
     
 
-    addLogo(){
-        
-        let input = ($('#emp-logo'))[0];
-        var $image = $('#preview-add-emp');
-        var oFReader = new FileReader();
+    addLogo () {
+      let input = ($('#emp-logo'))[0];
+      var $image = $('#preview-add-emp');
+      var oFReader = new FileReader();
 
-        oFReader.readAsDataURL(input.files[0]);
-        oFReader.onload = function (oFREvent) {
+      oFReader.readAsDataURL(input.files[0]);
+      oFReader.onload = function (oFREvent) {
+        // Destroy the old cropper instance
+        $image.cropper('destroy');
 
-            // Destroy the old cropper instance
-            $image.cropper('destroy');
+        // Replace url
+        $image.attr('src', this.result);
 
-            // Replace url
-            $image.attr('src', this.result);
-
-            // Start cropper
-            $image.cropper({
-                viewMode: 1,
-                minContainerWidth: 200,
-                minContainerHeight: 200,
-                autoCropArea: 1,
-                crop: function(event) {
-
-                    $('#emp-add-x').val(event.detail.x);
-                    $('#emp-add-y').val(event.detail.y);
-                    $('#emp-add-w').val(event.detail.width);
-                    $('#emp-add-h').val(event.detail.height);
-                }
-            });
-
-
-        };
+        // Start cropper
+        $image.cropper({
+          viewMode: 1,
+          minContainerWidth: 200,
+          minContainerHeight: 200,
+          autoCropArea: 1,
+          crop: function(event) {
+            $('#emp-add-x').val(event.detail.x);
+            $('#emp-add-y').val(event.detail.y);
+            $('#emp-add-w').val(event.detail.width);
+            $('#emp-add-h').val(event.detail.height);
+          }
+        });
+      };
     }
 
     handleSubmit(e){

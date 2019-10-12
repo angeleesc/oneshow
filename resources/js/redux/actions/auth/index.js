@@ -1,6 +1,7 @@
 import { 
-  AUTH_EXAMPLE_ACTION,
-  USER_LOGGED_IN
+  SET_USER_SCOPE,
+  USER_LOGGED_IN,
+  USER_LOGGED_OUT
 } from './types';
 import axios from 'axios';
 
@@ -20,6 +21,42 @@ export function authenticate (email, password) {
   }
 }
 
+export function logout () {
+  return (dispatch, getState) => {
+    const { auth: { apiToken } } = getState();
+
+    return axios.post('api/logout', {}, {
+      headers: {
+        Authorization: apiToken
+      }
+    })
+  }
+}
+
+export function getUserScope () {
+  return (dispatch, getState) => {
+    const { auth: { apiToken, user } } = getState();
+
+    return axios.get(`api/usuarios/permisos/${user.roleId}`, {
+      headers: {
+        Authorization: apiToken
+      }
+    })
+    .then(res => {
+      const { Nombre, Permisos } = res.data.data;
+      
+      dispatch(setUserScope(Nombre, Permisos));
+
+      return { Nombre, Permisos };
+    });
+  }
+}
+
+export const setUserScope = (scopeName, scope) => ({
+  type: SET_USER_SCOPE,
+  payload: { scopeName, scope }
+});
+
 export function userLoggedIn (apiToken, user) {
   return {
     type: USER_LOGGED_IN,
@@ -27,7 +64,8 @@ export function userLoggedIn (apiToken, user) {
   };
 }
 
-export const authExample = () => ({
-  type: AUTH_EXAMPLE_ACTION,
-  payload: { name: 'Jhon', lastname: 'Doe' }
-});
+export function userLoggedOut () {
+  return {
+    type: USER_LOGGED_OUT
+  }
+}

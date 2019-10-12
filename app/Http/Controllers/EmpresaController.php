@@ -368,61 +368,60 @@ class EmpresaController extends Controller
     public function addEmpresa(ValidateEmpresa $request){
         $input = $request->all();
 
-            //guardo la imagen en una variable
-            $image = $input['logo'];
-            //ubico la ruta de la imagen
-            $path = $image->getRealPath();
-            //obtengo la extension
-            $type = $image->getClientOriginalExtension();
-            //creo un nombre temporal
-            $name = time().'.'.$type;
-            //ruta imagen temporal
-            $pathImgTemporal = public_path('images/'.$name);
-            //proceso la imagen a 200x200
-            $img = Image::make($path)->crop( (int)round($input['w']),  (int)round($input['h']),  (int)round($input['x']),  (int)round($input['y']) )->fit(200,200)->save($pathImgTemporal);
-            //obtengo la data de la imagen
-            $data = file_get_contents($pathImgTemporal);
-            //convierto a base64
-            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            //elimino imagen temporal
-            File::delete($pathImgTemporal);
+        //guardo la imagen en una variable
+        $image = $input['logo'];
+        //ubico la ruta de la imagen
+        $path = $image->getRealPath();
+        //obtengo la extension
+        $type = $image->getClientOriginalExtension();
+        //creo un nombre temporal
+        $name = time().'.'.$type;
+        //ruta imagen temporal
+        $pathImgTemporal = public_path('images/'.$name);
+        //proceso la imagen a 200x200
+        $img = Image::make($path)->crop( (int)round($input['w']),  (int)round($input['h']),  (int)round($input['x']),  (int)round($input['y']) )->fit(200,200)->save($pathImgTemporal);
+        //obtengo la data de la imagen
+        $data = file_get_contents($pathImgTemporal);
+        //convierto a base64
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        //elimino imagen temporal
+        File::delete($pathImgTemporal);
 
+        //capturo los datos y los acomodo en un arreglo
+        $data = [
+            'identificacion'   => strtoupper($input['identificacion']),
+            'nombre'           => $input['nombre'],
+            'correo'           => $input['correo'],
+            'telefono'         => $input['telefono'],
+            'pais'             => new ObjectID($input['pais']),
+            'estatus'          => (boolean) $input['estatus'],
+            'logo'             => $base64,
+            'borrado'          => false
+        ];
+        $seatsio = new \Seatsio\SeatsioClient("f4b8068e-031f-4035-a6c2-c56eca47ced9");
+        $dato = $seatsio->subaccounts->create($input["nombre"]);
 
-            //capturo los datos y los acomodo en un arreglo
-            $data = [
-                'identificacion'   => strtoupper($input['identificacion']),
-                'nombre'           => $input['nombre'],
-                'correo'           => $input['correo'],
-                'telefono'         => $input['telefono'],
-                'pais'             => new ObjectID($input['pais']),
-                'estatus'          => (boolean) $input['estatus'],
-                'logo'             => $base64,
-                'borrado'          => false
-            ];
-            $seatsio = new \Seatsio\SeatsioClient("f4b8068e-031f-4035-a6c2-c56eca47ced9");
-            $dato = $seatsio->subaccounts->create($input["nombre"]);
+        //procedo a guardarlos en la bd
+        $registro                            = new Empresa;
+        $registro->Cuit_rut                  = $data['identificacion'];
+        $registro->Nombre                    = $data['nombre'];
+        $registro->Correo                    = $data['correo'];
+        $registro->Telefono                  = $data['telefono'];
+        $registro->Pais_id                   = $data['pais'];
+        $registro->Activo                    = $data['estatus'];
+        $registro->Logo                      = $data['logo'];
+        $registro->secretKey                 = $dato->secretKey;
+        $registro->publicKey                 = $dato->publicKey;
+        $registro->designerKey               = $dato->designerKey;
+        $registro->SeatsSubAccount_id        = $dato->id;
+        $registro->Borrado                   = $data['borrado'];
 
-            //procedo a guardarlos en la bd
-            $registro                            = new Empresa;
-            $registro->Cuit_rut                  = $data['identificacion'];
-            $registro->Nombre                    = $data['nombre'];
-            $registro->Correo                    = $data['correo'];
-            $registro->Telefono                  = $data['telefono'];
-            $registro->Pais_id                   = $data['pais'];
-            $registro->Activo                    = $data['estatus'];
-            $registro->Logo                      = $data['logo'];
-            $registro->secretKey                 = $dato->secretKey;
-            $registro->publicKey                 = $dato->publicKey;
-            $registro->designerKey               = $dato->designerKey;
-            $registro->SeatsSubAccount_id        = $dato->id;
-            $registro->Borrado                   = $data['borrado'];
-
-            //verifico si fue exitoso el insert en la bd
-            if($registro->save()){
-                return response()->json(['code' => 200]);
-            }else{
-                return response()->json(['code' => 500]);
-            }
+        //verifico si fue exitoso el insert en la bd
+        if($registro->save()){
+            return response()->json(['code' => 200]);
+        }else{
+            return response()->json(['code' => 500]);
+        }
     }
 
     /**

@@ -81,17 +81,20 @@ class LoginController extends Controller
 
 
     //metodo para cerrar la session
-    public function logout(Request $request){
-        $input = $request->all();
-        $usuario = Usuario::where('api_token', $input['api_token'])->first();
-        if($usuario){
-            $usuario->api_token = "";
-            return response()->json([
-                'code' => 200
-            ]);
+    public function logout (Request $request) {
+        $token = $request->header('Authorization');
+        $usuario = Usuario::where('api_token', $token)->first();
+
+        
+        if ($usuario) {  
+          $usuario->api_token = "";
+          $usuario->save();
+          
+          return response()->json(['code' => 200], 200);
         }
+
         return response()->json([
-            'code' => 400
+            'code' => 404
         ]);
     }
 

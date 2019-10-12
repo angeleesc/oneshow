@@ -1,3 +1,5 @@
-export const AUTH_EXAMPLE_ACTION = 'AUTH_EXAMPLE_ACTION';
-
 export const USER_LOGGED_IN = 'USER_LOGGED_IN';
+
+export const SET_USER_SCOPE = 'SET_USER_SCOPE';
+
+export const USER_LOGGED_OUT = 'USER_LOGGED_OUT';

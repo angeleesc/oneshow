@@ -20,10 +20,12 @@ export default class Add extends React.Component {
             categorias: [],
             categoriaSeleccionada: "",
             estados: [],
+            fileText: 'Elegir Archivo',
             isLoading: true
         };
         /** declaro las funciones que haran uso del state */
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleFileChange = this.handleFileChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.fileInput = React.createRef();
     }
@@ -49,6 +51,15 @@ export default class Add extends React.Component {
             })
         });
     }
+
+    handleFileChange (e) {
+      const [ file ] = this.fileInput.current.files;
+
+      this.setState({
+        fileText: file && file.name ? file.name : 'Elegir Archivo',
+      });
+    }
+
     /**
      * evento que  cambia a tiempo real el valor de las variables en el state asociada a los input
      * @param {*} e 
@@ -74,12 +85,12 @@ export default class Add extends React.Component {
      * @param {*} e 
      */
   handleSubmit(e) {
-    $('button#save-file').prepend('<i class="fa fa-spinner fa-spin"></i> ');
     e.preventDefault();
+    $('button#save-file').prepend('<i class="fa fa-spinner fa-spin"></i> ');
     let formData = new FormData();
     formData.append("id-evento", this.state.eventoid);
     formData.append("name", this.state.nombreArchivo);
-    console.log(this.state.nombreArchivo)
+    console.log(this.state.nombreArchivo);
     formData.append("categoria",this.state.idCategoria);
     formData.append("archivo", (this.fileInput.current.files[0] === undefined) ? '' : this.fileInput.current.files[0] );
     console.log(formData);
@@ -122,7 +133,7 @@ export default class Add extends React.Component {
             return (
                 <div>
             <Menu usuario={this.state.user} />
-            <Header                     usuario={this.state.user}                     history={this.props.history}                 />
+            <Header usuario={this.state.user} history={this.props.history} />
             <div className="content-wrapper">
                 <header className="page-header">
                     <div className="container-fluid">
@@ -148,9 +159,8 @@ export default class Add extends React.Component {
                         </div>
                     </div>
                 </header>
-
                 <div id="sweet" className="container-fluid">
-                            <h3><i class="fa fa-spinner fa-spin"></i>{" "}Cargando espere</h3>
+                  <h3><i className="fa fa-spinner fa-spin"></i>{" "}Cargando espere</h3>
                 </div>
             </div>
         </div>
@@ -189,39 +199,55 @@ export default class Add extends React.Component {
     
                         <div id="sweet" className="container-fluid">
                         
-                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="pills-datos-tab" data-toggle="pill" href="#pills-datos" role="tab" aria-controls="pills-datos" aria-selected="true">Datos</a>
+                            <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                <li className="nav-item">
+                                    <a className="nav-link active" id="pills-datos-tab" data-toggle="pill" href="#pills-datos" role="tab" aria-controls="pills-datos" aria-selected="true">Datos</a>
                                 </li>
                             </ul>
     
-                            <hr class="line-gray"/>
+                            <hr className="line-gray"/>
     
-                            <form id="form-add" class="form-change-password form" encType="multipart/form-data" onSubmit={this.handleSubmit}>
+                            <form id="form-add" className="form-change-password form" encType="multipart/form-data" onSubmit={this.handleSubmit}>
                                                         
-                                <div class="tab-content" id="pills-tabContent">
-                                    <div class="tab-pane fade show active" id="pills-datos" role="tabpanel" aria-labelledby="pills-datos-tab">
+                                <div className="tab-content" id="pills-tabContent">
+                                    <div className="tab-pane fade show active" id="pills-datos" role="tabpanel" aria-labelledby="pills-datos-tab">
     
     
     
-                                        <div class="form-group row">
-                                            <label class="col-sm-2 col-form-label col-form-label-sm">Archivo</label>
-                                            <div class="col-sm-5">
-                                                <input type="file" class="form-control-file" id="archivo" name="archivo" ref={this.fileInput} required/>
+                                        <div className="form-group row">
+                                            <label className="col-sm-2 col-form-label col-form-label-sm">Archivo</label>
+                                            <div className="col-sm-5">
+                                              <div className="custom-file">
+                                                <input 
+                                                  type="file" 
+                                                  id="archivo" 
+                                                  name="archivo" 
+                                                  className="custom-file-input"
+                                                  onChange={this.handleFileChange}
+                                                  ref={this.fileInput} 
+                                                  required
+                                                />
+                                                <label 
+                                                  className="custom-file-label" 
+                                                  htmlFor="archivo" 
+                                                >
+                                                  {this.state.fileText}
+                                                </label>
+                                              </div>
                                             </div>
                                         </div>
     
-                                        <div class="form-group row">
-                                            <label class="col-sm-2 col-form-label col-form-label-sm">Nombre del Archivo</label>
-                                            <div class="col-sm-5">
-                                                <input type="text" class="form-control" id="nombreArchivo" name="nombreArchivo" placeholder="Nombre del archivo (Max. 10 caracteres sin espacio)" onChange={this.handleInputChange} required/>
+                                        <div className="form-group row">
+                                            <label className="col-sm-2 col-form-label col-form-label-sm">Nombre del Archivo</label>
+                                            <div className="col-sm-5">
+                                                <input type="text" className="form-control" id="nombreArchivo" name="nombreArchivo" placeholder="Nombre del archivo (Max. 10 caracteres sin espacio)" onChange={this.handleInputChange} required/>
                                             </div>
                                         </div>
     
-                                        <div class="form-group row">
-                                            <label class="col-sm-2 col-form-label col-form-label-sm">Categoria</label>
-                                            <div class="col-sm-4">
-                                                <select class="form-control form-control-sm" id="categoria" name="categoria" value={this.state.value} onChange={this.handleInputChange} required>
+                                        <div className="form-group row">
+                                            <label className="col-sm-2 col-form-label col-form-label-sm">Categoria</label>
+                                            <div className="col-sm-4">
+                                                <select className="form-control form-control-sm" id="categoria" name="categoria" value={this.state.value} onChange={this.handleInputChange} required>
                                                     <option value="">Seleccione</option>
                                                     { this.state.categorias.map((e, index) => {
                                                         return (
@@ -234,15 +260,15 @@ export default class Add extends React.Component {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <div class="col-sm-4">
-                                        <button type="submit" id="save-file" class="btn btn-sm btn-dark mr-2">Guardar</button>
+                                <div className="form-group row">
+                                    <div className="col-sm-4">
+                                        <button type="submit" id="save-file" className="btn btn-sm btn-dark mr-2">Guardar</button>
                                         <Link
                                                 to={`/biblioteca/evento/${
                                                     this.state.eventoid
                                                 }`}
                                             >
-                                            <button type="button" class="btn btn-sm btn-dark">Volver</button></Link>
+                                            <button type="button" className="btn btn-sm btn-dark">Volver</button></Link>
                                     </div>
                                 </div>
                             </form>

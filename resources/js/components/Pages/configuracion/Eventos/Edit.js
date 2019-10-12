@@ -4,6 +4,7 @@ import Menu from "../../../components/Menu";
 import Header from "../../../components/Header";
 import { Link } from "react-router-dom";
 import RedesSociales from "./RedesSociales";
+import Select from 'react-select';
 // import SocialWall from "./SocialWall";
 
 import "../../css/configuracion/Biblioteca.css";
@@ -42,7 +43,7 @@ export default class Edit extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleLogo = this.handleLogo.bind(this);
-        this.handleChangeMulti = this.handleChangeMulti.bind(this);
+        this.handleMultiChange = this.handleMultiChange.bind(this);
         this.getPaises = this.getPaises.bind(this);
     }
 
@@ -63,84 +64,53 @@ export default class Edit extends React.Component {
         })
     }
 
-    componentDidMount() {
-        axios
-            .get("api/eventos/menus",{
-                headers: {
-                    Authorization: this.state.api_token
-                }
-            })
-            .then(res => {
-                console.log(res);
-                this.setState({
-                    menuAppInvitados: res.data.data
-                });
-                axios.get("api/eventos/one/"+this.state.idEvento,{
-                    headers: {
-                        Authorization: this.state.api_token
-                    }
-                }).then(res=>{
-                    console.log(res)
-                    this.setState({
-                        infoEvento:res.data.evento,
-                        idEmpresa:res.data.evento.empresa._id,
-                        nombre:res.data.evento.evento.Nombre,
-                        fecha:res.data.evento.evento.Fecha,
-                        hora:res.data.evento.evento.Hora,
-                        licencias:res.data.evento.evento.Licencias,
-                        paisSeleccionado:res.data.evento.evento.Pais_id,
-                        latitud:res.data.evento.evento.Latitud,
-                        longitud:res.data.evento.evento.Longitud,
-                        ubicacion:res.data.evento.evento.Ubicacion,
-                        estado:res.data.evento.evento.Activo ? ("5b7e4c3b589bd25309f878ca"):("5b7e4c90eaf5685309c47a4f"),
-                        app:res.data.evento.evento.App ? ("5b7e4c3b589bd25309f878ca"):("5b7e4c90eaf5685309c47a4f"),
-                        logo:res.data.evento.evento.Logo,
-                        isLoading:false
-                    })
-                    this.infoForm()
-                })
-            });
-    }
+  componentDidMount () {
+      axios
+          .get("api/eventos/menus",{
+              headers: {
+                  Authorization: this.state.api_token
+              }
+          })
+          .then(res => {
+              console.log(res);
+              this.setState({
+                  menuAppInvitados: res.data.data
+              });
+              axios.get("api/eventos/one/"+this.state.idEvento,{
+                  headers: {
+                      Authorization: this.state.api_token
+                  }
+              }).then(res=>{
+                  console.log('evento', res)
+                  this.setState({
+                      infoEvento:res.data.evento,
+                      idEmpresa:res.data.evento.empresa._id,
+                      nombre:res.data.evento.evento.Nombre,
+                      fecha:res.data.evento.evento.Fecha,
+                      hora:res.data.evento.evento.Hora,
+                      licencias:res.data.evento.evento.Licencias,
+                      paisSeleccionado:res.data.evento.evento.Pais_id,
+                      latitud:res.data.evento.evento.Latitud,
+                      longitud:res.data.evento.evento.Longitud,
+                      ubicacion:res.data.evento.evento.Ubicacion,
+                      items: res.data.evento.menusapp.map(item => ({ value: item._id, label: item.Nombre })),
+                      selectedItems: res.data.evento.menusapp.filter(item => {
+                        return res.data.evento.menuapp.some(selected => selected === item._id);
+                      }).map(item => ({ value: item._id, label: item.Nombre})),
+                      estado:res.data.evento.evento.Activo ? ("5b7e4c3b589bd25309f878ca"):("5b7e4c90eaf5685309c47a4f"),
+                      app:res.data.evento.evento.App ? ("5b7e4c3b589bd25309f878ca"):("5b7e4c90eaf5685309c47a4f"),
+                      logo:res.data.evento.evento.Logo,
+                      isLoading:false
+                  });
+              })
+          });
+  }
 
-    handleChangeMulti(e){
-        
-        this.setState({menuAppSeleccionados: [...e.target.selectedOptions].map(o => o.value)});
-        console.log(this.state.menuAppSeleccionados);
-    }
-
-    infoForm(){
-        console.log("estoy en infoform")
-        var optionSelectMultiple = {
-            placeholder: 'Seleccione',
-            selectAllText: 'Todos',
-            allSelected: 'Todos',
-            countSelected: '# de % opciones'
-        };
-        console.log($("#menuapp"))
-        $('#menuapp').multipleSelect(optionSelectMultiple).multipleSelect('setSelects', this.state.menuAppInvitados);
-        $('#licencias').inputmask({"mask": "9999999", greedy: false, "placeholder": ""});
-        var fecha = (this.state.fecha.split("/")).reverse();
-        fecha = fecha.toString();
-        fecha = fecha.replace(/,/g,"-");
-        console.log(fecha);
-        var ms = Date.parse(fecha);
-         fecha = new Date(ms);
-         console.log(fecha)
-        $('#fecha').datetimepicker({
-            format: 'DD/MM/YYYY',
-            minDate: fecha,
-        });
-
-        $('#hora').datetimepicker({
-            format: 'LT'
-        });
-
-        $('#div-edit-emp-img-preview').show();
-        $('#div-edit-emp-img-new').hide();
-        console.log("estoy al final")
-
-    }
-
+  handleMultiChange (change) {
+    this.setState({
+      selectedItems: change,
+    });
+  }
 
     handleChange(event) {
         const target = event.target;
@@ -160,7 +130,7 @@ export default class Edit extends React.Component {
         })
     }
 
-    handleSubmit(e){
+    handleSubmit (e) {
         e.preventDefault();
 
         // Enviar Configuracion de redes sociales
@@ -188,8 +158,7 @@ export default class Edit extends React.Component {
         formData.append("y", $('#add-y').val());
         formData.append("w", $('#add-w').val());
         formData.append("h", $('#add-h').val());
-
-        var menu = $('#menuapp').multipleSelect('getSelects');
+        const menu = this.state.selectedItems.map(item => item.value).join(',');
 
         formData.append("menuapp", menu);
         $('#update-evento').prepend('<i className="fa fa-spinner fa-spin"></i>');
@@ -504,27 +473,24 @@ export default class Edit extends React.Component {
                         </div>
 
                         <div className="tab-pane fade" id="pills-invitados" role="tabpanel" aria-labelledby="pills-invitados-tab">
-
                             <div className="alert alert-primary mb-4" role="alert">
                                 <i className="fas fa-info-circle"></i>&nbsp;
                                 Seleccione los menús que estaran habilitado en la App para el evento.
                             </div>
-
-                            <div className="form-group row">
-                                <label className="col-sm-2 col-form-label col-form-label-sm">Menús</label>
-                                <div className="col-sm-4">
-                                    <select className="form-control form-control-sm" id="menuapp" name="menuAppSeleccionados" value={this.state.menuAppSeleccionados} onChange={this.handleChangeMulti} multiple="multiple">
-                                    {this.state.menuAppInvitados.map(
-                                        (e, index) => {
-                                            return (
-                                                <option value={e._id} key={index}>{e.Nombre}</option>
-                                            )
-                                        }
-                                    )}
-                                    </select>
-                                </div>
+                            <div className="mb-3">
+                              <Select
+                                isMulti={true} 
+                                isSearchable={false}
+                                className="multiselect"
+                                classNamePrefix="oneshow"
+                                closeMenuOnSelect={false}
+                                options={this.state.items}
+                                onChange={this.handleMultiChange}
+                                defaultValue={this.state.selectedItems}
+                                placeholder="Agregue características..."
+                                styles={{ menu: base => ({ ...base, position: 'relative' }) }}
+                              />
                             </div>
-
                         </div>
 
                         {/* Componente de configuracion de Redes Sociales */}

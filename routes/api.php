@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 
 
 Route::post('/login', 'LoginController@login');
-Route::post('/logout', 'LoginController@logout');
+Route::post('/logout', 'LoginController@logout')->middleware('api_token');
 
 /**
  * Recover password endpoints

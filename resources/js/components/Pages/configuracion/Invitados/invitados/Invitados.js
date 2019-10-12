@@ -346,7 +346,6 @@ export default class Invitados extends Component {
                 </div>
             );
         } else {
-            console.log(this.state.permisoUsuario.permisos);
             return (
                 <div>
                     <Menu usuario={this.state.user} />
@@ -367,10 +366,48 @@ export default class Invitados extends Component {
                                 </div>
                             </div>
                         </header>
-
                         <div id="sweet" className="container-fluid">
                             <div className="row mb-4">
-                                <label className="my-1 mr-2 form-control-sm">
+                              <div className="col-md-3">
+                                <div className="form-group">
+                                  <label>
+                                      <strong>Empresa</strong>
+                                  </label>
+                                  {this.state.permisoUsuario.nombre == "ADMINISTRADOR" ? (
+                                    <select
+                                      name="empresa"
+                                      id="pro-find-empresa"
+                                      value={this.state.empresa}
+                                      onChange={this.handleFiltroEmpresa}
+                                      className="form-control form-control-sm"
+                                    >
+                                      <option value="todas">Todas</option>
+                                      {this.state.empresas.map((e, index) => (
+                                        <option value={e._id} key={index}>
+                                          {e.Nombre}
+                                        </option>
+                                      ))}
+                                    </select>
+                                    ) : (
+                                      <select
+                                        className="form-control form-control-sm"
+                                        id="pro-find-empresa"
+                                        name="empresa"
+                                        onChange={this.handleFiltroEmpresa}
+                                        value={this.state.usuario.Empresa_id}
+                                        disabled
+                                      >
+                                        <option value="todas">Todas</option>
+                                        {this.state.empresas.map((e, index) => (
+                                          <option value={e._id} key={index}>
+                                            {e.Nombre}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    )}
+                                </div>
+                              </div>
+                                {/* <label className="my-1 mr-2 form-control-sm">
                                     <strong>Empresa</strong>
                                 </label>
                                 <div className="col-3">
@@ -423,8 +460,47 @@ export default class Invitados extends Component {
                                             )}
                                         </select>
                                     )}
+                                </div> */}
+                                <div className="col-md-3">
+                                  <div className="form-group">
+                                    <label>
+                                        <strong>Evento</strong>
+                                    </label>
+                                    {this.state.permisoUsuario.nombre === "ADMINISTRADOR" ? (
+                                      <select
+                                        name="evento"
+                                        id="pro-find-empresa"
+                                        className="form-control form-control-sm"
+                                        value={this.state.evento}
+                                        onChange={this.handleFiltroEvento}
+                                      >
+                                          <option value="todas">Todas</option>
+                                          {this.state.eventos.map((e, index) => (
+                                            <option value={e._id} key={index}>
+                                              {e.Nombre}
+                                            </option>
+                                          ))}
+                                      </select>
+                                    ) : (
+                                      <select
+                                        name="evento"
+                                        id="pro-find-empresa"
+                                        className="form-control form-control-sm"
+                                        onChange={this.handleFiltroEvento}
+                                        value={this.state.usuario.Empresa_id}
+                                        disabled
+                                      >
+                                        <option value="todas">Todas</option>
+                                        {this.state.eventos.map((e, index) => (
+                                          <option value={e._id} key={index}>
+                                            {e.Nombre}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    )}
+                                  </div>
                                 </div>
-                                <label className="my-1 mr-2 form-control-sm">
+                                {/* <label className="my-1 mr-2 form-control-sm">
                                     <strong>Evento</strong>
                                 </label>
                                 <div className="col-3">
@@ -477,45 +553,33 @@ export default class Invitados extends Component {
                                             )}
                                         </select>
                                     )}
-                                </div>
-                                <label className="mt-1 mr-2 form-control-sm">
+                                </div> */}
+                                <div className="col-md-3">
+                                  <label>
                                     <strong>Grupo</strong>
-                                </label>
-                                <div className="col-3">
-                                    <select
-                                        className="form-control form-control-sm my-1 mr-sm-2 col-10"
-                                        id="pro-find-empresa"
-                                        name="grupo"
-                                        onChange={this.handleFiltroGrupo}
-                                        value={this.state.grupo}
-                                    >
-                                        <option value="todas">Todas</option>
-                                        {this.state.grupos.map((e, index) => {
-                                            return (
-                                                <option
-                                                    value={e._id}
-                                                    key={index}
-                                                >
-                                                    {e.Nombre}
-                                                </option>
-                                            );
-                                        })}
-                                    </select>
+                                  </label>
+                                  <select
+                                    name="grupo"
+                                    id="pro-find-empresa"
+                                    value={this.state.grupo}
+                                    onChange={this.handleFiltroGrupo}
+                                    className="form-control form-control-sm"
+                                  >
+                                    <option value="todas">Todas</option>
+                                    {this.state.grupos.map((e, index) => (
+                                      <option value={e._id} key={index}>
+                                        {e.Nombre}
+                                      </option>
+                                    ))}
+                                  </select>
                                 </div>
-                                {this.state.permisoUsuario.permisos.evento.includes(
-                                    "add"
-                                ) ? (
-                                    <div className="m-2">
-                                        <Link
-                                            className="btn-sm btn-dark button-add p-2"
-                                            to={"/invitados/add/"}
-                                        >
-                                            Agregar Invitado
-                                        </Link>
-                                    </div>
-                                ) : (
-                                    ""
-                                )}
+                                {this.state.permisoUsuario.permisos.evento.includes('add') &&
+                                  <div className="col-md-3" style={{ display: 'flex', alignItems: 'center' }}>
+                                    <Link to="/invitados/add/" className="btn-sm btn-block btn-dark button-add p-2">
+                                      Agregar Invitado
+                                    </Link>
+                                  </div>
+                                }
                                 <table
                                     className="table table-hover table-condensed table-dark-theme table-responsive-sm"
                                     id="dt-eventos"

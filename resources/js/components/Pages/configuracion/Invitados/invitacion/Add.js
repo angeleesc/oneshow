@@ -159,42 +159,46 @@ export default class Show extends Component {
                             <div className="form-group row">
                                 <label className="col-sm-2 col-form-label col-form-label-sm">Posición Invitación</label>
                                 <div className="col-sm-5">
-                                    <select className="form-control form-control-sm" id="tipo" name="tipo" value={this.state.tipo} onChange={this.handleChange}>
+                                    <select className="form-control form-control-sm" id="tipo" name="tipo" value={this.state.tipo} onChange={this.handleChange} required>
                                         <option value="">Seleccione</option>
                                         <option value="h" >Horizontal</option>
                                         <option value="v" >Vertical</option>
                                     </select>
                                 </div>
                             </div>
-
                             <div className="form-group row">
                                 <label className="col-sm-2 col-form-label col-form-label-sm">Invitación (Imagen)</label>
                                 <div className="col-sm-5">
-                                    <input type="file" className="form-control-file" id="archivoimg" name="archivoimg" />
+                                    <input 
+                                      type="file" 
+                                      id="archivoimg" 
+                                      name="archivoimg" 
+                                      className="form-control-file" 
+                                      required
+                                    />
                                 </div>
                             </div>
-
                             <div className="form-group row">
                                 <label className="col-sm-2 col-form-label col-form-label-sm">Invitación (PDF)</label>
                                 <div className="col-sm-5">
-                                    <input type="file" className="form-control-file" id="archivopdf" name="archivopdf" />
+                                    <input 
+                                      type="file" 
+                                      className="form-control-file" 
+                                      id="archivopdf" 
+                                      name="archivopdf" 
+                                      required
+                                    />
                                 </div>
                             </div>
-
                         </div>
-
-
                     </div>
-
                     <div className="form-group row">
                         <div className="col-sm-4">
                             <button type="submit" id="save-file" className="btn btn-sm btn-dark mr-2">Guardar</button>
                             <Link to={"/invitacion/show/"+this.state.idEvento}><button type="button" className="btn btn-sm btn-dark">Volver</button></Link>
                         </div>
                     </div>
-
                 </form>
-
                             {/**esto de abajo es de php, es el texto que cambia con el menu */}
                             <footer className="content-wrapper-footer">
                                 <span>{this.state.footer}</span>

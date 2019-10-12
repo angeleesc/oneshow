@@ -1,121 +1,119 @@
 import React, { Component } from "react";
-import axios from "axios";
 import logo from "../../../../public/images/logo-oneshow.png";
 import { Link } from "react-router-dom";
+import { logout, userLoggedOut } from './../../redux/actions/auth';
+import { toggleSidebar } from './../../redux/actions/app';
+import { connect } from 'react-redux';
 
-export default class Header extends Component {
+class Header extends Component {
     constructor(props) {
-        super(props);
-        this.state = {
-            url: "",
-            usuario: this.props.usuario,
-            api_token: localStorage.getItem("api_token"),
-            isLoading: false
-        };
-        this.handleLogut = this.handleLogut.bind(this);
+      super(props);
+      this.state = {
+        url: "",
+        usuario: this.props.usuario,
+        api_token: localStorage.getItem("api_token"),
+        isLoading: false
+      };
+      
+      this.handleLogut = this.handleLogut.bind(this);
+      this.handleClick = this.handleClick.bind(this);
+    }
+
+    componentDidMount () {
+      if(this.props.isSidebarOpen) {
+        const [ body ] = document.getElementsByTagName('body');
+        body.className = '';
+      }
     }
 
     handleLogut(e) {
-        e.preventDefault();
-        let formData = new FormData();
-        formData.append("api_token", this.state.api_token);
-        $("#logout").prepend('<i class="fa fa-spinner fa-spin"></i> ');
-        axios.post("api/logout", formData).then(res => {
-            if (res.data.code == "200") {
-                console.log(this.props);
-                localStorage.clear();
-                this.props.history.push("/");
-            }
-        });
+      e.preventDefault();
+
+      this.props.logout().then(() => {
+        this.props.history.push("/");
+        this.props.userLoggedOut();
+        localStorage.clear();
+      });
     }
 
     handleClick() {
-        var body = document.getElementsByTagName("body")[0];
-        if (body.className == "sidebar-closed-md") {
-            body.className = "";
-        } else {
-            body.className = "sidebar-closed-md";
-        }
+      const [ body ] = document.getElementsByTagName("body");
+
+      if (this.props.isSidebarOpen) {
+        body.className = "sidebar-closed-md";
+      } else {
+        body.className = "";
+      }
+
+      this.props.toggleSidebar();
     }
 
-    render() {
-        if (this.state.isLoading) {
-            return "";
-        } else {
-            if (!this.state.usuario) {
-                this.state.usuario = JSON.parse(
-                    localStorage.getItem("usuario")
-                );
-            }
-            return (
-                <header className="top-header">
-                    <Link to="/welcome" className="top-header-logo">
-                        <img className="logo-inside" src={logo} />
+  render () {
+    if (this.props.user === null)
+      return null;
+
+    return (
+      <header className="top-header">
+        <Link to="/welcome" className="top-header-logo">
+            <img className="logo-inside" src={logo} />
+        </Link>
+        <nav id="navbar-principal" className="navbar navbar-default">
+          <div className="container-fluid">
+              <div className="navbar-header">
+                  <button
+                      type="button"
+                      className="navbar-sidebar-toggle"
+                      onClick={this.handleClick}
+                      data-toggle-sidebar
+                  >
+                      <span className="fas fa-arrow-left fa-xs icon-arrow visible-sidebar-sm-open" />
+                      <span className="fas fa-arrow-right fa-xs icon-arrow visible-sidebar-sm-closed" />
+                      <span className="fas fa-arrow-left fa-xs icon-arrow visible-sidebar-md-open" />
+                      <span className="fas fa-arrow-right fa-xs icon-arrow visible-sidebar-md-closed" />
+                  </button>
+              </div>
+              <ul className="navbar-nav ml-auto">
+                <li className="nav-item dropdown">
+                  <a
+                      className="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdownMenuLink"
+                      role="button"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                  >
+                      <i className="fas fa-user" />{` `}{this.props.user.email}
+                  </a>
+                  <div
+                    className="dropdown-menu dropdown-menu-right dropdown-menu-sm-right"
+                    aria-labelledby="navbarDropdownMenuLink"
+                  >
+                    <Link to="/cambiar-password" className="dropdown-item">
+                      <i className="fas fa-key" />{` `}Cambiar Contraseña
                     </Link>
-                    <nav
-                        id="navbar-principal"
-                        className="navbar navbar-default"
-                    >
-                        <div className="container-fluid">
-                            <div className="navbar-header">
-                                <button
-                                    type="button"
-                                    className="navbar-sidebar-toggle"
-                                    onClick={this.handleClick}
-                                    data-toggle-sidebar
-                                >
-                                    <span className="fas fa-arrow-left fa-xs icon-arrow visible-sidebar-sm-open" />
-                                    <span className="fas fa-arrow-right fa-xs icon-arrow visible-sidebar-sm-closed" />
-                                    <span className="fas fa-arrow-left fa-xs icon-arrow visible-sidebar-md-open" />
-                                    <span className="fas fa-arrow-right fa-xs icon-arrow visible-sidebar-md-closed" />
-                                </button>
-                            </div>
-
-                            <ul className="navbar-nav ml-auto">
-                                <li className="nav-item dropdown">
-                                    <a
-                                        className="nav-link dropdown-toggle"
-                                        href="#"
-                                        id="navbarDropdownMenuLink"
-                                        role="button"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                    >
-                                        <i className="fas fa-user" />
-                                        &nbsp;
-                                        {this.state.usuario.Correo}
-                                        {/*{ Str::limit(Auth::user()->nameMail(), 15) }*/}
-                                    </a>
-                                    <div
-                                        className="dropdown-menu dropdown-menu-right dropdown-menu-sm-right"
-                                        aria-labelledby="navbarDropdownMenuLink"
-                                    >
-                                        <Link
-                                            className="dropdown-item"
-                                            to="/cambiar-password"
-                                        >
-                                            <i className="fas fa-key" />
-                                            &nbsp;Cambiar Contraseña
-                                        </Link>
-                                        <Link
-                                            to="/"
-                                            className="dropdown-item logout"
-                                            style={{
-                                                color: "#ccc"
-                                            }}
-                                            onClick={this.handleLogut}
-                                        >
-                                            <i className="fas fa-sign-out-alt" />
-                                            &nbsp;Salir
-                                        </Link>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </nav>
-                </header>
-            );
-        }
-    }
+                    <Link to="/" className="dropdown-item logout" onClick={this.handleLogut}>
+                      <i className="fas fa-sign-out-alt" />{` `}Salir
+                    </Link>
+                  </div>
+                </li>
+              </ul>
+          </div>
+        </nav>
+      </header>
+    );
+  }
 }
+
+const mapStateToProps = state => ({
+  user: state.auth.user,
+  isSidebarOpen: state.app.isSidebarOpen
+});
+
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout()),
+  userLoggedOut: () => dispatch(userLoggedOut()),
+  toggleSidebar: () => dispatch(toggleSidebar()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
