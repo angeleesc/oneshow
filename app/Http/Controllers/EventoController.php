@@ -21,7 +21,7 @@ use MongoDB\BSON\ObjectID;
 use Illuminate\Support\Str;
 use App\Http\Requests\Evento\ConsultarHashtags;
 use App\Http\Requests\Evento\ActualizarHashtags;
-
+use App\Http\Requests\Evento\RegistrarPublicacion;
 
 //controlador encargado de la seccion de eventos
 class EventoController extends Controller
@@ -1116,6 +1116,92 @@ class EventoController extends Controller
         return response()->json(['guardado' => true], 200);
     }
 
+    /**
+     * Obtener publicaciones del evento en formato XML/RSS
+     * 
+     * @param Request $request
+     * @param string $eventoId
+     * @return Response
+     */
+    public function obtenerPublicacionesRSS(Request $request, $eventoId) {
+
+        $plantillaRSS = '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel></channel></rss>';
+        $contenidoXML = new \SimpleXMLElement($plantillaRSS);
+
+        $evento = Evento::find($eventoId);
+
+        foreach ($evento->PublicacionesRSS as $publicacion) {
+
+            $item = $contenidoXML->channel->addChild('item');
+            $item->addChild('description', $publicacion['descripcion']);
+            $item->addChild('pubDate', $publicacion['fechaPublicacion']);
+
+            if ($publicacion['rutaDeImagen']) {
+                $imagen = $item->addChild('enclosure');
+                $imagen->addAttribute('url', $publicacion['rutaDeImagen']);
+                $imagen->addAttribute('type', 'image/png');
+            }
+        }
+
+        $rutaDelXML = base_path('storage/app/public/Eventos/'. $eventoId . '/Publicaciones/' . 'RSS.xml');
+        file_put_contents($rutaDelXML, $contenidoXML->asXML());
+
+        return response()->file($rutaDelXML);
+    }
+
+    /**
+     * Registrar publicacion RSS
+     * 
+     * @param Request $request
+     * @return Response
+     */
+    public function registrarPublicacionRSS(Request $request) {
+
+        $rutaDeImagen = ($request->imagen) ? $this->guardarImagen($request->eventoId, $request->imagen) : null;
+
+        $publicacion = [
+            'descripcion' => $request->descripcion,
+            'rutaDeImagen' => $rutaDeImagen,
+            'fechaPublicacion' => date(DATE_RFC2822)
+        ];
+
+        $evento = Evento::find($request->eventoId);
+
+        if ($evento->PublicacionesRSS) {
+            $nuevasPublicaciones = $evento->PublicacionesRSS;
+            array_push($nuevasPublicaciones, $publicacion);
+        } else {
+            $nuevasPublicaciones = array($publicacion);
+        }
+
+        $evento->PublicacionesRSS = $nuevasPublicaciones;
+        $evento->save();
+
+        return response()->json(['guardado' => true], 200);
+    }
+
+    /**
+     * Almacenar imagen de la publicacion
+     * 
+     * @param string $eventoId
+     * @param string $imagenCodificada
+     * @return string
+     */
+    private function guardarImagen($eventoId, $imagenCodificada) {
+        
+        $imagenDecodificada = base64_decode($imagenCodificada);
+        $nombre = time() . '.png';
+        $rutaDeLaImagen = base_path('storage/app/public/Eventos/'. $eventoId . '/Publicaciones/' . $nombre);
+
+        if(!File::exists(base_path('storage/app/public/Eventos/'. $eventoId .'/Publicaciones'))) {
+            File::makeDirectory(base_path('storage/app/public/Eventos/'. $eventoId .'/Publicaciones'), $mode = 0777, true, true);
+        }
+
+        file_put_contents($rutaDeLaImagen, $imagenDecodificada);
+
+        return '/storage/Eventos/'. $eventoId . '/Publicaciones/' . $nombre;
+    }
+
     public function getEventos(){
         $data = Evento::borrado(false)->get();
         if($data){
@@ -1124,9 +1210,4 @@ class EventoController extends Controller
             return json_encode(['code' => 500]);
         }
     }
-
-    
-    
-
-
 }

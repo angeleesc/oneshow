@@ -43,7 +43,8 @@ class AudioControls extends React.Component {
   }
 
   componentWillUnmount () {
-    this.endCurrentShow();
+    clearInterval(this.interval);
+    this.props.endRunningShow('audio');
   }
 
   componentDidUpdate (prevProps) {
@@ -62,8 +63,9 @@ class AudioControls extends React.Component {
 
   endCurrentShow () {
     clearInterval(this.interval);
-
     this.props.endRunningShow('audio');
+
+    this.props.submitCommand(`REM,0,1,AUD`);
   }
 
   startCommand () {
@@ -81,6 +83,12 @@ class AudioControls extends React.Component {
       time: this.state.time,
       file: selectedFile,
     });
+
+    // First command execution
+    let firstNow = (new Date()).getTime();
+    let firstEnd = firstNow + 5000;
+    const firstCommand = `AUD,1,1,${selectedFile.NombreCompleto},${firstNow},${firstEnd}`;
+    this.props.submitCommand(firstCommand);
 
     // Executing a command every time a
     // beat is produced
@@ -106,12 +114,6 @@ class AudioControls extends React.Component {
         this.props.updateCurrentLoop('audio', current.loop - 1);
       }
     }, interval);
-
-    this.setState({
-      bpm: 0,
-      loop: 0,
-      time: 0,
-    });
   }
 
   validateConfiguration () {

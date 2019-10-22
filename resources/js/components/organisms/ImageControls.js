@@ -52,7 +52,10 @@ class ImageControls extends React.Component {
   }
 
   componentWillUnmount () {
-    this.endCurrentShow();
+    clearInterval(this.interval);
+    clearTimeout(this.timeout);
+
+    this.props.endRunningShow('flash');
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -79,6 +82,8 @@ class ImageControls extends React.Component {
     clearTimeout(this.timeout);
     
     this.props.endRunningShow('image');
+
+    this.props.submitCommand(`REM,0,1,IMG`);
   }
 
   handleImageSelect (imageId) {
@@ -108,6 +113,16 @@ class ImageControls extends React.Component {
       vibrate: this.state.vibrate,
     });
 
+    // First command execution
+    const firstCommand = `IMG,1,${this.step},${selected[this.step].NombreCompleto},${this.state.vibrate ? 1 : 0}`;
+    this.props.submitCommand(firstCommand);
+
+    if (this.step === selected.length - 1) {
+      this.step = 0;
+    } else {
+      this.step = this.step + 1;
+    }
+
     // Executing a command every time a
     // beat is produced
     this.interval = setInterval(() => {
@@ -119,10 +134,9 @@ class ImageControls extends React.Component {
       let id = this.step;
       let image = current.files[this.step].NombreCompleto;
       let moment = 1;
-      let now = (new Date()).getTime();
-      let end = now + (current.time * 1000) + 5000;
+      let vibrate = current.vibrate ? 1 : 0;
 
-      let command = `IMG,${moment},${id},${image},${now},${end}`;
+      let command = `IMG,${moment},${id},${image},${vibrate}`;
 
       this.props.submitCommand(command);
 
@@ -136,14 +150,6 @@ class ImageControls extends React.Component {
         this.step = this.step + 1;
       }
     }, this.state.time * 1000);
-
-    this.setState(state => ({
-      loop: 0,
-      time: 0,
-      files: state.files.map(file => ({ ...file, selected: false })),
-      isSelectorOpen: false,
-      vibrate: false,
-    }));
   }
 
   validateConfiguration (selected) {

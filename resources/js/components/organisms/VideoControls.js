@@ -45,7 +45,9 @@ class VideoControls extends React.Component {
   }
 
   componentWillUnmount () {
-    this.endCurrentShow();
+    clearInterval(this.interval);
+
+    this.props.endRunningShow('video');
   }
 
   componentDidUpdate (prevProps) {
@@ -67,6 +69,8 @@ class VideoControls extends React.Component {
     clearInterval(this.interval);
 
     this.props.endRunningShow('video');
+
+    this.props.submitCommand(`REM,0,1,VID`);
   }
 
   startCommand () {
@@ -85,6 +89,12 @@ class VideoControls extends React.Component {
       time: this.state.time,
       vibrate: this.state.vibrate,
     });
+
+    // First command execution
+    let firstNow = (new Date()).getTime();
+    let firstEnd = firstNow + 5000;
+    const firstCommand = `VID,1,1,${selectedFile.NombreCompleto},${this.state.vibrate ? 1 : 0}`;
+    this.props.submitCommand(firstCommand);
 
     // Executing a command every time a
     // beat is produced
@@ -109,13 +119,6 @@ class VideoControls extends React.Component {
         this.props.updateCurrentLoop('video', current.loop - 1);
       }
     }, interval);
-
-    this.setState({
-      bpm: 0,
-      loop: 0,
-      time: 0,
-      vibrate: false,
-    });
   }
 
   validateConfiguration () {

@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use MongoDB\BSON\ObjectId;
 use PHP\BitTorrent\Torrent;
 use App\Jobs\MoveFileToTorrentClient;
+use Illuminate\Support\Facades\Validator;
 use wapmorgan\Mp3Info\Mp3Info;
 
 class BibliotecaController extends Controller
@@ -351,11 +352,26 @@ class BibliotecaController extends Controller
         $categoria = CategoriaBiblioteca::where('_id', new ObjectId($input['categoria']))->first();
         $duration = null;
 
-        if ($categoria->Nombre === 'Audio') {
+        if ($categoria->Nombre === 'Imagen') {
+          Validator::make(['archivo' => $request->archivo], [
+            'archivo' => 'file|image',
+          ])->validate();
+
+        } else if ($categoria->Nombre === 'Audio') {
+          
+          Validator::make(['archivo' => $request->archivo], [
+            'archivo' => 'file|mimetypes:audio/mpeg,audio/mp4,audio/vnd.wav',
+          ])->validate();
+          
           $audio = new Mp3Info($request->archivo->path());
           $duration = floor($audio->duration * 1000);
 
         } else if ($categoria->Nombre === 'Video') {
+          
+          Validator::make(['archivo' => $request->archivo], [
+            'archivo' => 'file|mimetypes:video/x-msvideo,video/mpeg,video/3gpp|mimes:mp4',
+          ])->validate();
+
           $getID3 = new \getID3();
           $video = $getID3->analyze($request->archivo->path());
 

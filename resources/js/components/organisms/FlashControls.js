@@ -33,11 +33,14 @@ class FlashControls extends React.Component {
     // Class attributes
     this.interval = '';
     this.timeout = '';
-    this.step = 0;
+    this.step = 1;
   }
 
   componentWillUnmount () {
-    this.endCurrentShow();
+    clearInterval(this.interval);
+    clearTimeout(this.timeout);
+
+    this.props.endRunningShow('flash');
   }
 
   componentDidUpdate (prevProps) {
@@ -60,7 +63,11 @@ class FlashControls extends React.Component {
     clearInterval(this.interval);
     clearTimeout(this.timeout);
 
+    this.step = 1;
+
     this.props.endRunningShow('flash');
+
+    this.props.submitCommand(`REM,0,1,FLH`);
   }
 
   startCommand () {
@@ -84,6 +91,21 @@ class FlashControls extends React.Component {
         
       }, this.state.time * 1000);
     }
+
+    // First command execution
+    const firstCommand = `FLH,1,${this.step},${this.step},${this.state.vibrate ? 1 : 0}`;
+    this.props.submitCommand(firstCommand);
+
+    if (this.step === 1) {
+      this.step = 0;
+    } else {
+      this.step = this.step + 1;
+    }
+
+    // If bpm is equal to zero, just execute the command once
+    // and let it be there
+    if (this.state.bpm === 0)
+      return;
 
     // Executing a command every time a
     // beat is produced
@@ -112,19 +134,12 @@ class FlashControls extends React.Component {
         this.step = this.step + 1;
       }
     }, interval);
-
-    this.setState({
-      bpm: 0,
-      loop: 0,
-      time: 0,
-      vibrate: false,
-    });
   }
 
   validateConfiguration () {
-    const { loop, time } = this.state;
+    const { loop, time, bpm } = this.state;
     
-    if (loop === 0 && time === 0) {
+    if (loop === 0 && time === 0 && bpm > 0) {
       this.props.displayAlertMessage('', 'Duración del comando no especificado', 'error');
       return false;
     }

@@ -298,7 +298,7 @@ class Multimedia extends Component {
               <div className="row align-items-center">
                 <div className="col-sm-3">
                   <h4 className="text-center my-0">
-                    <i className="fas fa-compact-disc" /> LUCES-SONIDO
+                    <i className="fas fa-compact-disc" /> LUCES & SONIDO
                   </h4>
                 </div>
                 <div className="col-sm-5">

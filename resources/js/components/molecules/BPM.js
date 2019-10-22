@@ -18,7 +18,7 @@ class BPM extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.value == -1 && this.props.value > -1) {
+    if (prevProps.value == 0 && this.props.value > 0) {
       this.loopRef.current.addEventListener('wheel', this.onWheelMovement, { passive: false });
     }
   }
@@ -30,7 +30,7 @@ class BPM extends React.Component {
     e.preventDefault();
 
     let next = this.props.value + (e.deltaY * -0.01);
-    let value = next < -1 ? -1 : next;
+    let value = next < 0 ? 0 : next;
 
     this.props.onChange(value);
   }
@@ -54,7 +54,7 @@ class BPM extends React.Component {
         <form>
           <div className="console-body">
             <div className="command-control" ref={this.loopRef}>
-              {value === -1 &&
+              {value === 0 &&
                 <div className="my-2 text-center">
                   <FontAwesomeIcon 
                     icon="circle" 
@@ -73,29 +73,10 @@ class BPM extends React.Component {
                   </p>
                 </div>
               }
-              {value === 0 &&
-                <div className="my-2 text-center">
-                  <FontAwesomeIcon 
-                    icon="power-off" 
-                    color="#fff" 
-                    size="2x"
-                  />
-                  <p 
-                    className="text-center" 
-                    style={{ 
-                      fontWeight: '600',
-                      fontSize: '12px',
-                      textTransform: 'uppercase' 
-                    }}
-                  >
-                    Apagado
-                  </p>
-                </div>
-              }
               {value > 0 && 
                 <input 
                   name="n" 
-                  min="-1"
+                  min="0"
                   value={value}
                   onChange={e => this.props.onChange(parseInt(e.target.value))}
                   type="number"

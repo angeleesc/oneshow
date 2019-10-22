@@ -44,7 +44,10 @@ class ColorControls extends React.Component {
   }
 
   componentWillUnmount () {
-    this.endCurrentShow();
+    clearInterval(this.interval);
+    clearTimeout(this.timeout);
+    
+    this.props.endRunningShow('color');
   }
 
   componentDidUpdate (prevProps) {
@@ -68,6 +71,8 @@ class ColorControls extends React.Component {
     clearTimeout(this.timeout);
     
     this.props.endRunningShow('color');
+
+    this.props.submitCommand(`REM,0,1,COL`);
   }
 
   startCommand () {
@@ -91,6 +96,21 @@ class ColorControls extends React.Component {
         
       }, this.state.time * 1000);
     }
+
+    // First command execution
+    const firstCommand = `COL,${1},${this.step},${this.state.colors[this.step]},${this.state.vibrate ? 1 : 0}`;
+    this.props.submitCommand(firstCommand);
+
+    if (this.step === (this.state.colors.length - 1)) {
+      this.step = 0;
+    } else {
+      this.step = this.step + 1;
+    }
+
+    // If bpm is equal to zero, just execute the command once
+    // and let it be there
+    if (this.state.bpm === 0)
+      return;
 
     // Executing a command every time a
     // beat is produced
@@ -119,14 +139,6 @@ class ColorControls extends React.Component {
         this.step = this.step + 1;
       }
     }, interval);
-
-    this.setState({
-      bpm: 0,
-      loop: 0,
-      time: 0,
-      colors: [],
-      vibrate: false,
-    });
   }
 
   handleNewColor (color) {
@@ -142,14 +154,14 @@ class ColorControls extends React.Component {
   }
 
   validateConfiguration () {
-    const { colors, loop, time } = this.state;
+    const { colors, loop, time, bpm } = this.state;
 
     if (colors.length <= 0) {
       this.props.displayAlertMessage('', 'No seleccionó ningún color para empezar el show', 'error');
       return false;
     }
     
-    if (loop === 0 && time === 0) {
+    if (loop === 0 && time === 0 && bpm > 0) {
       this.props.displayAlertMessage('', 'Duración del comando no especificado', 'error');
       return false;
     }

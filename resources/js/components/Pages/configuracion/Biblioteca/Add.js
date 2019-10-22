@@ -87,17 +87,17 @@ export default class Add extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     $('button#save-file').prepend('<i class="fa fa-spinner fa-spin"></i> ');
-    let formData = new FormData();
+    
+    const formData = new FormData();
     formData.append("id-evento", this.state.eventoid);
     formData.append("name", this.state.nombreArchivo);
-    console.log(this.state.nombreArchivo);
     formData.append("categoria",this.state.idCategoria);
     formData.append("archivo", (this.fileInput.current.files[0] === undefined) ? '' : this.fileInput.current.files[0] );
-    console.log(formData);
+    
     axios.post('api/biblioteca/evento/add-file',formData,{
-        headers: {
-            Authorization: this.state.api_token
-        }
+      headers: {
+        Authorization: this.state.api_token
+      }
     }).then(res=>{
         $('button#save-file').find('i.fa').remove()
         if(res.data.code === 200) {
@@ -123,8 +123,22 @@ export default class Add extends React.Component {
             sweetalert('Error al agregar archivo. Consulte al Administrador.', 'error', 'sweet');
         }
     }).catch(error => {
-        $('button#save-file').find('i.fa').remove()
-        sweetalert(error.response.data, 'error', 'sweet');
+      $('button#save-file').find('i.fa').remove();
+
+      if (error.response.status === 422) {
+        const { errors } = error.response.data;
+        
+        if (errors.archivo) {
+          const [text] = errors.archivo;
+          
+          sweetalert(text, 'error', 'sweet');
+
+        } else {
+          sweetalert('Existe un error en el formulario, revise e intente de nuevo.', 'error', 'sweet'); 
+        }
+      } else {
+        sweetalert('Ha ocurrido un error, por favor intentelo de nuevo', 'error', 'sweet');
+      }
     })
   }
 

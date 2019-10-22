@@ -223,14 +223,6 @@ class Menu extends Component {
                       </Link>
                     </li>
                   }
-                  {permisos.cliente.includes("show") &&
-                    <li className="sidebar-nav-link">
-                        <Link to="/invitados">
-                            <i className="fas fa-user-tie sidebar-nav-link-logo" />{" "}
-                            Invitados
-                        </Link>
-                    </li>
-                  }
                   {this.state.permisosUsuario.nombre === "ADMINISTRADOR" &&
                     <li className="sidebar-nav-link">
                       <Link to="/grupos">

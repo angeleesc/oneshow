@@ -175,7 +175,7 @@ class InvitadoController extends Controller
         }
         return response()->json(['code' => 200,'invitado'=>$invitado,'invitados-adicionales'=>$invitadosAdicionalesArreglo,'link'=>$linkConfirmacion]);
     }
-  }else{
+  } else {
     $invitado = $existeInvitado[0];
     $idInvitado = strval($invitado['_id']);
     $idEvento = $input['evento-id'];
@@ -293,11 +293,9 @@ class InvitadoController extends Controller
         }
       }
       return response()->json(['code' => 200,'mensaje'=>"correo ya registrado",'invitado'=>$invitado,'invitados-adicionales'=>$invitadosAdicionalesArreglo,'link'=>$linkConfirmacion]);
-    }else{
+    } else {
       return response()->json(['code'=>500,'mensaje'=>'Este invitado ya esta asociado al evento']);
     }
-    
-  
   }
 }
 

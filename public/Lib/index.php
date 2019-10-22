@@ -42,6 +42,11 @@
             ];
         }
 
+        $redes['rss'] = [
+            'rss_id_1' => ['http://www.oneshow.com/api/RSS/' . $_GET['eventoId']],
+            'rss_text' => 0
+        ];
+
         return $redes;
     }
 ?>
@@ -60,7 +65,8 @@
             'iframe' => 'media',
             'breakpoints' => array('4', '4', '3', '3', '2', '1', '1'),
             'filter_search' => false,
-            'add_files' => true
+            'add_files' => true,
+            'loadmore' => false
         )
     );
 ?>
