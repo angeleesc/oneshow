@@ -58,7 +58,10 @@ const ConfigurarSocialWall = forwardRef((props, ref) => {
             if (respuesta.data.ver) {
                 document.getElementsByName('tema')[0].value = respuesta.data.preferencias.tema;
                 document.getElementsByName('presentacion')[0].value = respuesta.data.preferencias.presentacion;
+                document.getElementsByName('intervaloActualizacion')[0].value = respuesta.data.preferencias.intervaloActualizacion;
                 setModerarContenido(respuesta.data.preferencias.moderarContenido);
+            } else {
+                document.getElementsByName('intervaloActualizacion')[0].value = 20;
             }
         });
     }
@@ -67,17 +70,16 @@ const ConfigurarSocialWall = forwardRef((props, ref) => {
         enviarConfiguracion: () => {
             let datosDelFormulario = new FormData();
             datosDelFormulario.append("eventoId", props.eventoId);
-            datosDelFormulario.append("preferencias",  {
-                tema: document.getElementsByName('tema')[0].value,
-                presentacion: document.getElementsByName('presentacion')[0].value,
-                moderarContenido
-            });
+            datosDelFormulario.append("tema", document.getElementsByName('tema')[0].value);
+            datosDelFormulario.append("presentacion", document.getElementsByName('presentacion')[0].value);
+            datosDelFormulario.append("intervaloActualizacion", document.getElementsByName('intervaloActualizacion')[0].value);
+            datosDelFormulario.append("moderarContenido", moderarContenido);
     
             axios.post('api/eventos/social-wall/configuracion', datosDelFormulario, {
                 headers: {
                     Authorization: localStorage.getItem("api_token")
                 }
-            });
+            }).then((res) => console.log('Procesado'));
         }
     }));
 
@@ -107,6 +109,13 @@ const ConfigurarSocialWall = forwardRef((props, ref) => {
                                 <option value="timeline">Linea de tiempo</option>
                                 <option value="feed">Carrusel</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div className="form-group row">
+                        <label className="col-sm-4 col-form-label col-form-label-sm">Tiempo de actualización (Segundos)</label>
+                        <div className="col-sm-6">
+                            <input className="form-control" type="number" name="intervaloActualizacion" />
                         </div>
                     </div>
 
