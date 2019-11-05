@@ -96,7 +96,8 @@ class AudioControls extends React.Component {
     // First command execution
     let firstNow = (new Date()).getTime();
     let firstEnd = firstNow + 5000;
-    const firstCommand = `AUD,1,1,${selectedFile.NombreCompleto},${firstNow},${firstEnd}`;
+    let now = (new Date()).getTime() - this.props.timeOffset;
+    const firstCommand = `AUD,1,1,${selectedFile.NombreCompleto},${firstNow},${firstEnd},${now}`;
     this.props.submitCommand(firstCommand);
 
     // Executing a command every time a
@@ -112,10 +113,9 @@ class AudioControls extends React.Component {
       let id = 1;
       let audio = current.file.NombreCompleto;
       let moment = 1;
-      let now = (new Date()).getTime();
-      let end = now + 5000;
+      let now = (new Date()).getTime() - this.props.timeOffset;
 
-      let command = `AUD,${moment},${id},${audio},${now},${end}`;
+      let command = `AUD,${moment},${id},${audio},0,${now}`;
 
       this.props.submitCommand(command);
       
@@ -191,7 +191,8 @@ class AudioControls extends React.Component {
   }
 }
 
-const mapStateToProps = ({ show, multimedia }) => ({
+const mapStateToProps = ({ app, show, multimedia }) => ({
+  app: app.timeOffset,
   eventId: multimedia.eventId,
   audio: show.audio,
   selectedSceneId: show.scenes.selected,
