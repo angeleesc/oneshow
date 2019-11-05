@@ -10,7 +10,6 @@ export default class RedesSociales extends Component {
 
         this.state = {
             isLoading: false,
-            footer: "Footer",
             opcion: "Empresas",
             api_token: localStorage.getItem("api_token"),
             usuario: JSON.parse(localStorage.getItem("usuario"))
@@ -165,9 +164,8 @@ export default class RedesSociales extends Component {
             .value
             .replace(" ", "")
             .split(",")
-            .map((hashtag) => {
-                return (hashtag && hashtag[0] != "#") ? "#" + hashtag : hashtag;
-            });
+            .map((hashtag) => (hashtag && hashtag[0] != "#") ? "#" + hashtag : hashtag)
+            .filter((hashtag) => hashtag !== "");
     }
 
     /**
@@ -216,7 +214,7 @@ export default class RedesSociales extends Component {
                                 id="campoHashtagsTwitter"
                                 className="form-control form-control-sm"
                                 placeholder="Ingrese los hashtags para Twitter"
-                                autocomplete="false"
+                                autoComplete="false"
                             />
                         </div>
                     </div>
@@ -231,7 +229,7 @@ export default class RedesSociales extends Component {
                                 id="campoHashtagsInstagram"
                                 className="form-control form-control-sm"
                                 placeholder="Ingrese los hashtags para Instagram"
-                                autocomplete="false"
+                                autoComplete="false"
                             />
                         </div>
                     </div>

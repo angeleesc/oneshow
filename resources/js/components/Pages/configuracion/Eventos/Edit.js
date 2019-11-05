@@ -5,7 +5,7 @@ import Header from "../../../components/Header";
 import { Link } from "react-router-dom";
 import RedesSociales from "./RedesSociales";
 import Select from 'react-select';
-// import SocialWall from "./SocialWall";
+import ConfigurarSocialWall from "./ConfigurarSocialWall";
 
 import "../../css/configuracion/Biblioteca.css";
 import "./css/Eventos.css";
@@ -39,6 +39,7 @@ export default class Edit extends React.Component {
         };
 
         this.configuracionRedesSociales = React.createRef();
+        this.configuracionesSocialWall = React.createRef();
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -133,8 +134,10 @@ export default class Edit extends React.Component {
     handleSubmit (e) {
         e.preventDefault();
 
-        // Enviar Configuracion de redes sociales
+        // Enviar Configuraciones de redes sociales y Social Wall
         this.configuracionRedesSociales.current.handleClick();
+        this.configuracionesSocialWall.current.enviarConfiguracion();
+
 
         let formData = new FormData();
         let s = this.state
@@ -192,7 +195,7 @@ export default class Edit extends React.Component {
         }).catch(error => {
             $('#update-evento').find('i.fa').remove();
             sweetalert(error.response.data, 'error', 'sweet');
-        })
+        });
     }
 
     handleLogo(){
@@ -311,9 +314,9 @@ export default class Edit extends React.Component {
                         <li className="nav-item">
                             <a className="nav-link" id="pills-redes-sociales-tab" data-toggle="pill" href="#pills-redes-sociales" role="tab" aria-controls="pills-redes-sociales" aria-selected="false">Redes Sociales</a>
                         </li>
-                        {/* <li className="nav-item">
+                        <li className="nav-item">
                             <a className="nav-link" id="pills-social-wall-tab" data-toggle="pill" href="#pills-social-wall" role="tab" aria-controls="pills-social-wall" aria-selected="false">Social Wall</a>
-                        </li> */}
+                        </li>
                     </ul>
 
                 <hr className="line-gray"/>
@@ -501,11 +504,13 @@ export default class Edit extends React.Component {
                             />
                         </div>
 
-                        {/* Componente de configuracion del Social Wall 
+                        {/* Componente de configuracion del Social Wall */}
                         <div className="tab-pane fade" id="pills-social-wall" role="tabpanel" aria-labelledby="pills-social-wall-tab">
-                            <SocialWall />
+                            <ConfigurarSocialWall
+                                ref={this.configuracionesSocialWall}
+                                eventoId={this.state.idEvento}
+                            />
                         </div>
-                        */}
 
 
                     </div>

@@ -38,9 +38,15 @@ class SocialWall extends Component {
             estilosDelTituloDeLaPagina: {
                 marginRight: "2rem"
             },
+            intervaloDeActualizacion: null,
+            intervaloDeScroll: null,
             urlParaIframe: window.location.protocol + "//" + window.location.hostname + "/Lib",
             urlModerarTextoOfensivo: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessText/Screen",
-            urlModerarImagenOfensiva: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate"
+            urlModerarImagenOfensiva: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate",
+            tema: null,
+            presentacion: null,
+            intervaloActualizacion: null,
+            moderarContenido : null
         };
 
         this.handleCompanyChange = this.handleCompanyChange.bind(this);
@@ -65,6 +71,12 @@ class SocialWall extends Component {
         this.etiquetarPublicacionComoOfensiva = this.etiquetarPublicacionComoOfensiva.bind(this);
         this.simularClickSobreFiltro = this.simularClickSobreFiltro.bind(this);
         this.vaciarValoresDeCamposSelectores = this.vaciarValoresDeCamposSelectores.bind(this);
+        this.crearIntervaloDeActualizaciones = this.crearIntervaloDeActualizaciones.bind(this);
+        this.consultarNuevasPublicaciones = this.consultarNuevasPublicaciones.bind(this);
+        this.limpiarIntervaloDeActualizacion = this.limpiarIntervaloDeActualizacion.bind(this);
+        this.crearIntervaloDeTransicionDeContenido = this.crearIntervaloDeTransicionDeContenido.bind(this);
+        this.limpiarIntervaloDeTransicion = this.limpiarIntervaloDeTransicion.bind(this);
+        this.consultarConfiguraciones = this.consultarConfiguraciones.bind(this);
     }
 
     /**
@@ -75,6 +87,15 @@ class SocialWall extends Component {
     componentDidMount () {
         this.vaciarValoresDeCamposSelectores();
         this.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
+    }
+
+    /**
+     * Ejecutar al desmontar componente
+     * 
+     * @return {void}
+     */
+    componentWillUnmount() {
+        this.limpiarIntervaloDeActualizacion();
     }
 
     /**
@@ -124,7 +145,10 @@ class SocialWall extends Component {
   
         this.props.setEvent(value);
         this.setState({ eventoId: value },
-        () => this.consultarHashtagsDelEvento());
+        () => {
+            this.consultarHashtagsDelEvento();
+            this.consultarConfiguraciones();
+        });
     }
 
     /**
@@ -166,6 +190,29 @@ class SocialWall extends Component {
     }
 
     /**
+     * Consultar configuraciones
+     * 
+     * @return {void}
+     */
+    consultarConfiguraciones() {
+        axios.get('api/eventos/social-wall/configuracion/' + this.state.eventoId, {
+            headers: {
+                Authorization: localStorage.getItem("api_token")
+            }
+        })
+        .then((respuesta) => {
+            console.log(respuesta);
+            if (respuesta.data.ver)
+                this.setState({
+                    tema: respuesta.data.preferencias.tema,
+                    presentacion: respuesta.data.preferencias.presentacion,
+                    intervaloActualizacion: respuesta.data.preferencias.intervaloActualizacion,
+                    moderarContenido : JSON.parse(respuesta.data.preferencias.moderarContenido)
+                });
+        });
+    }
+
+    /**
      * Lanzar Iframe con la libreria de Social Wall
      * 
      * @return {void}
@@ -194,7 +241,9 @@ class SocialWall extends Component {
                 this.obtenerHashtagsSinSimbolo(this.state.hashtagsInstagram)
             )
         ) +
-        "&eventoId=" + this.state.eventoId;
+        "&eventoId=" + this.state.eventoId + 
+        (this.state.tema) ? "&tema=" + this.state.tema : "" +
+        (this.state.presentacion) ? "&presentacion=" + this.state.presentacion : "";
     }
 
     /**
@@ -226,6 +275,8 @@ class SocialWall extends Component {
         } else if (elementoIframe.msRequestFullscreen) { /* IE/Edge */
             elementoIframe.msRequestFullscreen();
         }
+
+        this.crearIntervaloDeTransicionDeContenido();
     }
 
     /**
@@ -263,6 +314,8 @@ class SocialWall extends Component {
             })
         ));
 
+        this.crearIntervaloDeActualizaciones();
+        this.ocultarBotonDeCargarMas();
         this.guardarContenidoDeLasPublicaciones();
     }
 
@@ -293,7 +346,14 @@ class SocialWall extends Component {
             });
         }
 
-        this.setState({publicaciones}, () => this.moderarContenidoDeLasPublicaciones());
+        if (this.state.moderarContenido) {
+            this.setState({publicaciones}, () => this.moderarContenidoDeLasPublicaciones());
+            return
+        }
+
+        this.props.ocultarElementoDeCarga();
+        this.mostrarBotonPantallaCompleta();
+        this.mostrarIframeSocialWall();
     }
 
     /**
@@ -333,11 +393,11 @@ class SocialWall extends Component {
                     break;
                 }
 
-                if (this.state.publicaciones[indice].imagen) {
+                /* if (this.state.publicaciones[indice].imagen) {
                     this.moderarImagenOfensiva(this.state.publicaciones[indice]);
                 }
                 
-                this.moderarTextoOfensivo(this.state.publicaciones[indice]);
+                this.moderarTextoOfensivo(this.state.publicaciones[indice]); */
             }
 
             ultimoIndice += 5;
@@ -460,6 +520,100 @@ class SocialWall extends Component {
             .contentDocument
             .getElementsByClassName("filter-label")[0]
             .click();
+    }
+
+    /**
+     * Crear intervalo de actualizacion de publicaciones
+     * 
+     * @return {void}
+     */
+    crearIntervaloDeActualizaciones() {
+
+        let tiempoMiliseg = (this.state.intervaloActualizacion) ? this.state.intervaloActualizacion * 1000 : 20000;
+
+        let intervaloDeActualizacion = setInterval(() => {
+            this.consultarNuevasPublicaciones();
+        }, tiempoMiliseg);
+
+        this.setState({ intervaloDeActualizacion });
+    }
+
+    /**
+     * Consultar nuevo lote de publicaciones
+     * 
+     * @return {void}
+     */
+    consultarNuevasPublicaciones() {
+        document.getElementById('iFrameSocialWall')
+            .contentDocument
+            .getElementsByClassName('sb-loadmore')[0]
+            .click();
+    }
+
+    /**
+     * Limpiar intervalo de actualizacion de publicaciones
+     * 
+     * @return {void}
+     */
+    limpiarIntervaloDeActualizacion() {
+        if (this.state.intervaloDeActualizacion)
+            clearInterval(this.state.intervaloDeActualizacion);
+
+        if (this.state.intervaloDeScroll)
+            clearInterval(this.state.intervaloDeScroll);
+    }
+
+    /**
+     * Ocultar boton de "Ver mas"
+     * 
+     * @return {void}
+     */
+    ocultarBotonDeCargarMas() {
+        let contenedorDePublicaciones = document.getElementById('iFrameSocialWall').contentDocument.getElementById('sb_wall1');
+        let elementoDeEstilo = document.createElement("style");
+        let definicionesDeEstilo = document.createTextNode(".sb-loadmore { visibility: hidden; }");
+
+        elementoDeEstilo.appendChild(definicionesDeEstilo);
+        contenedorDePublicaciones.appendChild(elementoDeEstilo);
+    }
+
+    /**
+     * Crear intervalo de descenso del Scroll
+     * 
+     * @return {void}
+     */
+    crearIntervaloDeTransicionDeContenido() {
+
+        let intervaloDeScroll = setInterval(() => this.descenderScroll(), 10000);
+
+        this.setState({ intervaloDeScroll });
+    }
+
+    /**
+     * Descender Scroll de Iframe
+     * 
+     * @return {void}
+     */
+    descenderScroll() {
+
+        let coordenadaActualY = this.obtenerCoordenadaDelScroll();
+
+        document.getElementById('iFrameSocialWall')
+            .contentDocument
+            .body
+            .scrollTop = coordenadaActualY + 800;
+    }
+
+    /**
+     * Obtener coordenada Y del Scroll del Iframe
+     * 
+     * @return {void}
+     */
+    obtenerCoordenadaDelScroll() {
+        return document.getElementById('iFrameSocialWall')
+            .contentDocument
+            .body
+            .scrollTop;
     }
 
     render() {

@@ -112,6 +112,9 @@ Route::group(['middleware'=>'api_token','prefix' => 'eventos'], function() {
     Route::post('/redes-sociales/actualizar','EventoController@actualizarHashtagsDelEvento');
     
     Route::post('/RSS','EventoController@registrarPublicacionRSS');
+
+    Route::get('social-wall/configuracion/{eventoId}','EventoController@consultarConfiguracionSocialWall');
+    Route::post('social-wall/configuracion','EventoController@actualizarConfiguracionSocialWall');
 });
 
 /**

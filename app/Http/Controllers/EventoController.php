@@ -1202,6 +1202,39 @@ class EventoController extends Controller
         return '/storage/Eventos/'. $eventoId . '/Publicaciones/' . $nombre;
     }
 
+    /** 
+     * Consultar configuracion del Social Wall
+     * 
+     * @param int $eventoId
+     * @return Response
+     */
+    public function consultarConfiguracionSocialWall($eventoId) {
+
+        $evento = Evento::find($eventoId);
+
+        return ($evento->SocialWall) ? 
+            response()->json(['ver' => true, 'preferencias' => $evento->SocialWall]) :
+            response()->json(['ver' => false]);
+    }
+
+    /**
+     * Actualizar preferencias del Social Wall
+     * 
+     * @param Request $request
+     * @return Response
+     */
+    public function actualizarConfiguracionSocialWall(Request $request) {
+        $evento = Evento::find($request->eventoId);
+        $evento->SocialWall = [
+            'tema' => $request->tema,
+            'presentacion' => $request->presentacion,
+            'moderarContenido' => $request->moderarContenido
+        ];
+        $evento->save();
+
+        return response()->json(['creado' => true]);
+    }
+
     public function getEventos(){
         $data = Evento::borrado(false)->get();
         if($data){
