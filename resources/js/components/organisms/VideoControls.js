@@ -63,6 +63,15 @@ class VideoControls extends React.Component {
         }, () => this.startCommand())
       }
     }
+
+    if (prevProps.eventId !== this.props.eventId) {
+      this.props.getFilesFromEvent('Video').then(files => {
+        this.setState({ files });
+      })
+      .catch(e => {
+        console.log('Error', e);
+      })
+    }
   }
 
   endCurrentShow () {
@@ -191,7 +200,8 @@ class VideoControls extends React.Component {
   }
 }
 
-const mapStateToProps = ({ show }) => ({
+const mapStateToProps = ({ show, multimedia }) => ({
+  eventId: multimedia.eventId,
   video: show.video,
   selectedSceneId: show.scenes.selected,
   selectedScene: show.scenes.items.find(item => {

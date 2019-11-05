@@ -54,17 +54,9 @@ class Multimedia extends Component {
         /**
          * Desclarando las funciones que daran uso al state del constructor de esta clase
          */
-        this.handleChange = this.handleChange.bind(this);
         this.handleCompanyChange = this.handleCompanyChange.bind(this);
         this.handleEventChange = this.handleEventChange.bind(this);
-        this.sendMqttCommand = this.sendMqttCommand.bind(this);
         this.sendGivenMqttCommand = this.sendGivenMqttCommand.bind(this);
-        this.removeMqttJob = this.removeMqttJob.bind(this);
-        this.handleStartTime = this.handleStartTime.bind(this);
-        this.handleEndTime = this.handleEndTime.bind(this);
-        this.openStartTime = this.openStartTime.bind(this);
-        this.openEndTime = this.openEndTime.bind(this);
-        this.hideTimes = this.hideTimes.bind(this);
 
         this.mqttHost = process.env.MIX_MQTT_HOST;
         this.mqttPort = parseInt(process.env.MIX_MQTT_PORT);
@@ -97,101 +89,6 @@ class Multimedia extends Component {
       this.mqttClient.send(`/${companyId}/${eventId}`, command);
     }
 
-    /**
-     * Funcion para enviar comandos o acciones a la cola del evento
-     * @param {fecha de inicio del comando o accion} fechainicio 
-     * @param {fecha final del comando evento o accion} fechafin 
-     */
-    sendMqttCommand (moment) {
-      const { titleTool } = this.props.tool;
-      const { companyId, eventId } = this.props;
-      const { startTime, endTime, color, archivo, flash2 } = this.state;
-
-      const topic = `/${companyId}/${eventId}`;
-      let message = '';
-      let payload = '';
-
-      if (titleTool === 'colores' && !color)
-        return console.log('Select a color');
-      
-      switch (titleTool) {
-        case 'colores': 
-          message = `COL,${moment},:id:,${color},${startTime.getTime()},${endTime.getTime()}`;
-          payload = color;
-          break;
-        case 'flash':
-          message = `FLH,${moment},:id:,${flash2},${startTime.getTime()},${endTime.getTime()}`;
-          payload = flash2;
-          break;
-        case 'imagen':
-          message = `IMG,${moment},:id:,${archivo},${startTime.getTime()},${endTime.getTime()}`;
-          payload = archivo;
-          break;
-        case 'audio':
-          message = `AUD,${moment},:id:,${archivo},${startTime.getTime()},${endTime.getTime()}`;
-          payload = archivo;
-          break;
-        case 'video':
-          message =  `VID,${moment},:id:,${archivo},${startTime.getTime()},${endTime.getTime()}`;
-          payload = archivo;
-          break;
-        default:
-          message = `MUL,${moment},:id:,${archivo},${startTime.getTime()},${endTime.getTime()}`;
-          payload = archivo;
-          break;
-      }
-
-      const job = {
-        eventId,
-        type: titleTool,
-        status: 'ejecucion',
-        startTime: startTime.getTime(),
-        endTime: endTime.getTime(),
-        payload
-      }
-
-      this.props.createJob(job, this.state.api_token)
-        .then(jobId => {
-          this.mqttClient.send(topic, message.replace(':id:', jobId));
-        })
-        .catch(e => {
-          alert('Try again');
-          
-          console.log(e);
-        })
-    }
-
-    /**
-     * Metodo para quitar un comando de las acciones asociadas a ella
-     * @param {id} ID del job a dejar de ejecutar 
-     */
-    removeMqttJob (id, type) {
-      let jobType = '';
-
-      switch (type) {
-        case 'colores':
-          jobType = 'COL';  
-          break;
-        case 'flash':
-          jobType = 'FLH';
-          break;
-        case 'imagen':
-          jobType = 'IMG';
-          break;
-        case 'audio':
-          jobType = 'AUD';
-          break;
-        case 'video':
-          jobType = 'VID';
-          break;
-      }
-      const { companyId, eventId } = this.props;
-      const topic = `/${companyId}/${eventId}`;
-      const message = `REM,0,${id},${jobType}`;
-
-      this.mqttClient.send(topic, message);
-   }
-
     handleCompanyChange (e) {
       const { value } = e.target;
 
@@ -216,73 +113,6 @@ class Multimedia extends Component {
       this.props.setEvent(value);
       this.props.getEnvios(value);
     }
-
-   /**
-    * metodo para cambiar el state de las variables usadas en los inputs
-    * @param {evento} e 
-    */
-    handleChange (e) {
-      console.log('original handle change');
-      if (e.target != undefined) {
-        this.setState({
-          [e.target.name]: e.target.value
-        });
-
-      } else if (e.hex != undefined) {  
-        let colorDiv = document.getElementById("recuadro-color");
-        colorDiv.style.backgroundColor=e.hex;
-        
-        this.setState({
-            color: e.hex
-        });
-      }
-    }
-
-    openStartTime () {
-      this.setState({ isOpenStartTime: true }, () => {
-        document.querySelector(".wrapper").style.display="none";
-      });
-    }
-
-    handleStartTime (time) {
-      this.setState({startTime: new Date(time), isOpenStartTime: false}, () => {
-        document.querySelector('.wrapper').style.display = 'block';
-      });
-    }
-    
-    handleEndTime (time) {
-      this.setState({endTime: new Date(time), isOpenEndTime: false}, () => {
-        document.querySelector('.wrapper').style.display = 'block';
-      });
-    };
-
-    openEndTime () {
-      this.setState({ isOpenEndTime: true }, () => {
-        document.querySelector(".wrapper").style.display="none";
-      });
-    }
-
-    hideTimes () {
-      this.setState({ isOpenStartTime: false, isOpenEndTime: false }, () => {
-        document.querySelector(".wrapper").style.display="block";
-      });
-    }
-
-    /**
-     * metodo para colocar hora de nuevo abierta
-     */
-    handleThemeToggle() {
-        this.setState({ isOpenHora: true });            
-        document.querySelector(".wrapper").style.display="none";
-    }
-
-    /**
-     * metodo para colocar hora de nuevo abierta 2
-     */
-    handleThemeToggle2() {
-        this.setState({ isOpenHora2: true });
-        document.querySelector(".wrapper").style.display="none";
-    } 
 
   render () {
     if (this.state.isLoading)

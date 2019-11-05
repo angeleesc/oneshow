@@ -59,6 +59,15 @@ class AudioControls extends React.Component {
         }, () => this.startCommand())
       }
     }
+
+    if (prevProps.eventId !== this.props.eventId) {
+      this.props.getFilesFromEvent('Audio').then(files => {
+        this.setState({ files });
+      })
+      .catch(e => {
+        console.log('Error', e);
+      })
+    }
   }
 
   endCurrentShow () {
@@ -182,7 +191,8 @@ class AudioControls extends React.Component {
   }
 }
 
-const mapStateToProps = ({ show }) => ({
+const mapStateToProps = ({ show, multimedia }) => ({
+  eventId: multimedia.eventId,
   audio: show.audio,
   selectedSceneId: show.scenes.selected,
   selectedScene: show.scenes.items.find(item => {
