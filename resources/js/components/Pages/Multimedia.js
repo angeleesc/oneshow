@@ -9,6 +9,7 @@ import Scenes from './../organisms/Scenes';
 import EmptyMultimedia from "../components/Multimedia/EmptyMultimedia";
 import TabNavigation from './../organisms/TabNavigation';
 import { connect } from 'react-redux';
+import { getTimestampDiff } from './../../redux/actions/app'; 
 import { toggleFullscreen, setFullscreenState } from './../../redux/actions/app';
 import { 
   getEventos, 
@@ -68,6 +69,9 @@ class Multimedia extends Component {
       // Fetching event
       this.props.getCompanies()
         .then(() => this.setState({ isLoading: false }));
+
+      this.props.getTimestampDiff()
+        .then(() => console.log('Server time fetched'));
 
       // Subscribing to broker
       this.mqttClient.connect({
@@ -222,6 +226,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  getTimestampDiff: () => dispatch(getTimestampDiff()),
   toggleFullscreen: () => dispatch(toggleFullscreen()),
   setFullscreenState: (state) => dispatch(setFullscreenState(state)),
   setCompany: (companyId) => dispatch(setCompany(companyId)),

@@ -226,4 +226,10 @@ class AgendaController extends Controller
         }
         return DataTables::collection( $data_agendas )->make(true);
     }
+
+    public function getCurrentServerTime (Request $request) {
+      return response()->json([
+        'time' => time(),
+      ], 200);
+    }
 }
