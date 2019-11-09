@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Social Stream 2.6.9
+ * PHP Social Stream 2.8.2
  * Copyright 2018 Axent Media (axentmedia@gmail.com)
  */
 
@@ -144,10 +144,18 @@ class ss_default_slidelayout {
             $sharetitle = @urlencode( strip_tags($param['title']) );
             $us .= '
                 <span class="sb-share">
-                    <a class="sb-sicon sb-facebook sb-hover" href="https://www.facebook.com/sharer.php?u=' . urlencode($param['url']) . '&amp;t=' . @$sharetitle . '"'.$this->target.'></a>
-                    <a class="sb-sicon sb-twitter sb-hover" href="https://twitter.com/share?url=' . urlencode($param['url']) . '&amp;text=' . @$sharetitle . '"'.$this->target.'></a>
-                    <a class="sb-sicon sb-google sb-hover" href="https://plus.google.com/share?url=' . urlencode($param['url']) . '"'.$this->target.'></a>
-                    <a class="sb-sicon sb-linkedin sb-hover" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=' . urlencode($param['url']) . '&amp;title=' . @$sharetitle . '"'.$this->target.'></a>
+                    <a class="sb-facebook sb-hover" href="https://www.facebook.com/sharer.php?u=' . urlencode($param['url']) . '&amp;t=' . @$sharetitle . '"'.$this->target.'>
+                        <i class="sb-sicon sb-facebook"></i>
+                    </a>
+                    <a class="sb-twitter sb-hover" href="https://twitter.com/share?url=' . urlencode($param['url']) . '&amp;text=' . @$sharetitle . '"'.$this->target.'>
+                        <i class="sb-sicon sb-twitter"></i>
+                    </a>
+                    <a class="sb-google sb-hover" href="https://plus.google.com/share?url=' . urlencode($param['url']) . '"'.$this->target.'>
+                        <i class="sb-sicon sb-pinterest"></i>
+                    </a>
+                    <a class="sb-linkedin sb-hover" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=' . urlencode($param['url']) . '&amp;title=' . @$sharetitle . '"'.$this->target.'>
+                        <i class="sb-sicon sb-linkedin"></i>
+                    </a>
                 </span>';
             }
         }

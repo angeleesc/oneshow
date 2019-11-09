@@ -90,11 +90,7 @@ export default class RedesSociales extends Component {
             if (respuesta.status === 200) {
                 this.isLoading = false;
 
-                setTimeout(() => {
-                    window.scrollTo(0, 0);
-                    this.props.history.goBack();
-                }, 2000);
-        
+                setTimeout(() => window.scrollTo(0, 0), 2000);
             }
         })
     }

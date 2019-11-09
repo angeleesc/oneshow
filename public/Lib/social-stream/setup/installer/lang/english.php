@@ -53,8 +53,8 @@ $lang = array(
 
   'A-facebook' => "Facebook",
   'A-facebook_desc' => 'Required For All Facebook Feeds. <a href="'.DOC_URL.'#facebook-api" target="_blank">Read the documentation</a> for more details on how to get your Facebook App Token.',
-  'A-facebook_app_id' => "Facebook App ID",
-  'A-facebook_app_secret' => "Facebook App Secret",
+  'A-facebook_api_key' => "Facebook App ID",
+  'A-facebook_api_secret' => "Facebook App Secret",
 
   'A-twitter' => "Twitter",
   'A-twitter_desc' => 'Required For All Twitter Feeds. <a href="'.DOC_URL.'#twitter-api" target="_blank">Read the documentation</a> for more details on how to get your Twitter API Credentials.',

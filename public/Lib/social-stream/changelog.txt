@@ -1,3 +1,15 @@
+Version 2.8.2 - 24.10.2019
+- jQuery.noConflict option added to avoid global definition of the library.
+- Setup password encrypted.
+- Making sharing buttons responsive.
+- Facebook own app connection problem fixed.
+- Instagram lacking user info problem fixed.
+- StumbleUpon removed of the plugin.
+
+Version 2.8.1 - 04.10.2019
+- Setup multiple Facebook pages listing problem fixed.
+- Tabable layout feed loading problem fixed.
+
 Version 2.8.0 - 26.09.2019
 - Setup administration panel added.
 - Facebook problem with API v4 fixed.

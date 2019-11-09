@@ -90,8 +90,6 @@ Route::group(['middleware'=>'api_token','prefix' => 'agendas'], function() {
 /**
  * Rutas API orientadas al controlador de EVENTOS eventoController
  */
-Route::get('/RSS/{eventoId}','EventoController@obtenerPublicacionesRSS');
-
 Route::group(['middleware'=>'api_token','prefix' => 'eventos'], function() {
     //rutas de eventos
     Route::get('/', 'EventoController@getEventos');

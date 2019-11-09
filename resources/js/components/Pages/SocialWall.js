@@ -40,7 +40,9 @@ class SocialWall extends Component {
             },
             intervaloDeActualizacion: null,
             intervaloDeScroll: null,
-            urlParaIframe: window.location.protocol + "//" + window.location.hostname + "/Lib",
+            avisoSinContenido: false,
+            showNoHashtags: false,
+            urlParaIframe: window.location.protocol + "//" + window.location.host + "/Lib",
             urlModerarTextoOfensivo: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessText/Screen",
             urlModerarImagenOfensiva: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate",
             tema: null,
@@ -76,7 +78,6 @@ class SocialWall extends Component {
         this.limpiarIntervaloDeActualizacion = this.limpiarIntervaloDeActualizacion.bind(this);
         this.crearIntervaloDeTransicionDeContenido = this.crearIntervaloDeTransicionDeContenido.bind(this);
         this.limpiarIntervaloDeTransicion = this.limpiarIntervaloDeTransicion.bind(this);
-        this.consultarConfiguraciones = this.consultarConfiguraciones.bind(this);
     }
 
     /**
@@ -84,9 +85,8 @@ class SocialWall extends Component {
      * 
      * @return {void}
      */
-    componentDidMount () {
-        this.vaciarValoresDeCamposSelectores();
-        this.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
+   componentDidMount () {
+his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
     }
 
     /**
@@ -139,16 +139,15 @@ class SocialWall extends Component {
         const { value } = e.target;
   
         if (!value) {
-            this.props.setEvent('');
-            return
+          return this.setState({
+            mostrarIframe: false,
+          });
         }
   
-        this.props.setEvent(value);
-        this.setState({ eventoId: value },
-        () => {
-            this.consultarHashtagsDelEvento();
-            this.consultarConfiguraciones();
-        });
+        this.setState({ 
+          eventoId: value,
+          mostrarIframe: false,
+        }, () => this.consultarHashtagsDelEvento());
     }
 
     /**
@@ -266,6 +265,9 @@ class SocialWall extends Component {
     colocarPantallaCompleta() {
         let elementoIframe = document.getElementById("iFrameSocialWall");
 
+        if (!elementoIframe)
+            return
+
         if (elementoIframe.requestFullscreen) {
             elementoIframe.requestFullscreen();
         } else if (elementoIframe.mozRequestFullScreen) { /* Firefox */
@@ -300,7 +302,7 @@ class SocialWall extends Component {
      * 
      * @return {void}
      */
-    agregarEventoPantallaCompletaAIframe() {
+    agregarEventoPantallaCompletaAIframe () {
         let eventosFullScreens = [
             'fullscreenchange',
             'mozfullscreenchange',
@@ -342,7 +344,7 @@ class SocialWall extends Component {
                 id: publicacion.id,
                 tipo: publicacion.classList.item(1),
                 imagen: (publicacion.getElementsByClassName('icbox').length > 0) ? publicacion.getElementsByClassName('icbox')[0].href : null,
-                texto: publicacion.getElementsByClassName("sb-text")[0].innerText
+                texto: (publicacion.getElementsByClassName("sb-text")[0]) ? publicacion.getElementsByClassName("sb-text")[0].innerText : ""
             });
         }
 
@@ -361,10 +363,10 @@ class SocialWall extends Component {
      * 
      * @return {void}
      */
-    obtenerContenidoDeLasPublicaciones() {
-        return document.getElementById('iFrameSocialWall')
-            .contentDocument
-            .getElementsByClassName("sb-item");
+    obtenerContenidoDeLasPublicaciones() {      
+      return document.getElementById('iFrameSocialWall')
+        .contentDocument
+        .getElementsByClassName("sb-item");
     }
 
     /**
@@ -456,6 +458,10 @@ class SocialWall extends Component {
      * @return {void}
      */
     mostrarBotonPantallaCompleta() {
+
+        if (this.state.publicaciones.length === 0) 
+            return
+
         this.setState({ mostrarBotonPantallaCompleta: true });
     }
 
@@ -465,13 +471,16 @@ class SocialWall extends Component {
      * @return {void}
      */
     mostrarIframeSocialWall() {
-        this.setState({ 
-            estilosIframe: {
-                width: "inherit",
-                border: "none",
-                visibility: "visible"
-            }
-        });
+      const [ noData ] = document.getElementById('iFrameSocialWall').contentDocument.getElementsByClassName('sboard-nodata');
+      noData.style = 'display: none;';
+
+      this.setState({ 
+        estilosIframe: {
+          width: "inherit",
+          border: "none",
+          visibility: "visible"
+        }
+      });
     }
 
     /**
@@ -544,10 +553,14 @@ class SocialWall extends Component {
      * @return {void}
      */
     consultarNuevasPublicaciones() {
-        document.getElementById('iFrameSocialWall')
-            .contentDocument
-            .getElementsByClassName('sb-loadmore')[0]
-            .click();
+
+        // let botonDeCargarMas = document.getElementById('iFrameSocialWall').contentDocument.getElementsByClassName('sb-loadmore')[0];
+
+        // if (botonDeCargarMas)
+        //     document.getElementById('iFrameSocialWall')
+        //         .contentDocument
+        //         .getElementsByClassName('sb-loadmore')[0]
+        //         .click();
     }
 
     /**
@@ -559,6 +572,10 @@ class SocialWall extends Component {
         if (this.state.intervaloDeActualizacion)
             clearInterval(this.state.intervaloDeActualizacion);
 
+        this.limpiarIntervaloDeTransicion()
+    }
+
+    limpiarIntervaloDeTransicion() {
         if (this.state.intervaloDeScroll)
             clearInterval(this.state.intervaloDeScroll);
     }
@@ -583,7 +600,7 @@ class SocialWall extends Component {
      * @return {void}
      */
     crearIntervaloDeTransicionDeContenido() {
-
+        
         let intervaloDeScroll = setInterval(() => this.descenderScroll(), 10000);
 
         this.setState({ intervaloDeScroll });

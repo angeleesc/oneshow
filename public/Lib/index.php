@@ -43,8 +43,9 @@
         }
 
         $redes['rss'] = [
-            'rss_id_1' => ['http://www.oneshow.com/api/RSS/' . $_GET['eventoId']],
-            'rss_text' => 0
+            'rss_id_1' => ['http://localhost:8001/api/rss/' . $_GET['eventoId']],
+            'rss_text' => 0,
+            'rss_output' => 'title,thumb,text,info,meta,tags'
         ];
 
         return $redes;
@@ -55,17 +56,19 @@
     echo social_stream(
         array(
             'id' => '1',
-            'type' => ($_GET['presentacion']) ? $_GET['presentacion'] : 'wall',
+            'type' => isset($_GET['presentacion']) ? $_GET['presentacion'] : 'wall',
             'network' => obtenerRedesAConsultar(),
-            'theme' => ($_GET['tema']) ? $_GET['tema'] : 'sb-modern-light',
+            'theme' => isset($_GET['tema']) ? $_GET['tema'] : 'sb-modern-light',
             'itemwidth' => 250,
-            'results' => ($_GET['cantidadDeResultados']) ? $_GET['cantidadDeResultados'] : 30,
+            'results' => isset($_GET['cantidadDeResultados']) ? $_GET['cantidadDeResultados'] : 30,
             'cache' => 720,
             'debuglog' => 1,
             'iframe' => 'media',
             'breakpoints' => array('4', '4', '3', '3', '2', '1', '1'),
             'filter_search' => false,
             'add_files' => true,
+            'live' => true,
+            'live_interval' => 1,
             'order' => 'random'
         )
     );

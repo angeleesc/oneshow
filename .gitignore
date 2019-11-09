@@ -10,6 +10,12 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 
+# Social stream environment files
+/public/Lib/social-stream/cache/*.cache
+/public/Lib/social-stream/setup/data.php
+/public/Lib/social-stream/config.php
+/public/Lib/social-stream/log.txt
+
 # Compilation generated files
 # /public/js/app.js
 # /public/js/vendor.js

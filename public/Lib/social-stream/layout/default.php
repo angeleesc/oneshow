@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Social Stream 2.6.9
+ * PHP Social Stream 2.8.2
  * Copyright 2018 Axent Media (axentmedia@gmail.com)
  */
 
@@ -229,10 +229,18 @@ class ss_default_layout {
             $sharemedia = @urlencode( $param['thumb'] );
             $us .= '
                 <span class="sb-share">
-                    <a class="sb-sicon sb-facebook sb-hover" href="https://www.facebook.com/sharer.php?u=' . urlencode($param['url']) . '&t=' . @$sharetitle . '"'.$this->target.'></a>
-                    <a class="sb-sicon sb-twitter sb-hover" href="https://twitter.com/share?url=' . urlencode($param['url']) . '&text=' . @$sharetitle . '"'.$this->target.'></a>
-                    <a class="sb-sicon sb-pinterest sb-hover" href="//pinterest.com/pin/create/link/?url=' . urlencode($param['url']) . '&amp;description=' . @$sharetitle . '&amp;media=' . @$sharemedia . '"'.$this->target.'></a>
-                    <a class="sb-sicon sb-linkedin sb-hover" href="https://www.linkedin.com/shareArticle?mini=true&url=' . urlencode($param['url']) . '&title=' . @$sharetitle . '"'.$this->target.'></a>
+                    <a class="sb-facebook sb-hover" href="https://www.facebook.com/sharer.php?u=' . urlencode($param['url']) . '&t=' . @$sharetitle . '"'.$this->target.'>
+                        <i class="sb-sicon sb-facebook"></i>
+                    </a>
+                    <a class="sb-twitter sb-hover" href="https://twitter.com/share?url=' . urlencode($param['url']) . '&text=' . @$sharetitle . '"'.$this->target.'>
+                        <i class="sb-sicon sb-twitter"></i>
+                    </a>
+                    <a class="sb-pinterest sb-hover" href="//pinterest.com/pin/create/link/?url=' . urlencode($param['url']) . '&amp;description=' . @$sharetitle . '&amp;media=' . @$sharemedia . '"'.$this->target.'>
+                        <i class="sb-sicon sb-pinterest"></i>
+                    </a>
+                    <a class="sb-linkedin sb-hover" href="https://www.linkedin.com/shareArticle?mini=true&url=' . urlencode($param['url']) . '&title=' . @$sharetitle . '"'.$this->target.'>
+                        <i class="sb-sicon sb-linkedin"></i>
+                    </a>
                 </span>';
             }
         }

@@ -5024,3 +5024,7 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover {
 .oneshow__option:hover {
   background-color: #bf0411 !important;
 }
+
+.sboard-nodata {
+  display: none !important;
+}

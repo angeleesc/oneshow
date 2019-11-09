@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Social Stream 2.8.0
+ * PHP Social Stream 2.8.2
  * Copyright 2015-2019 Axent Media (support@axentmedia.com)
  */
 
@@ -154,7 +154,7 @@ class Installer {
             $this->setupWrite('data',
                 array(
                     'USERNAME' => $_POST['username'],
-                    'PASSWORD' => $_POST['password']
+                    'PASSWORD' => md5( trim($_POST['password']) )
                 )
             );
 
@@ -175,7 +175,19 @@ class Installer {
         if ( isset($_POST['login'])
             && ! empty($_POST['username']) && ! empty($_POST['password']) ) {
 
-            if ($_POST['username'] == USERNAME && $_POST['password'] == PASSWORD) {
+            $PASSWORD = PASSWORD;
+            // r2.8.2 < compatibility fix
+            if ( ! preg_match('/^[a-f0-9]{32}$/', PASSWORD) ) {
+                $PASSWORD = md5(PASSWORD);
+                $this->setupWrite('data',
+                    array(
+                        'PASSWORD' => $PASSWORD
+                    )
+                );
+            }
+            // END - r2.8.2 < compatibility fix
+
+            if ($_POST['username'] == USERNAME && md5( trim($_POST['password']) ) == $PASSWORD) {
                 $this->login();
 
                 $this->flashMessage('Login was successful.');
@@ -387,7 +399,7 @@ class Installer {
                                         'picture' => @$pageData->picture->data->url,
                                         'access_token' => $pageData->access_token
                                     );
-                                    $newAccount[$userData->id]['pages'] = array($pageData->id => $pageAccount);
+                                    $newAccount[$userData->id]['pages'][$pageData->id] = $pageAccount;
                                 }
                             } else {
                                 $this->view->error('Facebook authentication error: ' . @$pagesData->error->message);
@@ -470,8 +482,8 @@ class Installer {
         $this->view->vars = array(
             'doc_url' => DOC_URL,
 
-            'facebook_app_id' => @$this->setoptions['facebook_app_id'],
-            'facebook_app_secret' => @$this->setoptions['facebook_app_secret'],
+            'facebook_app_id' => @$this->setoptions['facebook_api_key'],
+            'facebook_app_secret' => @$this->setoptions['facebook_api_secret'],
             'instagram_client_id' => @$this->setoptions['instagram_client_id'] ? $this->setoptions['instagram_client_id'] : '0912694563ee4b26ad9095f3fdf5b889',
             'linkedin_api_key' => @$this->setoptions['linkedin_api_key'],
             'linkedin_api_secret' => @$this->setoptions['linkedin_api_secret'],
@@ -521,8 +533,8 @@ class Installer {
     private function apiWrite(array $options)
     {
         // Save setup data file
-        $this->setoptions['facebook_app_id'] = $options['facebook_app_id'];
-        $this->setoptions['facebook_app_secret'] = $options['facebook_app_secret'];
+        $this->setoptions['facebook_app_id'] = $options['facebook_api_key'];
+        $this->setoptions['facebook_app_secret'] = $options['facebook_api_secret'];
         $this->setoptions['instagram_client_id'] = $options['instagram_client_id'];
         $this->setoptions['linkedin_api_key'] = $options['linkedin_api_key'];
         $this->setoptions['linkedin_api_secret'] = $options['linkedin_api_secret'];
@@ -648,8 +660,10 @@ class Installer {
         $file = file( $setup_file );
         if ( ! empty( $file ) ) {
             foreach ( $vars as $key => $val ) {
-                if ( ! is_string( $val ) && ! is_numeric( $val ) )
+                if ( ! is_string( $val ) && ! is_numeric( $val ) ) {
                     $val = json_encode( $val );
+                    $val = str_replace( "'", "\'", $val );
+                }
 
                 foreach ( $file as &$line ) {
                     if ( false !== strpos( $line, $key ) ) {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP Social Stream 2.8.0
+ * PHP Social Stream 2.8.1
  * Copyright 2014-2019 Axent Media (support@axentmedia.com)
  */
 
@@ -19,7 +19,7 @@ if (@$_POST['action'] == 'sb_tabable') {
 
     if ( ! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
         $sb = new SocialStream();
-        $sb->init( $_REQUEST['attr'], true, null, array( $_REQUEST['feed'] ) );
+        $sb->init( $_REQUEST['attr'], true, null, array( array($_REQUEST['feed'] => 1) ) );
     }
     else {
         header("Location: ".$_SERVER["HTTP_REFERER"]);

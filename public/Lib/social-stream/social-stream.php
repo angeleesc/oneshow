@@ -4,8 +4,8 @@
  * Script Name: PHP Social Stream
  * Script URI: https://axentmedia.com/php-social-stream/
  * Description: Combine all your social media network & feed updates (Facebook, Twitter, Flickr, YouTube, RSS, ...) into one feed and display on your website.
- * Tags: social media, social networks, social feed, social tabs, social wall, social timeline, social stream, php social stream, feed reader, facebook, twitter, tumblr, delicious, pinterest, flickr, instagram, youtube, vimeo, stumbleupon, deviantart, rss, soundcloud, vk, linkedin, vine
- * Version: 2.8.0
+ * Tags: social media, social networks, social feed, social tabs, social wall, social timeline, social stream, php social stream, feed reader, facebook, twitter, tumblr, delicious, pinterest, flickr, instagram, youtube, vimeo, deviantart, rss, soundcloud, vk, vine
+ * Version: 2.8.2
  * Author: Axent Media
  * Author URI: https://axentmedia.com/
  * License: https://codecanyon.net/licenses/standard
@@ -616,7 +616,7 @@ class SocialStream {
             $_SESSION[$label] = array();
             unset($_SESSION["$label-temp"]);
         }
-        
+
         // Check which feeds are specified
         $feeds = array();
         $firstTab = false;
@@ -689,11 +689,14 @@ class SocialStream {
         
         if ( ! $ajax_feed) {
             if ( ! empty($attr['add_files']) ) {
+                $SB_DEBUG = defined( 'SB_DEBUG' ) && SB_DEBUG && file_exists( SB_DIR . '/public/src' );
+                $src = $SB_DEBUG ? 'src/' : '';
+
                 $cssfiles = $jsfiles = '';
                 if ( ! $GLOBALS['enqueue']['general']) {
                     // add css files
-                    $cssfiles .= '<link href="'. $SB_PATH . 'public/css/colorbox.css" rel="stylesheet" type="text/css" />';
-                    $cssfiles .= '<link href="'. $SB_PATH . 'public/css/styles.css" rel="stylesheet" type="text/css" />';
+                    $cssfiles .= '<link href="'. $SB_PATH . 'public/' . $src . 'css/colorbox.css" rel="stylesheet" type="text/css" />';
+                    $cssfiles .= '<link href="'. $SB_PATH . 'public/' . $src . 'css/styles.css" rel="stylesheet" type="text/css" />';
 
                     // load custom css file if exist
                     if ( ! empty($themeoption['custom_css']) )
@@ -708,7 +711,7 @@ class SocialStream {
                 }
                 if ( $is_timeline ) {
                     if ( ! $GLOBALS['enqueue']['timeline']) {
-                        $cssfiles .= '<link href="'.$SB_PATH . 'public/css/timeline-styles.css" rel="stylesheet" type="text/css" />';
+                        $cssfiles .= '<link href="'.$SB_PATH . 'public/' . $src . 'css/timeline-styles.css" rel="stylesheet" type="text/css" />';
                         $jsfiles .= '<script type="text/javascript" src="'.$SB_PATH . 'public/js/sb-timeline.js"></script>';
                         $GLOBALS['enqueue']['timeline'] = true;
                     }
@@ -716,7 +719,7 @@ class SocialStream {
                     if ( $is_feed ) {
                         if ( ! empty($attr['carousel']) ) {
                             if ( ! $GLOBALS['enqueue']['carousel']) {
-                                $cssfiles .= '<link href="'.$SB_PATH . 'public/css/lightslider.css" rel="stylesheet" type="text/css" />';
+                                $cssfiles .= '<link href="'.$SB_PATH . 'public/' . $src . 'css/lightslider.css" rel="stylesheet" type="text/css" />';
                                 $jsfiles .= '<script type="text/javascript" src="'.$SB_PATH . 'public/js/sb-carousel.js"></script>';
                                 $GLOBALS['enqueue']['carousel'] = true;
                             }
@@ -2919,6 +2922,7 @@ class SocialStream {
                             $adtag = ($type != 'feed' || @$attr['carousel']) ? 'div' : 'li';
                             $adgrid = (@$ad['ad_grid_size']) ? ($ad['ad_grid_size'] == 'solo' ? '' : ' sb-'.$ad['ad_grid_size']) : '';
                             // get ad content
+                            $adcontent = '';
                             switch ($ad['ad_type']) {
                                 case "text":
                                     $adinnerstyle = '';
@@ -3401,7 +3405,10 @@ class SocialStream {
         // END: fetch comments ajax function
 
         $output .= '
-        <script type="text/javascript">
+        <script type="text/javascript">';
+        if ( ! empty($attr['add_files']) )
+            $output .= 'jQuery.noConflict();';
+        $output .= '
             jQuery(document).ready(function($) {
 				function sb_getwinsize() {
 					var wsize = {
@@ -3869,16 +3876,16 @@ class SocialStream {
                   $.ajax({
                     type: "post",
                     url: "'.$SB_PATH.'ajax.php",
-                    data: {action: "sb_tabable", feed: feed, attr: '.$attr_ajax.', nonce: tabnonce, label: "'.$label.'"},
+                    data: { action: "sb_tabable", feed: feed, attr: '.$attr_ajax.', nonce: tabnonce, label: "'.$label.'" },
                     cache: false
-                    })
-                    .done(function( response ) {
-                        $("#timeline_'.$label.$ticker_id_t.'").html(response);
-                        $sbticker.newsTicker();
-                        ' . $ticker_lazyload_output . $iframe_output . '
-                    })
-                    .fail(function() {
-                        alert( "Problem reading the feed data!" );
+                  })
+                  .done(function( response ) {
+                    $("#timeline_'.$label.$ticker_id_t.'").html(response);
+                    $sbticker.newsTicker();
+                    ' . $ticker_lazyload_output . $iframe_output . '
+                  })
+                  .fail(function() {
+                    alert( "Problem reading the feed data!" );
                   });
                 }
                });';
@@ -4117,7 +4124,8 @@ class SocialStream {
                 // Find access token
                 if ( ! empty($GLOBALS['api']['facebook']['facebook_accounts']) ) {
                     $resetAccounts = reset($GLOBALS['api']['facebook']['facebook_accounts']);
-                    $facebook_access_token = is_array($resetAccounts['pages']) ? reset($resetAccounts['pages']) : $resetAccounts['access_token'];
+                    $resetPages = reset($resetAccounts['pages']);
+                    $facebook_access_token = $resetPages['access_token'];
                     // Search account's access token by profile ID
                     if ( isset($GLOBALS['api']['facebook']['facebook_accounts'][$feed_value]) ) {
                         $facebook_access_token = $GLOBALS['api']['facebook']['facebook_accounts'][$feed_value]['access_token'];
@@ -4193,7 +4201,6 @@ class SocialStream {
                     $afields[] = 'title';
                     $afields[] = 'format';
                 }
-                
                 $fields = implode(',', $afields);
                 $feed_url = 'https://graph.facebook.com/v4.0/' . $feed_value . '/' . $feedType
                     . '?limit=' . ( ($i == 2) ? $pageresults : $results ) . @$since_str . @$until_str . @$after_str . @$locale_str

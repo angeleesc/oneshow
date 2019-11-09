@@ -12,6 +12,7 @@ use App\Models\MongoDB\Pais;
 use App\Models\MongoDB\Estado;
 use App\Models\MongoDB\Envio;
 use App\Models\MongoDB\Usuario;
+use App\Models\MongoDB\Cliente;
 use App\Models\MongoDB\Sector;
 use App\Models\MongoDB\Rol;
 use Carbon\Carbon;
@@ -1114,39 +1115,6 @@ class EventoController extends Controller
         $evento->save();
 
         return response()->json(['guardado' => true], 200);
-    }
-
-    /**
-     * Obtener publicaciones del evento en formato XML/RSS
-     * 
-     * @param Request $request
-     * @param string $eventoId
-     * @return Response
-     */
-    public function obtenerPublicacionesRSS(Request $request, $eventoId) {
-
-        $plantillaRSS = '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel></channel></rss>';
-        $contenidoXML = new \SimpleXMLElement($plantillaRSS);
-
-        $evento = Evento::find($eventoId);
-
-        foreach ($evento->PublicacionesRSS as $publicacion) {
-
-            $item = $contenidoXML->channel->addChild('item');
-            $item->addChild('description', $publicacion['descripcion']);
-            $item->addChild('pubDate', $publicacion['fechaPublicacion']);
-
-            if ($publicacion['rutaDeImagen']) {
-                $imagen = $item->addChild('enclosure');
-                $imagen->addAttribute('url', $publicacion['rutaDeImagen']);
-                $imagen->addAttribute('type', 'image/png');
-            }
-        }
-
-        $rutaDelXML = base_path('storage/app/public/Eventos/'. $eventoId . '/Publicaciones/' . 'RSS.xml');
-        file_put_contents($rutaDelXML, $contenidoXML->asXML());
-
-        return response()->file($rutaDelXML);
     }
 
     /**
