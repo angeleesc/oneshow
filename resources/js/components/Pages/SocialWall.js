@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import  React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Mensaje from "../atoms/Mensaje";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     getEventos, 
     getCompanies,
@@ -35,9 +36,7 @@ class SocialWall extends Component {
                 border: "none",
                 visibility: "hidden"
             },
-            estilosDelTituloDeLaPagina: {
-                marginRight: "2rem"
-            },
+            isLoading: false,
             intervaloDeActualizacion: null,
             intervaloDeScroll: null,
             avisoSinContenido: false,
@@ -96,6 +95,9 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
      */
     componentWillUnmount() {
         this.limpiarIntervaloDeActualizacion();
+
+        this.props.setCompany('');
+        this.props.setEvent('');
     }
 
     /**
@@ -104,9 +106,6 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
      * @return {void}
      */
     vaciarValoresDeCamposSelectores() {
-        this.props.setCompany('');
-        this.props.setEvent('');
-
         document.getElementsByName('company')[0].value = '';
         document.getElementsByName('event')[0].value = '';
     }
@@ -118,15 +117,21 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
      * @return {void}
      */
     handleCompanyChange (e) {
-        const { value } = e.target;
-  
-        if (!value) {
-          this.props.setCompany('');
-          this.props.setEvent('');
-        } else {
-          this.props.setCompany(value);
-          this.props.getEventsFromCompany(value);
-        }
+      const { value } = e.target;
+
+      if (!value) {
+        this.props.setCompany('');
+        this.props.setEvent('');
+      } else {
+        this.props.setCompany(value);
+        this.props.getEventsFromCompany(value);
+      }
+
+      this.setState({
+        mostrarIframe: false,
+        hashtagsTwitter: [],
+        hashtagsInstagram: [],
+      });
     }
   
     /**
@@ -139,14 +144,22 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
         const { value } = e.target;
   
         if (!value) {
+          this.props.setEvent('');
+
           return this.setState({
             mostrarIframe: false,
+            isLoading: false,
           });
         }
+
+        this.props.setEvent(value);
   
-        this.setState({ 
+        this.setState({
           eventoId: value,
           mostrarIframe: false,
+          isLoading: true,
+          hashtagsTwitter: [],
+          hashtagsInstagram: [],
         }, () => this.consultarHashtagsDelEvento());
     }
 
@@ -156,35 +169,42 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
      * @return {void}
      */
     consultarHashtagsDelEvento() {
-        this.props.mostrarElementoDeCarga();
+        // this.props.mostrarElementoDeCarga();
         
         axios.get('api/eventos/redes-sociales/consultar?eventoId=' + this.state.eventoId, {
             headers: {
                 Authorization: this.state.api_token
             }
         }).then(respuesta => {
-            if (respuesta.status === 200) {
-
-                let hashtagsTwitter = (respuesta.data.hashtagsTwitter) ? JSON.parse(respuesta.data.hashtagsTwitter) : [];
-                let hashtagsInstagram = (respuesta.data.hashtagsInstagram) ? JSON.parse(respuesta.data.hashtagsInstagram) : [];
-
-                this.props.ocultarElementoDeCarga();
-
-                this.setState({
-                    hashtagsTwitter,
-                    hashtagsInstagram,
-                    mostrarIframe: true
-                },
-                () => this.activarIframe());
-
-                return
+          if (respuesta.status === 200) {
+            const hashtagsTwitter = (respuesta.data.hashtagsTwitter) ? JSON.parse(respuesta.data.hashtagsTwitter) : [];
+            const hashtagsInstagram = (respuesta.data.hashtagsInstagram) ? JSON.parse(respuesta.data.hashtagsInstagram) : [];
+            
+            if (hashtagsInstagram.length === 0 && hashtagsTwitter.length === 0) {
+              return this.setState({
+                isLoading: false,
+                mostrarIframe: true,
+                hashtagsTwitter,
+                hashtagsInstagram
+              });
             }
 
-            swal(
-                'Problema con la conexión',
-                'error',
-                'sweet'
-            );
+            // this.props.ocultarElementoDeCarga();
+
+            this.setState({
+              hashtagsTwitter,
+              hashtagsInstagram,
+              mostrarIframe: true,
+            }, () => this.activarIframe());
+
+            return
+          }
+
+          swal(
+              'Problema con la conexión',
+              'error',
+              'sweet'
+          );
         })
     }
 
@@ -217,10 +237,10 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
      * @return {void}
      */
     activarIframe() {
-        if (this.existenHashtagsParaEvento()) {
-            this.props.mostrarElementoDeCarga();
-            document.getElementById("iFrameSocialWall").setAttribute("src", this.obtenerURLConParametros());
-        }
+      if (this.existenHashtagsParaEvento()) {
+        // this.props.mostrarElementoDeCarga();
+        document.getElementById("iFrameSocialWall").setAttribute("src", this.obtenerURLConParametros());
+      }
     }
 
     /**
@@ -303,22 +323,26 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
      * @return {void}
      */
     agregarEventoPantallaCompletaAIframe () {
-        let eventosFullScreens = [
-            'fullscreenchange',
-            'mozfullscreenchange',
-            'webkitfullscreenchange',
-            'msfullscreenchange'
-        ];
+      this.setState({
+        isLoading: false,
+      });
+      
+      let eventosFullScreens = [
+        'fullscreenchange',
+        'mozfullscreenchange',
+        'webkitfullscreenchange',
+        'msfullscreenchange'
+      ];
 
-        eventosFullScreens.forEach(evento => (
-            document.getElementById('iFrameSocialWall').addEventListener(evento, () => {
-                this.editarFiltroDeTipoDeContenido();
-            })
-        ));
+      eventosFullScreens.forEach(evento => (
+        document.getElementById('iFrameSocialWall').addEventListener(evento, () => {
+          this.editarFiltroDeTipoDeContenido();
+        })
+      ));
 
-        this.crearIntervaloDeActualizaciones();
-        this.ocultarBotonDeCargarMas();
-        this.guardarContenidoDeLasPublicaciones();
+      // this.ocultarBotonDeCargarMas();
+      this.crearIntervaloDeActualizaciones();
+      this.guardarContenidoDeLasPublicaciones();
     }
 
     /**
@@ -471,8 +495,8 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
      * @return {void}
      */
     mostrarIframeSocialWall() {
-      const [ noData ] = document.getElementById('iFrameSocialWall').contentDocument.getElementsByClassName('sboard-nodata');
-      noData.style = 'display: none;';
+      // const [ noData ] = document.getElementById('iFrameSocialWall').contentDocument.getElementsByClassName('sboard-nodata');
+      // noData.style = 'display: none;';
 
       this.setState({ 
         estilosIframe: {
@@ -586,12 +610,12 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
      * @return {void}
      */
     ocultarBotonDeCargarMas() {
-        let contenedorDePublicaciones = document.getElementById('iFrameSocialWall').contentDocument.getElementById('sb_wall1');
-        let elementoDeEstilo = document.createElement("style");
-        let definicionesDeEstilo = document.createTextNode(".sb-loadmore { visibility: hidden; }");
+      let contenedorDePublicaciones = document.getElementById('iFrameSocialWall').contentDocument.getElementById('sb_wall1');
+      let elementoDeEstilo = document.createElement("style");
+      let definicionesDeEstilo = document.createTextNode(".sb-loadmore { visibility: hidden; }");
 
-        elementoDeEstilo.appendChild(definicionesDeEstilo);
-        contenedorDePublicaciones.appendChild(elementoDeEstilo);
+      elementoDeEstilo.appendChild(definicionesDeEstilo);
+      contenedorDePublicaciones.appendChild(elementoDeEstilo);
     }
 
     /**
@@ -634,114 +658,99 @@ his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
     }
 
     render() {
-        return (
-            <div>
-                <Menu usuario={this.state.user} />
-                <Header usuario={this.state.user} history={this.props.history} />
-
-                <div className="content-wrapper">
-                    <header className="page-header">
-                        <div className="container-fluid">
-                            
-                            <div className="row">
-                                <div className="col-sm-8 col-md-8">
-                                    <div className="d-flex">
-                                        <div className="my-2" style={this.state.estilosDelTituloDeLaPagina}>
-                                            <h1 className="page-header-heading">
-                                                <div>
-                                                    <i className="fas fa-photo-video page-header-heading-icon" />
-                                                    Social Wall
-                                                </div>
-                                            </h1>
-                                        </div>
-
-                                        <div className="col-sm-9">
-                                            <form>
-                                                <div className="form-row">
-                                                <div className="col">
-                                                    <select
-                                                    name="company"
-                                                    className="form-control form-control-sm"
-                                                    onChange={this.handleCompanyChange}
-                                                    value={this.state.company}
-                                                    >
-                                                    <option value="">Selecione una Empresa</option>
-                                                    {this.props.companies.map(company => (
-                                                        <option key={company.id} value={`${company.id}`}>
-                                                        {company.name}
-                                                        </option>
-                                                    ))}
-                                                    </select>
-                                                </div>
-                                                <div className="col">
-                                                    <select 
-                                                        name="event"
+      return (
+        <div>
+          <Menu usuario={this.state.user} />
+          <Header usuario={this.state.user} history={this.props.history} />
+          <div className="content-wrapper">
+            <header className="page-header">
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-sm-2">
+                    <h5>
+                      <FontAwesomeIcon icon="photo-video" color="#fff"/> 
+                      {` `} Social Wall
+                    </h5>
+                  </div>
+                  <div className="col-sm-7">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <select
+                          name="company"
+                          className="form-control form-control-sm"
+                          onChange={this.handleCompanyChange}
+                          value={this.state.company}
+                        >
+                          <option value="">Selecione una Empresa</option>
+                          {this.props.companies.map(company => (
+                            <option key={company.id} value={`${company.id}`}>
+                              {company.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-md-6">
+                        <select 
+                          name="event"
+                          className="form-control form-control-sm" 
                                                         className="form-control form-control-sm" 
-                                                        onChange={this.handleEventChange}
-                                                        value={this.props.eventId}
-                                                    >
-                                                    <option value="">Seleccione un Evento</option>
-                                                    {this.props.eventos.map(event => (
-                                                        <option key={event.id} value={`${event.id}`}>
-                                                        {event.name}
-                                                        </option>
-                                                    ))}
-                                                    </select>
-                                                </div>
-                                                </div>
-                                            </form>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                { this.state.mostrarBotonPantallaCompleta &&
-                                <div className="ml-auto">
-                                    <button
-                                        type="button"
-                                        className="btn btn-sm btn-dark ml-4"
-                                        onClick={this.colocarPantallaCompleta}
-                                    >
-                                        <i className="fas fa-arrows-alt" />
-                                        &nbsp;Fullscreen
-                                    </button>
-                                </div>
-                                }
-
-                            </div>
-                        </div>
-                    </header>
-
-                    <div id="sweet" className="container-fluid">
-                        <>
-                            {!this.state.mostrarIframe &&
-                                <Mensaje
-                                    icono="fas fa-photo-video"
-                                    texto="Seleccione un evento para el Social Wall"
-                                />
-                            }
-                            {(this.state.mostrarIframe && !this.existenHashtagsParaEvento()) &&
-                                <Mensaje
-                                    icono="fas fa-exclamation-circle"
-                                    texto="No existen hashtags registrados en el evento"
-                                />
-                            }
-                            {(this.state.mostrarIframe && this.existenHashtagsParaEvento()) &&
-                                <iframe
-                                    id="iFrameSocialWall"
-                                    style={this.state.estilosIframe}
-                                    onLoad={this.agregarEventoPantallaCompletaAIframe}
-                                ></iframe>
-                            }
-                        </>
+                          className="form-control form-control-sm" 
+                          onChange={this.handleEventChange}
+                          value={this.props.eventId}
+                        >
+                          <option value="">Seleccione un Evento</option>
+                          {this.props.eventos.map(event => (
+                            <option key={event.id} value={`${event.id}`}>
+                              {event.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-
-                    {/**esto de abajo es de php, es el texto que cambia con el menu */}
-                    <footer className="content-wrapper-footer"></footer>
-
+                  </div>
+                  <div className="col-md-3">
+                    {this.state.mostrarBotonPantallaCompleta &&
+                      <div className="ml-auto">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-dark ml-4"
+                          onClick={this.colocarPantallaCompleta}
+                        >
+                          <i className="fas fa-arrows-alt" />
+                          {` `} Fullscreen
+                        </button>
+                      </div>
+                    }
+                  </div>
                 </div>
+              </div>
+            </header>
+            <div id="sweet" className="container-fluid">
+              {this.state.isLoading &&
+                <div className="text-center">
+                  <FontAwesomeIcon color="#fff" icon="sync" spin />
+                </div>
+              }
+              <React.Fragment>
+                {(this.state.mostrarIframe && !this.existenHashtagsParaEvento()) &&
+                  <Mensaje
+                    icono="fas fa-exclamation-circle"
+                    texto="No existen hashtags registrados en el evento"
+                  />
+                }
+                {(this.state.mostrarIframe && this.existenHashtagsParaEvento()) &&
+                  <iframe
+                    id="iFrameSocialWall"
+                    style={this.state.estilosIframe}
+                    onLoad={this.agregarEventoPantallaCompletaAIframe}
+                  >
+                  </iframe>
+                }
+              </React.Fragment>
             </div>
-        );
+          </div>
+        </div>
+      );
     }
 }
 
