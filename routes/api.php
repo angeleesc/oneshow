@@ -129,6 +129,7 @@ Route::group(['middleware'=>'api_token','prefix' => 'invitaciones'], function() 
     Route::post('/files', 'InvitacionController@getFiles');
     Route::post('/file/delete', 'InvitacionController@deleteFile');
     Route::post('/file/add', 'InvitacionController@addFile');
+    Route::post('/plantilla', 'InvitacionController@invitationTemplateAdd');
 });
 
 /**
@@ -253,7 +254,16 @@ Route::group(['middleware'=>'api_token','prefix' => 'menu'], function() {
         Route::post('/actualizar', 'MenugPlatosController@actualizar');
         Route::post('/eliminar/{id}', 'MenugPlatosController@eliminar');        
     });
-
-
     
 });
+
+/**
+ * Rutas API orientadas al controlador de Plantillas de invitación 
+ */
+
+Route::group(['middleware'=>'api_token','prefix' => 'plantillas'], function() {
+    //rutas de empresas
+    Route::get('/', 'PlantillaController@plantillasTraerTodas');
+});
+
+
