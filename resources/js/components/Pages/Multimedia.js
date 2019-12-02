@@ -79,7 +79,7 @@ class Multimedia extends Component {
 
       // Subscribing to broker
       this.mqttClient.connect({
-        useSSL: process.env.MIX_MQTT_SSL,
+        useSSL: process.env.MIX_MQTT_SSL === 'true' ? true : false,
         onSuccess: () => console.log('Connected!!'),
         onFailure: e => console.log(e)
       });
