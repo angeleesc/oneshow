@@ -43,7 +43,11 @@ class SocialWall extends Component {
             showNoHashtags: false,
             urlParaIframe: window.location.protocol + "//" + window.location.host + "/Lib",
             urlModerarTextoOfensivo: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessText/Screen",
-            urlModerarImagenOfensiva: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate"
+            urlModerarImagenOfensiva: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate",
+            tema: null,
+            presentacion: null,
+            intervaloActualizacion: null,
+            moderarContenido : null
         };
 
         this.handleCompanyChange = this.handleCompanyChange.bind(this);
@@ -80,11 +84,8 @@ class SocialWall extends Component {
      * 
      * @return {void}
      */
-    componentDidMount () {
-        alert = function() {};
-
-        this.vaciarValoresDeCamposSelectores();
-        this.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
+   componentDidMount () {
+his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
     }
 
     /**
@@ -208,6 +209,29 @@ class SocialWall extends Component {
     }
 
     /**
+     * Consultar configuraciones
+     * 
+     * @return {void}
+     */
+    consultarConfiguraciones() {
+        axios.get('api/eventos/social-wall/configuracion/' + this.state.eventoId, {
+            headers: {
+                Authorization: localStorage.getItem("api_token")
+            }
+        })
+        .then((respuesta) => {
+            console.log(respuesta);
+            if (respuesta.data.ver)
+                this.setState({
+                    tema: respuesta.data.preferencias.tema,
+                    presentacion: respuesta.data.preferencias.presentacion,
+                    intervaloActualizacion: respuesta.data.preferencias.intervaloActualizacion,
+                    moderarContenido : JSON.parse(respuesta.data.preferencias.moderarContenido)
+                });
+        });
+    }
+
+    /**
      * Lanzar Iframe con la libreria de Social Wall
      * 
      * @return {void}
@@ -236,7 +260,9 @@ class SocialWall extends Component {
                 this.obtenerHashtagsSinSimbolo(this.state.hashtagsInstagram)
             )
         ) +
-        "&eventoId=" + this.state.eventoId;
+        "&eventoId=" + this.state.eventoId + 
+        (this.state.tema) ? "&tema=" + this.state.tema : "" +
+        (this.state.presentacion) ? "&presentacion=" + this.state.presentacion : "";
     }
 
     /**
@@ -346,7 +372,14 @@ class SocialWall extends Component {
             });
         }
 
-        this.setState({publicaciones}, () => this.moderarContenidoDeLasPublicaciones());
+        if (this.state.moderarContenido) {
+            this.setState({publicaciones}, () => this.moderarContenidoDeLasPublicaciones());
+            return
+        }
+
+        this.props.ocultarElementoDeCarga();
+        this.mostrarBotonPantallaCompleta();
+        this.mostrarIframeSocialWall();
     }
 
     /**
@@ -528,9 +561,12 @@ class SocialWall extends Component {
      * @return {void}
      */
     crearIntervaloDeActualizaciones() {
+
+        let tiempoMiliseg = (this.state.intervaloActualizacion) ? this.state.intervaloActualizacion * 1000 : 20000;
+
         let intervaloDeActualizacion = setInterval(() => {
             this.consultarNuevasPublicaciones();
-        }, 20000);
+        }, tiempoMiliseg);
 
         this.setState({ intervaloDeActualizacion });
     }

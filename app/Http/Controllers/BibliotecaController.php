@@ -413,7 +413,7 @@ class BibliotecaController extends Controller
               MoveFileToTorrentClient::dispatch($registro);
             } else {
               $name = $registro->id .'.'. $fileData['extension'];
-              $request->file('archivo')->storeAs('ROOT/files', $name, 'ftp');
+              $request->file('archivo')->storeAs(env('ONESHOW_FTP_DEST_FOLDER'), $name, 'ftp');
             }
 
 
@@ -427,7 +427,6 @@ class BibliotecaController extends Controller
     }
 
     public function downloadTorrent (Request $request) {
-      // return 'asldknaskldnaslkd';
       $pathToFile = public_path('storage/torrents') . '/' . $request->filename . '.torrent';
 
       if (is_file($pathToFile))

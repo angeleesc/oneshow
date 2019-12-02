@@ -1193,7 +1193,11 @@ class EventoController extends Controller
      */
     public function actualizarConfiguracionSocialWall(Request $request) {
         $evento = Evento::find($request->eventoId);
-        $evento->SocialWall = $request->preferencias;
+        $evento->SocialWall = [
+            'tema' => $request->tema,
+            'presentacion' => $request->presentacion,
+            'moderarContenido' => $request->moderarContenido
+        ];
         $evento->save();
 
         return response()->json(['creado' => true]);

@@ -39,22 +39,20 @@ class CrearConfiguracionTest extends TestCase
         $faker = \Faker\Factory::create();
 
         return [
-            'preferencias' => [
-                'tema' => $faker->randomElement([
-                    'sb-modern-light',
-                    'sb-metro-dark',
-                    'sb-modern2-light',
-                    'sb-default-light',
-                    'sb-flat-light',
-                    'sb-modern-dark'
-                ]),
-                'presentacion' => $faker->randomElement([
-                    'wall',
-                    'feed',
-                    'timeline'
-                ]),
-                'moderarContenido' => $faker->randomElement([true, false])
-            ]
+            'tema' => $faker->randomElement([
+                'sb-modern-light',
+                'sb-metro-dark',
+                'sb-modern2-light',
+                'sb-default-light',
+                'sb-flat-light',
+                'sb-modern-dark'
+            ]),
+            'presentacion' => $faker->randomElement([
+                'wall',
+                'feed',
+                'timeline'
+            ]),
+            'moderarContenido' => $faker->randomElement([true, false])
         ];
     }
 }

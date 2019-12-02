@@ -75,6 +75,17 @@ class ImageControls extends React.Component {
         }, () => this.startCommand())
       }
     }
+
+    if (prevProps.eventId !== this.props.eventId) {
+      this.props.getFilesFromEvent('Imagen').then(files => {
+        this.setState({ 
+          files: files.map(file => ({...file, selected: false }))
+        });
+      })
+      .catch(e => {
+        console.log('Error', e);
+      })
+    }
   }
 
   endCurrentShow () {
@@ -114,7 +125,8 @@ class ImageControls extends React.Component {
     });
 
     // First command execution
-    const firstCommand = `IMG,1,${this.step},${selected[this.step].NombreCompleto},${this.state.vibrate ? 1 : 0}`;
+    let now = (new Date()).getTime() + this.props.timeOffset;
+    const firstCommand = `IMG,1,${this.step},${selected[this.step].NombreCompleto},${this.state.vibrate ? 1 : 0},${now}`;
     this.props.submitCommand(firstCommand);
 
     if (this.step === selected.length - 1) {
@@ -135,8 +147,9 @@ class ImageControls extends React.Component {
       let image = current.files[this.step].NombreCompleto;
       let moment = 1;
       let vibrate = current.vibrate ? 1 : 0;
+      let now = (new Date()).getTime() + this.props.timeOffset;
 
-      let command = `IMG,${moment},${id},${image},${vibrate}`;
+      let command = `IMG,${moment},${id},${image},${vibrate},${now}`;
 
       this.props.submitCommand(command);
 
@@ -240,7 +253,9 @@ class ImageControls extends React.Component {
   }
 }
 
-const mapStateToProps = ({ show }) => ({
+const mapStateToProps = ({ app, show, multimedia }) => ({
+  timeOffset: app.timeOffset,
+  eventId: multimedia.eventId,
   image: show.image,
   selectedSceneId: show.scenes.selected,
   selectedScene: show.scenes.items.find(item => {
