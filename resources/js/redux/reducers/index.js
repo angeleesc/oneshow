@@ -6,6 +6,9 @@ import show from './show';
 import alert from './alert';
 import loader from './loader';
 import plantillas from './plantillas'
+import empresas from './empresas'
+import eventos from './eventos'
+import regalos from './regalos'
 export default combineReducers({
   app,
   auth,
@@ -13,5 +16,8 @@ export default combineReducers({
   alert,
   multimedia,
   loader,
-  plantillas
+  plantillas,
+  empresas,
+  eventos,
+  regalos
 });

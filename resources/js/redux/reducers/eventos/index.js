@@ -1,23 +1,32 @@
-// import { 
-//     TRAER_TODAS,
+import {
+    TRAER_EVENTOS,
+    ERROR,
+    CARGANDO
 
-//   } from '../../actions/plantillas/types'
-  
-//   const INITIAL_STATE = {
-//     eventos: [],
+} from '../../actions/eventos/types'
 
-//   };
-  
-//   export default function (state = INITIAL_STATE, action) {
-//     switch (action.type) {
-//       case TRAER_TODAS:
-//         return {
-//           ...state,
-//           plantillas: action.payload
-//         }
+const INITIAL_STATE = {
+    eventos: [],
+    cargando: false,
 
-//       default:
-//         return state;
-//     }
-//   }
-  
+};
+
+export default function (state = INITIAL_STATE, action) {
+    switch (action.type) {
+        case TRAER_EVENTOS:
+            return {
+                ...state,
+                eventos: action.payload, cargando: false
+            }
+
+        case CARGANDO:
+            return { ...state, cargando: true }
+
+        case ERROR:
+            return { ...state, error: action.payload, cargando: false }
+
+        default:
+            return state;
+    }
+}
+

@@ -42,10 +42,26 @@ export default class Show extends React.Component {
             fotoAnfitrion1: "",
             fotoAnfitrion2: "",
             fotoAnfitrion3: "",
-            url: 'http://127.0.0.1:8001',
+            url: 'http://192.168.1.2:8001',
             api_token: localStorage.getItem("api_token"),
             isLoading: true
         };
+
+        this.mostrarItemMenu.bind(this)
+    }
+
+    mostrarItemMenu() {
+
+        let item = []
+        this.state.menuAppInvitados.map(e => {
+            this.state.menuAppSeleccionados.filter(m => {
+                if (m.$oid == e._id) {
+                    item.push(e.Nombre)
+                }
+            })
+        })
+
+        return item
 
     }
 
@@ -92,6 +108,7 @@ export default class Show extends React.Component {
                         fotoAnfitrion1: res.data.evento.evento.FotoAnfitrion1,
                         fotoAnfitrion2: res.data.evento.evento.FotoAnfitrion2,
                         fotoAnfitrion3: res.data.evento.evento.FotoAnfitrion3,
+                        menuAppSeleccionados: res.data.evento.evento.MenuApp,
                         isLoading: false
                     })
                     console.log(this.state)
@@ -129,6 +146,8 @@ export default class Show extends React.Component {
 
 
     render() {
+        // console.log(this.state);
+
         if (this.state.isLoading) {
             return (
                 <div>
@@ -457,15 +476,11 @@ export default class Show extends React.Component {
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm">Menús</label>
                                             <div className="col-sm-4">
-                                                <select className="form-control form-control-sm" id="menuapp" name="menuAppSeleccionados" value={this.state.menuAppSeleccionados} onChange={this.handleChangeMulti} multiple="multiple">
-                                                    {this.state.menuAppInvitados.map(
-                                                        (e, index) => {
-                                                            return (
-                                                                <option value={e._id} key={index}>{e.Nombre}</option>
-                                                            )
-                                                        }
-                                                    )}
-                                                </select>
+                                                {
+                                                    this.mostrarItemMenu().map(i => (
+                                                        <span className="badge badge-secondary m-2">{i}</span>
+                                                    ))
+                                                }
                                             </div>
                                         </div>
 

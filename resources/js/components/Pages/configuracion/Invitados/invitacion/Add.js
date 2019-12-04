@@ -24,7 +24,7 @@ class Show extends Component {
             api_token: localStorage.getItem("api_token"),
             isLoading: false,
 
-            url: 'http://127.0.0.1:8001',
+            url: 'http://192.168.1.2:8001',
             templateSelect: createRef()
         };
         this.handleChange = this.handleChange.bind(this);
@@ -87,16 +87,44 @@ class Show extends Component {
             const hora = document.querySelector('#hora');
             const dir1 = document.querySelector('#dir1');
             const vestimenta = document.querySelector('#vestimenta');
+            const fotoAnfitrion1 = document.querySelector('#fotoAnfitrion1');
+            const fotoAnfitrion2 = document.querySelector('#fotoAnfitrion2');
+            const fotoAnfitrion3 = document.querySelector('#fotoAnfitrion3');
 
-            nombreEvento.innerHTML = this.state.evento.Evento
-            anfrition1.innerHTML = this.state.evento.Anfitrion1
-            fechaMes.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[0]
-            fechaDia.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[1]
-            fechaAnio.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[2]
-            hora.innerHTML = `${this.state.evento.Fecha.split(" ")[1]} ${this.state.evento.Fecha.split(" ")[2]}`
-            dir1.innerHTML = this.state.evento.Dir1
-            dir2.innerHTML = this.state.evento.Dir2
-            vestimenta.innerHTML = this.state.evento.Vestimenta
+            if (nombreEvento && this.state.evento.Evento) {
+                nombreEvento.innerHTML = this.state.evento.Evento
+            }
+            if (anfrition1 && this.state.evento.Anfitrion1) {
+                anfrition1.innerHTML = this.state.evento.Anfitrion1
+            }
+            if (fechaMes && fechaMes && fechaDia &&  this.state.evento.Fecha) {
+                fechaMes.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[0]
+                fechaDia.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[1]
+                fechaAnio.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[2]
+            }
+            if (hora &&  this.state.evento.Fecha) {
+                hora.innerHTML = `${this.state.evento.Fecha.split(" ")[1]} ${this.state.evento.Fecha.split(" ")[2]}`
+            }
+            if (dir1 && this.state.evento.Dir1) {
+                dir1.innerHTML = this.state.evento.Dir1
+            }
+
+            if (dir2 && this.state.evento.Dir2) {
+                dir2.innerHTML = this.state.evento.Dir2
+            }
+            if (vestimenta && this.state.evento.Vestimenta) {
+                vestimenta.innerHTML = this.state.evento.Vestimenta
+            }
+            if(fotoAnfitrion1 && this.state.evento.FotoAnfitrion1){
+                fotoAnfitrion1.src = this.state.evento.FotoAnfitrion1
+            }
+            if(fotoAnfitrion2 && this.state.evento.fotoAnfitrion2){
+                fotoAnfitrion2.src = this.state.evento.FotoAnfitrion2
+            } 
+            if(fotoAnfitrion3 && this.state.evento.FotoAnfitrion3){
+                fotoAnfitrion3.src = this.state.evento.FotoAnfitrion3
+            }
+
         }
     }
     handleChange(event) {
