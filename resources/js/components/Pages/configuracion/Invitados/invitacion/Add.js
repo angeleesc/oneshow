@@ -24,7 +24,7 @@ class Show extends Component {
             api_token: localStorage.getItem("api_token"),
             isLoading: false,
 
-            url: 'http://192.168.1.2:8001',
+            url: 'http://localhost:8001',
             templateSelect: createRef()
         };
         this.handleChange = this.handleChange.bind(this);
@@ -47,6 +47,7 @@ class Show extends Component {
     }
 
     handleSaveTemplate() {
+
         const evento = this.state.eventos.filter(ev => ev._id == this.state.idEvento)[0]
         this.setState({
             evento: evento
@@ -57,6 +58,8 @@ class Show extends Component {
                 Evento_id: this.state.idEvento,
                 idPlantilla
             }
+            console.log('PLANTILLA',plantilla);
+            
 
             this.props.agregarPlantillaEvento(plantilla);
 
@@ -73,10 +76,13 @@ class Show extends Component {
         const $contenedorPlantillas = document.querySelector("#contenedor-plantilla");
         if (id !== "0") {
 
-            const template = await fetch(`${this.state.url}/plantillas/${id}/index.html`)
+            const template = await fetch(`${this.state.url}/plantillas/${id}/index.html`, {
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                }
+            })
             const result = await template.text();
-
-
+            
             $contenedorPlantillas.innerHTML = result
 
             const nombreEvento = document.querySelector('#nombre');
@@ -207,7 +213,7 @@ class Show extends Component {
         if (plantillas) {
             return (
                 plantillas.map((plantilla, key) => {
-                    return <option key={key} value={plantilla._id} >{plantilla.nombre}</option>
+                    return <option key={key} value={plantilla._id} >Plantilla Modelo {plantilla.nombre}</option>
                 })
             )
         }
@@ -220,7 +226,7 @@ class Show extends Component {
             border: 'solid #466a7b 1px',
             height: '100vh',
             padding: '0px'
-        };
+        }
 
 
         if (this.state.isLoading || this.props.cargando) {
@@ -309,7 +315,7 @@ class Show extends Component {
                                                     className="form-control-file"
                                                     id="archivopdf"
                                                     name="archivopdf"
-                                                    required
+                                                    
                                                 />
                                             </div>
                                         </div>

@@ -5,12 +5,12 @@ export const traerPlantillas = (token) => async (dispatch) => {
     try {
         const data = await fetch('/api/plantillas', {
             headers: {
-                Authorization: token
+                Authorization: token,                
             }
         });
         const resp = await data.json()
 
-
+        
         dispatch({
             type: TRAER_TODAS,
             payload: resp
@@ -39,7 +39,7 @@ export const agregarPlantillaEvento = (newPlantilla) => async (dispatch) => {
                 Authorization: apiToken
             }
         })
-
+        
         dispatch({
             type: AGREGAR_PLANTILLA_EVENTO
         })

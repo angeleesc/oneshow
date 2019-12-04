@@ -199,11 +199,11 @@ export default class Show extends Component {
                                             &nbsp;No existen invitaciones.
                                         </div>
                                     ) : (
-                                            this.state.archivos.map((e, index) => {
+                                            this.state.archivos.map((e, index) => {                            
                                                 return (
                                                     <tr key={index} id={e._id}>
                                                         <td className="text-center">
-                                                            {e.Tipo ? e.Tipo : e.PlantillaNombre}
+                                                            {e.Tipo ? e.Tipo : `Plantilla Modelo ${e.PlantillaId}`}
                                                         </td>
                                                         <td className="text-center">
                                                             {e.SizeImagen}

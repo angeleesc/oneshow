@@ -1,23 +1,31 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-use App\Models\MongoDB\Plantilla;
+
 //controlador encargado de la seccion de los usuarios
 class PlantillaController extends Controller
 {
 
     //metodo para llamar la vista principal de usuarios
-    public function plantillasTraerTodas(){
+    public function plantillasTraerTodas()
+    {
 
         //devuleve la vista
-	$plantillas = Plantilla::all();
-        return response()->json(['plantillas' => $plantillas ]);
+        // $plantillas = Plantilla::all();
+        //   ;
+        $url = $_SERVER['DOCUMENT_ROOT'] . '/plantillas';
+        $files = scandir($url);
+
+        $file_list = [];
+        foreach ($files as  $value) {
+
+            if ($value == '..' or $value == '.') {
+                // $file_list[] = ['files' => $value];
+            } else {
+                $file_list[] = ['_id' => $value, 'nombre' => $value];
+            }
+        }
+        return response()->json(['plantillas' => $file_list]);
+
     }
-
-
-
-    
-
-
 }

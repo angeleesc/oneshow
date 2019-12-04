@@ -214,7 +214,13 @@ class InvitacionController extends Controller
         //verifico que la respuesta venga por ajax
         // return response()->json(['d' => $request->all()['idPlantilla'] ]); 
         if ($request->post()) {
-            $input = $request->all();            
+            $input = $request->all();   
+            
+            $all = Invitacion::all();
+            if(count($all) >= 1){
+                return json_encode(['code' => 'Solo puede existir una invitación para el evento']);
+            }
+           
             if(!isset($input['idPlantilla']) OR !isset($input['Evento_id'])) {
                 $plantilla = false;
                 $evento = false;
@@ -223,20 +229,18 @@ class InvitacionController extends Controller
                 $evento = (string) $input['Evento_id'];
             }
             
-
+           
             if (!$plantilla OR !$evento) {
                 return response()->json(['code' => 400]);
             }
             $data = [
                 'id-evento' => new ObjectID($evento),
-                'id-plantilla' =>  new ObjectID($plantilla),
+                'id-plantilla' =>  $plantilla,
                 'activo' => true,
                 'borrado' => false,
                 'fecha' => Carbon::now()
 
             ];
-
-            //procedo a guardarlos en la bd
 
             try {
                 $registro = new Invitacion();
@@ -247,8 +251,8 @@ class InvitacionController extends Controller
                 $registro->Borrado = $data['borrado'];
                 $registro->save();
                 return response()->json(['code' => 200]);
-            } catch (\Throwable $th) {
-                return response()->json(['code' => 500]);
+            } catch (\Exception $e) {
+                return response()->json(['code' => $e->getMessage()]);
             }  
         }
     }
@@ -339,6 +343,7 @@ class InvitacionController extends Controller
         //verifico que exista data sino lo devulevo vacio
        
         if ($invitaciones) {
+
             foreach ($invitaciones as $f) {
                 //armo la data que se muestra en la tabla
                 $archivos[] = [
@@ -347,8 +352,7 @@ class InvitacionController extends Controller
                     'SizeImagen' => $f->SizeImg,
                     'SizePdf' => $f->SizePdf == '' ? '-' : $f->SizePdf,
                     'Activo' => $f->Activo,
-                    'PlantillaNombre' => Plantilla::find($f->Plantilla_id)['nombre'],
-                    'PlantillaId' => Plantilla::find($f->Plantilla_id)['idPlantilla'],
+                    'PlantillaId' => $f->Plantilla_id,
                 ];
             }
             
@@ -383,6 +387,11 @@ class InvitacionController extends Controller
         //verifico que la respuesta venga por ajax
 
         $input = $request->all();
+        $all = Invitacion::all();
+        if(count($all) >= 1){
+            return json_encode(['code' => 'Solo puede existir una invitación para el evento']);
+        }
+       
         $evento = (string) $input['id-evento'];
         $empresa = (string) Evento::find($evento)->Empresa_id;
         $pathSave = 'Invitacion/' . $empresa . '/' . $evento . '/';
