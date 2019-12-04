@@ -85,7 +85,7 @@ class SocialWall extends Component {
      * @return {void}
      */
    componentDidMount () {
-his.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
+      this.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
     }
 
     /**
