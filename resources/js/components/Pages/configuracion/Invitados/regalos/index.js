@@ -34,10 +34,34 @@ class Regalos extends Component {
         if (!this.props.eventos.eventos.length) {
             await this.props.traerEventos()
             await this.props.traerEventosRegalos()
+        }else{
+            this.props.eventos.eventos.map(async e =>{
+                if(('Regalos') in e){
+                }else{
+                    await this.props.traerEventosRegalos()
+                }
+            })
         }
 
     }
+    handleChange() {
+        const { eventos } = this.props.eventos
+        const id = this.changeEmpresa.current.value
 
+
+        const eventosEmpresa = eventos.filter(e => e.Empresa_id == id)
+
+        if (id == 0) {
+            return eventos.map((e, i) => (
+                this.mostrarRegalos(e, i)
+            ))
+        } else {
+            return eventosEmpresa.map((e, i) => (
+                this.mostrarRegalos(e, i)
+            ))
+        }
+
+    }
     selectDeEmpresas() {
         if (this.props.empresas.cargando) {
             return <CargandoSpinner />
@@ -103,50 +127,6 @@ class Regalos extends Component {
         )
 
     }
-
-
-    mostrarTabla() {
-
-        return (
-            <table
-                className="table table-hover table-condensed table-dark-theme table-responsive-sm"
-                id="dt-eventos"
-            >
-                <thead>
-                    <tr className="fila-head">
-                        <th className="text-center">EMPRESA</th>
-                        <th className="text-center">EVENTO</th>
-                        <th className="text-center">FECHA</th>
-                        <th className="text-center">APP</th>
-                        <th className="text-center">REGALOS</th>
-                        <th className="text-center">
-                            ACCIONES
-                    </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.selectE ? this.handleChange() : this.mostrarContenidoTabla()}
-                </tbody>
-            </table>
-        )
-
-    }
-
-    mostrarContenidoTabla() {
-        const { eventos } = this.props.eventos
-
-        if (this.props.eventos.cargando) {
-            return <CargandoSpinner />
-        }
-        if (this.props.eventos.error) {
-            return <AlertMessage message={this.props.eventos.error} type={"warning"} />
-        }
-
-        return eventos.map((e, i) => (
-            this.mostrarRegalos(e, i)
-        ))
-    }
-
     mostrarRegalos(e, index) {
         return (
             <tr key={index} id={e._id}>
@@ -194,30 +174,55 @@ class Regalos extends Component {
             </tr>
         )
     }
-    handleChange() {
+    mostrarContenidoTabla() {
         const { eventos } = this.props.eventos
-        const id = this.changeEmpresa.current.value
 
-
-        const eventosEmpresa = eventos.filter(e => e.Empresa_id == id)
-
-        if (id == 0) {
-            return eventos.map((e, i) => (
-                this.mostrarRegalos(e, i)
-            ))
-        } else {
-            return eventosEmpresa.map((e, i) => (
-                this.mostrarRegalos(e, i)
-            ))
+        if (this.props.eventos.cargando) {
+            return <CargandoSpinner />
+        }
+        if (this.props.eventos.error) {
+            return <AlertMessage message={this.props.eventos.error} type={"warning"} />
         }
 
+        return eventos.map((e, i) => (
+            this.mostrarRegalos(e, i)
+        ))
     }
+
+    mostrarTabla() {
+
+        return (
+            <table
+                className="table table-hover table-condensed table-dark-theme table-responsive-sm"
+                id="dt-eventos"
+            >
+                <thead>
+                    <tr className="fila-head">
+                        <th className="text-center">EMPRESA</th>
+                        <th className="text-center">EVENTO</th>
+                        <th className="text-center">FECHA</th>
+                        <th className="text-center">APP</th>
+                        <th className="text-center">REGALOS</th>
+                        <th className="text-center">
+                            ACCIONES
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.state.selectE ? this.handleChange() : this.mostrarContenidoTabla()}
+                </tbody>
+            </table>
+        )
+
+    }
+
+
     render() {
 
         return (
             <Fragment>
                 <Menu />
-                <Header  history={this.props.history} />
+                <Header history={this.props.history} />
                 <div className="content-wrapper">
                     <header className="page-header">
                         <div className="container-fluid">

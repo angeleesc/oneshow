@@ -16,14 +16,21 @@ import {
     ERROR,
     LIMPIAR_FORM
 } from './types'
+
+import { TRAER_EVENTOS } from '../eventos/types'
 import axios from "axios";
 
 
-export const traerRegalosEventosID = (idEvento) => async (dispatch) => {
+export const traerRegalosEventosID = (idEvento,ley) => async (dispatch, getState) => {
     const apiToken = localStorage.getItem("api_token");
+    const { regalos } = getState().regalos;
+    const { eventos } = getState().eventos;
+    
     dispatch({
         type: CARGANDO
     })
+
+  
     try {
 
         const data = await axios.get(`api/regalos/get-regalo/${idEvento}`, {
@@ -31,13 +38,36 @@ export const traerRegalosEventosID = (idEvento) => async (dispatch) => {
         })
 
         const resp = data.data.regalos;
+
+        const nuevosRegalos = resp.map((regalo) => ({
+            ...regalo
+        }))
+
+        const regalosAct = [
+            ...regalos,
+            nuevosRegalos
+        ]
+        const regalos_key = regalosAct.length - 1;
+
+        const eventosAct = [...eventos]
+        let key = keyEvento.filter(k => k != undefined)
         
+        eventosAct[key] = {
+            ...eventos[key],
+            regalos_key
+        }
+
         dispatch({
             type: TRAER_REGALOS,
-            payload: resp
+            payload: regalosAct
+        })
+        dispatch({
+            type: TRAER_EVENTOS,
+            payload: eventosAct
         })
 
     } catch (error) {
+        
         dispatch({
             type: ERROR,
             payload: 'Algo ha salido mal al treaer los regalos'
@@ -117,7 +147,7 @@ export const guardarRegalo = (regalo, editEvento, idRegalo) => async (dispatch) 
 
     let url = null;
 
-    
+
     if (regalo.TipoRegalo) {
         url = `api/regalos/add/${editEvento}/${idRegalo}`
     } else {
@@ -134,7 +164,7 @@ export const guardarRegalo = (regalo, editEvento, idRegalo) => async (dispatch) 
             payload: result
         })
     } catch (error) {
-        
+
         dispatch({
             type: ERROR,
             payload: 'Algo ha salido mal'
@@ -151,18 +181,18 @@ export const borrarRegalo = (id) => async (dispatch) => {
         })
 
         dispatch({
-            type:TRAER_REGALOS,
+            type: TRAER_REGALOS,
             payload: {}
         })
     } catch (error) {
         dispatch({
-            type:ERROR,
+            type: ERROR,
             payload: 'Algo ha salido mal.'
         })
     }
 }
 
-export const limpiarForm = () => (dispatch) =>{
+export const limpiarForm = () => (dispatch) => {
 
     dispatch({
         type: LIMPIAR_FORM

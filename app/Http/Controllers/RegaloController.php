@@ -48,7 +48,8 @@ class RegaloController extends Controller
 
             return json_encode(['code' => 200, 'data' => $eventos]);
         } catch (\Exception $e) {
-            return json_encode(['code' => $e->getMessage()]);
+            // $e->getMessage()
+            return json_encode(['code' => 500]);
         }
 
     }

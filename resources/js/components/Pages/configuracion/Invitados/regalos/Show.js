@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import { connect } from 'react-redux';
 import Menu from "../../../../components/Menu";
 import Header from "../../../../components/Header";
+import CargandoSpinner from '../../../../atoms/CargandoSpinner'
 import AlertMessage from '../../../../atoms/AlertMessage'
 import { Link } from "react-router-dom";
 import * as regalosActions from '../../../../../redux/actions/regalos'
@@ -28,26 +29,26 @@ class Show extends Component {
     async componentDidMount() {
         const { match: { params: { id } } } = this.props
         const { eventos } = this.props.eventos
-        const { regalos } = this.props.regalos
 
-
-        if (!eventos.length) {
+        console.log('eventos', !this.props.eventos.eventos.length);
+        
+        if (!this.props.eventos.eventos.length) {
             await this.props.traerEventos()
-            const nombre = this.props.eventos.eventos.filter(e => (e._id == id))
-            this.setState({
-                eventoNombre: nombre[0].Evento
-            })
-        } else {
-            const nombre = eventos.filter(e => (e._id == id))
-            this.setState({
-                eventoNombre: nombre[0].Evento
-            })
-        }
-        if (!regalos.length) {
+        
             await this.props.traerRegalosEventosID(id)
+            
+            const evento = this.props.eventos.eventos.filter(e => (e._id == id))
+            this.setState({
+                eventoNombre: evento[0].Evento,
+                regalos_key: evento[0].regalos_key
+            })
+        } else{
+            const evento = this.props.eventos.eventos.filter(e => (e._id == id))
+            this.setState({
+                eventoNombre: evento[0].Evento,
+                regalos_key: evento[0].regalos_key
+            })
         }
-
-
 
     }
     mostratTabla() {
@@ -79,9 +80,9 @@ class Show extends Component {
         )
 
     }
-    
-    modalDelete(id,evento) {
-        Swal.fire({
+
+    async  modalDelete(id, evento) {
+        const result = await Swal.fire({
             text: "¿Está seguro que desea borrar el regalo?",
             type: "warning",
             showCancelButton: true,
@@ -89,37 +90,41 @@ class Show extends Component {
             confirmButtonText: "Si",
             cancelButtonText: "No",
             target: document.getElementById("sweet")
-        }).then(result => {
+        })
 
-            if(result.value){
-                this.props.borrarRegalo(id)
-                this.props.traerRegalosEventosID(evento)
-            }
-        });
-    }
-    mostrarContenidoTabla() {
-        const { regalos } = this.props.regalos
-        const { match: { params: { id } } } = this.props
-        if (!regalos.length) {
-            return <AlertMessage message={" No existen regalos."} type={"danger"} />
+        if (result.value) {
+            await this.props.borrarRegalo(id)
+            await this.props.traerRegalosEventosID(evento)
+
+            this.setState({
+                regalosXevento: await this.props.regalos.regalos
+            })
+
 
         }
+    }
+    mostrarContenidoTabla() {
+        const { match: { params: { id } } } = this.props
+        const { regalos } = this.props.regalos
+        const { eventos } = this.props.eventos
+        const evento = eventos.filter(e => (e._id == id))
 
         if (this.props.regalos.cargando) {
             return <CargandoSpinner />
         }
+
         if (this.props.regalos.error) {
             return <AlertMessage message={this.props.regalos.error} type={"warning"} />
         }
 
-        return regalos.map((e, i) => (
-            this.mostrarRegalos(e, i, id)
-        ))
+
     }
     mostrarRegalos(e, index, idEvento) {
         const styleX = {
             color: '#d9534f'
         }
+        console.log(e.TipoRegalo);
+        
         return (
             <tr key={index} id={e._id}>
                 <td className="text-center">
@@ -187,6 +192,9 @@ class Show extends Component {
         )
     }
     render() {
+
+        console.log('props', this.props);
+
         if (this.props.regalos.error) {
             sweetalert(`${this.props.regalos.error}.`, 'error', 'sweet')
 

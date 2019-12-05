@@ -91,6 +91,9 @@ export default class Show extends Component {
     }
 
     render() {
+
+        console.log("Permisos",this.state.permisoUsuario);
+        
         if (this.state.isLoading) {
             return (
                 <div>
