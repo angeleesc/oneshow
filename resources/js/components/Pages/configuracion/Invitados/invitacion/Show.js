@@ -19,7 +19,8 @@ export default class Show extends Component {
             eventos: JSON.parse(localStorage.getItem("eventos")),
             api_token: localStorage.getItem("api_token"),
             isLoading: true,
-            isLoadingEmpresa: true
+            isLoadingEmpresa: true,
+
         };
         this.handleDelete = this.handleDelete.bind(this);
     }
@@ -94,7 +95,7 @@ export default class Show extends Component {
             return (
                 <div>
                     <Menu usuario={this.state.user} />
-                    <Header  usuario={this.state.user} history={this.props.history}    />
+                    <Header usuario={this.state.user} history={this.props.history} />
                     <div className="content-wrapper">
                         <header className="page-header">
                             <div className="container-fluid">
@@ -125,9 +126,10 @@ export default class Show extends Component {
             );
         } else {
             return (
+
                 <div>
                     <Menu usuario={this.state.user} />
-                    <Header  usuario={this.state.user} history={this.props.history}    />
+                    <Header usuario={this.state.user} history={this.props.history} />
                     <div className="content-wrapper">
                         <header className="page-header">
                             <div className="container-fluid">
@@ -153,26 +155,26 @@ export default class Show extends Component {
                                     {this.state.permisoUsuario.permisos.biblioteca.includes(
                                         "add"
                                     ) ? (
-                                        <tr>
-                                            <td>
-                                                <Link
-                                                    to={{
-                                                        pathname:
-                                                            "/invitacion/add/",
-                                                        state: {
-                                                            idEvento: this.state
-                                                                .idEvento
-                                                        }
-                                                    }}
-                                                    className="btn-sm btn-dark button-add p-2"
-                                                >
-                                                    Agregar Archivo
+                                            <tr>
+                                                <td>
+                                                    <Link
+                                                        to={{
+                                                            pathname:
+                                                                "/invitacion/add/",
+                                                            state: {
+                                                                idEvento: this.state
+                                                                    .idEvento
+                                                            }
+                                                        }}
+                                                        className="btn-sm btn-dark button-add p-2"
+                                                    >
+                                                        Agregar
                                                 </Link>
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        ""
-                                    )}
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            ""
+                                        )}
                                     <tr className="fila-head">
                                         <th className="text-center">TIPO</th>
                                         <th className="text-center">
@@ -197,48 +199,48 @@ export default class Show extends Component {
                                             &nbsp;No existen invitaciones.
                                         </div>
                                     ) : (
-                                        this.state.archivos.map((e, index) => {
-                                            return (
-                                                <tr key={index} id={e._id}>
-                                                    <td className="text-center">
-                                                        {e.Tipo}
-                                                    </td>
-                                                    <td className="text-center">
-                                                        {e.SizeImagen}
-                                                    </td>
-                                                    <td className="text-center">
-                                                        {e.SizePdf}
-                                                    </td>
-                                                    <td className="text-center">
-                                                        <div className="text-center">
-                                                            {this.state.permisoUsuario.permisos.biblioteca.includes(
-                                                                "delete"
-                                                            ) ? (
-                                                                <div class="text-center">
-                                                                    <a
-                                                                        onClick={() => {
-                                                                            this.handleDelete(
-                                                                                e._id
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        <i
-                                                                            data-toggle="tooltip"
-                                                                            data-placement="top"
-                                                                            title="Borrar"
-                                                                            className="fas fa-trash-alt icono-ver"
-                                                                        />
-                                                                    </a>
-                                                                </div>
-                                                            ) : (
-                                                                ""
-                                                            )}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })
-                                    )}
+                                            this.state.archivos.map((e, index) => {                            
+                                                return (
+                                                    <tr key={index} id={e._id}>
+                                                        <td className="text-center">
+                                                            {e.Tipo ? e.Tipo : `Plantilla Modelo ${e.PlantillaId}`}
+                                                        </td>
+                                                        <td className="text-center">
+                                                            {e.SizeImagen}
+                                                        </td>
+                                                        <td className="text-center">
+                                                            {e.SizePdf}
+                                                        </td>
+                                                        <td className="text-center">
+                                                            <div className="text-center">
+                                                                {this.state.permisoUsuario.permisos.biblioteca.includes(
+                                                                    "delete"
+                                                                ) ? (
+                                                                        <div class="text-center">
+                                                                            <a
+                                                                                onClick={() => {
+                                                                                    this.handleDelete(
+                                                                                        e._id
+                                                                                    );
+                                                                                }}
+                                                                            >
+                                                                                <i
+                                                                                    data-toggle="tooltip"
+                                                                                    data-placement="top"
+                                                                                    title="Borrar"
+                                                                                    className="fas fa-trash-alt icono-ver"
+                                                                                />
+                                                                            </a>
+                                                                        </div>
+                                                                    ) : (
+                                                                        ""
+                                                                    )}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
+                                        )}
                                 </tbody>
                             </table>
 

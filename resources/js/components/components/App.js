@@ -35,6 +35,9 @@ import Invitados from "../Pages/configuracion/Invitados/invitados/Invitados";
 import InvitadosAdd from "../Pages/configuracion/Invitados/invitados/Add";
 import InvitadosShow from "../Pages/configuracion/Invitados/invitados/Show";
 import InvitadosEdit from "../Pages/configuracion/Invitados/invitados/Edit";
+import Regalos from "../Pages/configuracion/Invitados/regalos";
+import RegalosShow from "../Pages/configuracion/Invitados/regalos/Show";
+import RegalosGuardar from "../Pages/configuracion/Invitados/regalos/Guardar";
 import Grupos from "../Pages/configuracion/Grupos/Grupos";
 import GruposAdd from "../Pages/configuracion/Grupos/Add";
 import GruposEdit from "../Pages/configuracion/Grupos/Edit";
@@ -63,205 +66,230 @@ import NewPassword from './../Pages/NewPassword';
 
 library.add(fas);
 
-function App () {
-  const { alert } = store.getState();
+function App() {
+    const { alert } = store.getState();
 
     return (
         <Provider store={store}>
-          <React.Fragment>
-            <BrowserRouter>
-                <Switch>
-                    {/**A continuacion se presentan todas las rutas registradas del front end
+            <React.Fragment>
+                <BrowserRouter>
+                    <Switch>
+                        {/**A continuacion se presentan todas las rutas registradas del front end
               asi como sus respectivos componentes renderi ados en cada una */}
-                    <Route exact path="/" component={Login} />
-                    <Route exact path="/welcome" component={Welcome} />
-                    <Route exact path="/multimedia" component={Multimedia} />
-                    <Route exact path="/social-wall" component={SocialWall} />
-                    <Route exact path="/biblioteca" component={Biblioteca} />
-                    <Route exact path="/cambiar-password" component={ChangePassword} />
-                    <Route exact path="/recover-password" component={RecuperarPassword} />
-                    <Route exact path="/user/change/password/:token" component={NewPassword} />
-                    <Route
-                        exact
-                        path="/biblioteca/evento/:id"
-                        component={ViewEventoBiblioteca}
-                    />
-                    <Route
-                        exact
-                        path="/biblioteca/evento/add-file/:id"
-                        component={AddEventoBiblioteca}
-                    />
-                    <Route exact path="/empresas" component={Empresas} />
-                    <Route exact path="/empresas/add" component={AddEmpresa} />
-                    <Route
-                        exact
-                        path="/empresas/show/:id"
-                        component={ShowEmpresas}
-                    />
-                    <Route
-                        exact
-                        path="/empresas/edit/:id"
-                        component={EditEmpresas}
-                    />
-                    <Route
-                        exact
-                        path="/empresas/planos-base/:id"
-                        component={PlanoBase}
-                    />
-                    <Route
-                        exact
-                        path="/empresa/planos-base/add"
-                        component={PlanoBaseAdd}
-                    />
+                        <Route exact path="/" component={Login} />
+                        <Route exact path="/welcome" component={Welcome} />
+                        <Route exact path="/multimedia" component={Multimedia} />
+                        <Route exact path="/social-wall" component={SocialWall} />
+                        <Route exact path="/biblioteca" component={Biblioteca} />
+                        <Route exact path="/cambiar-password" component={ChangePassword} />
+                        <Route exact path="/recover-password" component={RecuperarPassword} />
+                        <Route exact path="/user/change/password/:token" component={NewPassword} />
+                        <Route
+                            exact
+                            path="/biblioteca/evento/:id"
+                            component={ViewEventoBiblioteca}
+                        />
+                        <Route
+                            exact
+                            path="/biblioteca/evento/add-file/:id"
+                            component={AddEventoBiblioteca}
+                        />
+                        <Route exact path="/empresas" component={Empresas} />
+                        <Route exact path="/empresas/add" component={AddEmpresa} />
+                        <Route
+                            exact
+                            path="/empresas/show/:id"
+                            component={ShowEmpresas}
+                        />
+                        <Route
+                            exact
+                            path="/empresas/edit/:id"
+                            component={EditEmpresas}
+                        />
+                        <Route
+                            exact
+                            path="/empresas/planos-base/:id"
+                            component={PlanoBase}
+                        />
+                        <Route
+                            exact
+                            path="/empresa/planos-base/add"
+                            component={PlanoBaseAdd}
+                        />
 
-                    <Route
-                        exact
-                        path="/empresa/planos-base/edit/:id"
-                        component={PlanoBaseEdit}
-                    />
-                    <Route
-                        exact
-                        path="/empresa/eventos/:id"
-                        component={Eventos}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/add/:id"
-                        component={EventosAdd}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/edit/:id"
-                        component={EventoEdit}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/show/:id"
-                        component={EventoShow}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/etapas/:id"
-                        component={Etapas}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/etapas/add/:id"
-                        component={EtapasAdd}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/etapas/edit/:id"
-                        component={EtapasEdit}
-                    />
-                    <Route
-                        exact
-                        path="/evento/planos/planos-base-copia/:id"
-                        component={PlanosBaseCopia}
-                    />
-                    <Route
-                        exact
-                        path="/evento/plano/copia/"
-                        component={PlanoCopiaAdd}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/planos/:id"
-                        component={Planos}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/planos/add/:id"
-                        component={PlanosAdd}
-                    />
-                    <Route
-                        exact
-                        path="/eventos/planos/edit/:id"
-                        component={PlanosEdit}
-                    />
-                    <Route exact path="/usuarios" component={Usuarios} />
-                    <Route exact path="/usuarios/add" component={UsuariosAdd} />
-                    <Route
-                        exact
-                        path="/usuarios/edit/:id"
-                        component={UsuariosEdit}
-                    />
-                    <Route
-                        exact
-                        path="/usuarios/show/:id"
-                        component={UsuariosShow}
-                    />
-                    <Route exact path="/invitacion" component={Invitacion} />
-                    <Route
-                        exact
-                        path="/invitacion/show/:id"
-                        component={InvitacionShow}
-                    />
-                    <Route
-                        exact
-                        path="/invitacion/add"
-                        component={InvitacionAdd}
-                    />
-                    <Route exact path="/invitados" component={Invitados} />
-                    <Route
-                        exact
-                        path="/invitados/add"
-                        component={InvitadosAdd}
-                    />
-                    <Route
-                        exact
-                        path="/invitados/edit/"
-                        component={InvitadosEdit}
-                    />
-                    <Route
-                        exact
-                        path="/invitados/show/"
-                        component={InvitadosShow}
-                    />
+                        <Route
+                            exact
+                            path="/empresa/planos-base/edit/:id"
+                            component={PlanoBaseEdit}
+                        />
+                        <Route
+                            exact
+                            path="/empresa/eventos/:id"
+                            component={Eventos}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/add/:id"
+                            component={EventosAdd}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/edit/:id"
+                            component={EventoEdit}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/show/:id"
+                            component={EventoShow}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/etapas/:id"
+                            component={Etapas}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/etapas/add/:id"
+                            component={EtapasAdd}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/etapas/edit/:id"
+                            component={EtapasEdit}
+                        />
+                        <Route
+                            exact
+                            path="/evento/planos/planos-base-copia/:id"
+                            component={PlanosBaseCopia}
+                        />
+                        <Route
+                            exact
+                            path="/evento/plano/copia/"
+                            component={PlanoCopiaAdd}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/planos/:id"
+                            component={Planos}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/planos/add/:id"
+                            component={PlanosAdd}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/planos/edit/:id"
+                            component={PlanosEdit}
+                        />
+                        <Route exact path="/usuarios" component={Usuarios} />
+                        <Route exact path="/usuarios/add" component={UsuariosAdd} />
+                        <Route
+                            exact
+                            path="/usuarios/edit/:id"
+                            component={UsuariosEdit}
+                        />
+                        <Route
+                            exact
+                            path="/usuarios/show/:id"
+                            component={UsuariosShow}
+                        />
+                        <Route exact path="/invitacion" component={Invitacion} />
+                        <Route
+                            exact
+                            path="/invitacion/show/:id"
+                            component={InvitacionShow}
+                        />
+                        <Route
+                            exact
+                            path="/invitacion/add"
+                            component={InvitacionAdd}
+                        />
+                        <Route exact path="/invitados" component={Invitados} />
+                        <Route
+                            exact
+                            path="/invitados/add"
+                            component={InvitadosAdd}
+                        />
+                        <Route
+                            exact
+                            path="/invitados/edit/"
+                            component={InvitadosEdit}
+                        />
+                        <Route
+                            exact
+                            path="/invitados/show/"
+                            component={InvitadosShow}
+                        />
 
-                    <Route
-                        exact
-                        path="/invitados/asientos/"
-                        component={Asientos}
-                    />
-                    <Route
-                        exact
-                        path="/asientos/planos/"
-                        component={SeleccionPlanos}
-                    />
-                    <Route
-                        exact
-                        path="/planos/seleccion-asiento/"
-                        component={SeleccionAsientos}
-                    />
-                    <Route
-                        exact
-                        path="/planos/edicion-asiento/"
-                        component={EdicionAsiento}
-                    />
-                    <Route exact path="/grupos" component={Grupos} />
-                    <Route exact path="/grupos/add" component={GruposAdd} />
-                    <Route
-                        exact
-                        path="/grupos/edit/:id"
-                        component={GruposEdit}
-                    />
-                    <Route
-                        exact
-                        path="/mail/:id"
-                        component={MailConfirmation}
-                    />
-                    <Route exact path="/event/:id" component={MailAsiento} />
-                    <Route
-                        exact
-                        path="/menu-gastronomico/"
-                        component={MenuGastronomico}
-                    />
-                </Switch>
-            </BrowserRouter>
-            <Alert/>
-            <Loader/>
-          </React.Fragment>
+                        <Route
+                            exact
+                            path="/invitados/asientos/"
+                            component={Asientos}
+                        />
+                        <Route
+                            exact
+                            path="/asientos/planos/"
+                            component={SeleccionPlanos}
+                        />
+                        <Route
+                            exact
+                            path="/planos/seleccion-asiento/"
+                            component={SeleccionAsientos}
+                        />
+                        <Route
+                            exact
+                            path="/planos/edicion-asiento/"
+                            component={EdicionAsiento}
+                        />
+                        <Route
+                            exact
+                            path="/regalos"
+                            component={Regalos}
+                        />
+                        <Route
+                            exact
+                            path="/regalos/show/:id"
+                            component={RegalosShow}
+                        />
+                        <Route
+                            exact
+                            path="/regalos/guardar/:id"
+                            component={RegalosGuardar}
+                        />
+                        <Route
+                            exact
+                            path="/regalos/show/regalo/:id/:regalo"
+                            component={RegalosGuardar}
+                        />
+                        <Route
+                            exact
+                            path="/regalos/edit/regalo/:id/:editRegalo"
+                            component={RegalosGuardar}
+                        />
+                        <Route exact path="/grupos" component={Grupos} />
+                        <Route exact path="/grupos/add" component={GruposAdd} />
+                        <Route
+                            exact
+                            path="/grupos/edit/:id"
+                            component={GruposEdit}
+                        />
+                        <Route
+                            exact
+                            path="/mail/:id"
+                            component={MailConfirmation}
+                        />
+                        <Route exact path="/event/:id" component={MailAsiento} />
+                        <Route
+                            exact
+                            path="/menu-gastronomico/"
+                            component={MenuGastronomico}
+                        />
+                    </Switch>
+                </BrowserRouter>
+                <Alert />
+                <Loader />
+            </React.Fragment>
         </Provider>
     );
 }

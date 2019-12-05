@@ -52,7 +52,7 @@ export default class Biblioteca extends Component {
                 }
             )
             .then(res => {
-                console.log(res);
+                console.log('api/biblioteca',res);
                 localStorage.setItem("eventos", JSON.stringify(res.data));
                 this.setState({
                     eventos: res.data,

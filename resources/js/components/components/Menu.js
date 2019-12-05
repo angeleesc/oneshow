@@ -27,7 +27,7 @@ class Menu extends Component {
   }
 
   componentDidMount () {
-    const guestsPaths = ['/invitacion', '/invitados', '/asientos'];
+    const guestsPaths = ['/invitacion', '/invitados', '/asientos', '/regalos'];
     const configPaths = ['/biblioteca', '/empresas', '/invitados', '/grupos', '/menu-gastronómico', '/usuarios']
     
     this.props.getUserScope().then(({ Nombre, Permisos}) => this.setState({
@@ -160,12 +160,12 @@ class Menu extends Component {
                           Asientos
                       </Link>
                   </li>
-                  {/* <li className="sidebar-nav-link">
-                      <a href="{{ route('invitados.regalo') }}">
+                  <li className="sidebar-nav-link">
+                      <Link to="/regalos">
                           <i className="fas fa-gift sidebar-nav-link-logo" />{" "}
                           Regalos
-                      </a>
-                  </li> */}
+                      </Link>
+                  </li>
                 </ul>
               </div>
             </div>

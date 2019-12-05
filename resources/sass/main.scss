@@ -222,9 +222,20 @@
     height: 236px;
     margin: 0 auto;
 }
-
+.area-cropper-foto{
+    position: relative;
+    width: 320px;
+    height: 236px;
+    margin: 0 auto;
+}
 .img-example {
     width: 200px;
+    border: 4px #cccccc solid;
+    padding: 2px;
+}
+
+.img-fotografia {
+    width: 320px;
     border: 4px #cccccc solid;
     padding: 2px;
 }

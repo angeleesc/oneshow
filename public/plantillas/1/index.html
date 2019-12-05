@@ -1,0 +1,119 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400&display=swap" rel="stylesheet">
+
+</head> 
+
+<style>
+    #plantilla-contenedor {
+        font-size: 1em;
+        height: 100vh;
+        background-color: #f8f4f1;
+        color: #282d2f;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    #plantilla-contenedor #conent {
+
+        background-image: url('http://localhost:8001/plantillas/1/img/marco-mobile.svg');
+        background-size: cover;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #plantilla-contenedor #conent p {
+        margin: 0;
+        padding: 0;
+    }
+
+    #plantilla-contenedor #conent #evento {
+        display: flex;
+        width: 100%;
+        flex-direction: row-reverse;
+        justify-content: center;
+    }
+
+    #plantilla-contenedor #conent #evento figure {
+        position: absolute;
+        width: 110px;
+        top: 25px;
+        left: 0px;
+    }
+
+    #plantilla-contenedor #conent #evento #nombre {
+        margin-bottom: 50px;
+        margin-top: 50px;
+    }
+
+    #plantilla-contenedor #conent #evento figure img {
+        width: 100%;
+        border-radius: 50%;
+        box-shadow: 2px 3px 5px rgba(0, 0, 0, .6);
+    }
+
+    #plantilla-contenedor #conent #fecha {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    
+
+    #plantilla-contenedor #conent #fecha {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 70%;
+    }
+
+    #plantilla-contenedor #conent #fecha p {
+        border-top: solid #dedbd8 1px;
+        border-bottom: solid #dedbd8 1px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        width: 40%;
+        text-align: center;
+    }
+    #plantilla-contenedor #conent .container-hora {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-evenly;
+    }
+
+    #plantilla-contenedor #conent #dir2 {
+        width: 70%;
+        text-align: center;
+    }
+</style>
+
+<div id="plantilla-contenedor">
+    <div id="conent">
+        <div id="evento">
+            <!-- <figure>
+                <img src="http://localhost:8001/plantillas/1/img/quiencefoto.jpg" alt="foto-quinceañera">
+            </figure> -->
+            <p id="nombre"></p>
+        </div>
+        <h1 id="anfrition1"></h1>
+        <div id="fecha">
+            <p id="fecha-mes"></p>
+            <h3 id="fecha-dia"></h3>
+            <p id="fecha-anio"></p>
+        </div>
+        <br>
+        <div class="container-hora">
+            -<p id="hora"><span></span></p>-
+        </div>
+
+        <h4 id="dir1"></h4>
+        <p id="dir2"></p>
+        <h5 id="vestimenta"></h5>
+    </div>
+</div>
