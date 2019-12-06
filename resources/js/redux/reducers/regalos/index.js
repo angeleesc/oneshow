@@ -13,7 +13,8 @@ import {
   VALUE_TIPO_DINERO_REGALO,
   CARGANDO,
   ERROR,
-  LIMPIAR_FORM
+  LIMPIAR_FORM,
+  CARGANDO_GUARDAR
 } from '../../actions/regalos/types'
 
 const INITIAL_STATE = {
@@ -30,6 +31,7 @@ const INITIAL_STATE = {
   Adquirido: "",
   Link: "",
   cargando: false,
+  cargando_guardar: false,
   error: "",
   regresar: false,
 };
@@ -41,13 +43,15 @@ export default function (state = INITIAL_STATE, action) {
         ...state,
         regalos: action.payload,
         cargando: false,
+        cargando_guardar: false,
         regresar: false,
       }
 
     case AGREGAR_REGALOS_EVENTO:
       return {
         ...state,
-        regalos: {},
+        // regalos: action.payload,
+        // regaloSeleccionado:[],
         tipoRegalo: "",
         OpcionDinero: "",
         Banco: "",
@@ -60,12 +64,13 @@ export default function (state = INITIAL_STATE, action) {
         Adquirido: "",
         Link: "",
         cargando: false,
+        cargando_guardar: false,
         error: "",
         regresar: true
       }
 
     case TIPO_REGALO: {
-      return {...state, tipoRegalo: action.payload}
+      return { ...state, tipoRegalo: action.payload }
     }
     case VALUE_BANCO: {
       return { ...state, Banco: action.payload, error: "" }
@@ -74,7 +79,7 @@ export default function (state = INITIAL_STATE, action) {
       return { ...state, CUIL: action.payload, error: "" }
     }
     case VALUE_CBU: {
-      return { ...state, CBU: action.payload ,error: "" }
+      return { ...state, CBU: action.payload, error: "" }
     }
     case VALUE_PATH_IMG: {
       return { ...state, PathImg: action.payload, error: "" }
@@ -86,34 +91,36 @@ export default function (state = INITIAL_STATE, action) {
       return { ...state, SKU: action.payload, error: "" }
     }
     case VALUE_TIENDA: {
-      return { ...state, TiendaSugerida: action.payload, error:"" }
+      return { ...state, TiendaSugerida: action.payload, error: "" }
     }
     case VALUE_LINK: {
       return { ...state, Link: action.payload, error: "" }
     }
-     case VALUE_TIPO_DINERO_REGALO: {
+    case VALUE_TIPO_DINERO_REGALO: {
       return { ...state, OpcionDinero: action.payload, error: "" }
     }
     case CARGANDO:
       return { ...state, cargando: true }
 
+    case CARGANDO_GUARDAR:
+      return { ...state, cargando_guardar: true }
     case ERROR:
       return { ...state, error: action.payload, cargando: false, regresar: false }
 
-    case LIMPIAR_FORM: 
+    case LIMPIAR_FORM:
       return {
-          ...state,
-          tipoRegalo: "",
-          OpcionDinero: "",
-          Banco: "",
-          CUIL: "",
-          CBU: "",
-          PathImg: "",
-          SKU: "",
-          Objeto: "",
-          TiendaSugerida: "",
-          Adquirido: "",
-          Link: ""
+        ...state,
+        tipoRegalo: "",
+        OpcionDinero: "",
+        Banco: "",
+        CUIL: "",
+        CBU: "",
+        PathImg: "",
+        SKU: "",
+        Objeto: "",
+        TiendaSugerida: "",
+        Adquirido: "",
+        Link: ""
       }
     default:
       return state;

@@ -275,6 +275,6 @@ Route::group(['prefix' => 'regalos'], function() {
     Route::post('/get-info', 'RegaloController@getInfo');
     Route::get('/get-regalo/{evento}', 'RegaloController@getRegalosEventoId');
     Route::post('/add/{idEvento}/{idRegalo}', 'RegaloController@addAndEdit');
-    Route::post('/addObjeto/{idEvento}', 'RegaloController@addObjeto');
+    Route::post('/addObjeto/{idEvento}/{idRegalo}', 'RegaloController@addObjeto');
     Route::delete('/delete/{id}', 'RegaloController@deleteRegalo');
 });

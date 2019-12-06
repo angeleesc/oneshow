@@ -13,6 +13,7 @@ import {
     VALUE_TIPO_DINERO_REGALO,
     TIPO_REGALO,
     CARGANDO,
+    CARGANDO_GUARDAR,
     ERROR,
     LIMPIAR_FORM
 } from './types'
@@ -21,16 +22,16 @@ import { TRAER_EVENTOS } from '../eventos/types'
 import axios from "axios";
 
 
-export const traerRegalosEventosID = (idEvento,ley) => async (dispatch, getState) => {
+export const traerRegalosEventosID = (idEvento, key) => async (dispatch, getState) => {
     const apiToken = localStorage.getItem("api_token");
     const { regalos } = getState().regalos;
     const { eventos } = getState().eventos;
-    
+
     dispatch({
         type: CARGANDO
     })
 
-  
+
     try {
 
         const data = await axios.get(`api/regalos/get-regalo/${idEvento}`, {
@@ -39,10 +40,12 @@ export const traerRegalosEventosID = (idEvento,ley) => async (dispatch, getState
 
         const resp = data.data.regalos;
 
+        //busco los regalos del evento que se activo
         const nuevosRegalos = resp.map((regalo) => ({
             ...regalo
         }))
 
+        //lo coloco junto un array con lo regalos que estaba en el reducer
         const regalosAct = [
             ...regalos,
             nuevosRegalos
@@ -50,8 +53,8 @@ export const traerRegalosEventosID = (idEvento,ley) => async (dispatch, getState
         const regalos_key = regalosAct.length - 1;
 
         const eventosAct = [...eventos]
-        let key = keyEvento.filter(k => k != undefined)
-        
+
+        //le pongo el key del regalo al evento
         eventosAct[key] = {
             ...eventos[key],
             regalos_key
@@ -67,7 +70,7 @@ export const traerRegalosEventosID = (idEvento,ley) => async (dispatch, getState
         })
 
     } catch (error) {
-        
+
         dispatch({
             type: ERROR,
             payload: 'Algo ha salido mal al treaer los regalos'
@@ -139,31 +142,71 @@ export const handleInputTipoRegaloDinero = (value) => (dispatch) => {
         payload: value
     })
 }
-export const guardarRegalo = (regalo, editEvento, idRegalo) => async (dispatch) => {
+/**
+ * 
+ * @param {Object} regalo  objeto del regalo
+ * @param {IDBDatabase} editEvento _id del evento
+ * @param {IDBDatabase} idRegalo  _id del regalo en caso que se vaya a editar
+ * @param {IDBArrayKey} keyRegalo [] => key de los regalos que identifica el array dentro del reducer de regalos
+ * @param {IDBArrayKey} keyItem key del item que se esta editando
+ */ 
+export const guardarRegalo = (regalo, editEvento, idRegalo, keyRegalo, edit, keyItem) => async (dispatch, getState) => {
     const apiToken = localStorage.getItem("api_token");
+    const { regalos } = getState().regalos;
     dispatch({
-        type: CARGANDO
+        type: CARGANDO_GUARDAR
     })
 
     let url = null;
-
-
+    
     if (regalo.TipoRegalo) {
+        
         url = `api/regalos/add/${editEvento}/${idRegalo}`
     } else {
-        url = `api/regalos/addObjeto/${editEvento}`
+        url = `api/regalos/addObjeto/${editEvento}/${idRegalo}`
     }
 
     try {
         const result = await axios.post(url, regalo, {
             headers: { Authorization: apiToken }
         })
+        const newRegalo = result.data.regalo
+        
+        let regalosAct = []
+        if (!edit) {
+
+            const regalosOld = [...regalos]
+
+            regalosAct = [
+                ...regalosOld[keyRegalo]
+            ]
+
+            regalosAct.push(newRegalo)
+
+        } else {
+
+            const regalosOld = [...regalos]
+
+            regalosOld[keyRegalo].splice(keyItem, 1)
+
+            regalosAct = [
+                ...regalosOld[keyRegalo]
+            ]
+            regalosAct.push(newRegalo)
+
+        }
 
         dispatch({
             type: AGREGAR_REGALOS_EVENTO,
-            payload: result
+        })
+
+        dispatch({
+            type: TRAER_REGALOS,
+            payload: [regalosAct]
         })
     } catch (error) {
+
+        console.log(error);
 
         dispatch({
             type: ERROR,
@@ -173,18 +216,36 @@ export const guardarRegalo = (regalo, editEvento, idRegalo) => async (dispatch) 
 
 }
 
-export const borrarRegalo = (id) => async (dispatch) => {
+export const borrarRegalo = (id, key, keyItem, keyEvento) => async (dispatch, getState) => {
     const apiToken = localStorage.getItem("api_token");
+    const { regalos } = getState().regalos;
+    const { eventos } = getState().eventos;
     try {
         axios.delete(`api/regalos/delete/${id}`, {
             headers: { Authorization: apiToken }
         })
 
+        const nuevosEventos = [...eventos]
+        nuevosEventos[keyEvento] = {
+            ...nuevosEventos[keyEvento],
+            Regalos: regalos[key].length - 1
+        }
+        const regalosAct = [...regalos]
+
+        regalosAct[key].splice(keyItem, 1)
+
+
         dispatch({
             type: TRAER_REGALOS,
-            payload: {}
+            payload: regalosAct
         })
+        dispatch({
+            type: TRAER_EVENTOS,
+            payload: nuevosEventos
+        })
+
     } catch (error) {
+        // console.log(error);
         dispatch({
             type: ERROR,
             payload: 'Algo ha salido mal.'

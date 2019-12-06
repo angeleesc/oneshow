@@ -2,12 +2,15 @@ import React, { Component, Fragment, createRef } from "react";
 import { connect } from 'react-redux';
 import Menu from "../../../../components/Menu";
 import Header from "../../../../components/Header";
+import FormDinero from './FormDinero'
+import FormObjeto from './FormObjeto'
 import { Link } from "react-router-dom";
 import * as regalosActions from '../../../../../redux/actions/regalos'
 import * as eventosActions from '../../../../../redux/actions/eventos'
-import './index.css'
+
 const {
-    traerRegalosEventosID,
+    handleInputTipoRegalo,
+    handleInputTipoRegaloDinero,
     handleInputBanco,
     handleInputCuentaCuil,
     handleInputCbu,
@@ -16,9 +19,8 @@ const {
     handleInputSKU,
     handleInputTiendaSugerida,
     handleInputLink,
-    handleInputTipoRegalo,
-    handleInputTipoRegaloDinero,
     guardarRegalo,
+    traerRegalosEventosID,
     limpiarForm,
 } = regalosActions
 const { traerEventos } = eventosActions
@@ -36,8 +38,8 @@ class Guardar extends Component {
             eventoNombre: "",
             valueRegaloObjeto: 'OBJETO',
             valueRegaloDinero: 'DINERO',
-            selectTipoRegalo: false,
-            selectTipoRegaloDinero: false,
+            selectTipoRegalo: false,//se activa cuando cambia select tipo de regalo
+            // selectTipoRegaloDinero: false,
             inputDisabled: false,
             inputTransferenciaDisabled: false,
             inputEfectivoDisabled: false
@@ -46,87 +48,95 @@ class Guardar extends Component {
         this.refSelectTipoRegalo = createRef();
         this.refSelectTipoRegaloDinero = createRef();
         this.imagenObjeto = createRef();
-        this.handleChangeSelectTipoRegalo = this.handleChangeSelectTipoRegalo.bind(this);
-        this.mostrarFormDinero = this.mostrarFormDinero.bind(this);
-        this.mostrarFormObjeto = this.mostrarFormObjeto.bind(this);
-        this.handleSelectTipoDinero = this.handleSelectTipoDinero.bind(this);
-        this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
-        this.handlInputProps = this.handlInputProps.bind(this);
+        this.handleChangeSelectTipoRegalo = this.handleChangeSelectTipoRegalo.bind(this);
+        // this.mostrarFormDinero = this.mostrarFormDinero.bind(this);
+        // this.mostrarFormObjeto = this.mostrarFormObjeto.bind(this);
+        // this.handleSelectTipoDinero = this.handleSelectTipoDinero.bind(this);
+        this.handleFormSubmit = this.handleFormSubmit.bind(this);
+        // this.handlInputProps = this.handlInputProps.bind(this);
         this.buttonsFooter = this.buttonsFooter.bind(this);
 
     }
 
     async componentDidMount() {
 
-        const { match: { params: { id, regalo, editRegalo } } } = this.props
-        const { eventos } = this.props.eventos
-        const { regalos } = this.props.regalos
+        const { match: { params: { id, regalo } } } = this.props
 
-        if (!eventos.length) {
+        if (!this.props.eventos.eventos.length) {
+            //si no existen los eventos los traemos del reducer
             await this.props.traerEventos()
-            const nombre = this.props.eventos.eventos.filter(e => (e._id == id))
+
+            const evento = this.props.eventos.eventos.filter(e => (e._id == id))
             this.setState({
-                eventoNombre: nombre[0].Evento
-            })
-        } else {
-            const nombre = eventos.filter(e => (e._id == id))
-            this.setState({
-                eventoNombre: nombre[0].Evento
+                eventoNombre: evento[0].Evento,
             })
         }
 
-        if (!regalos.length) {
-            await this.props.traerRegalosEventosID(id)
-        }
+        const evento = this.props.eventos.eventos.filter(e => (e._id == id))
+        this.setState({
+            eventoNombre: evento[0].Evento,
+        })
 
-        if (editRegalo) {
-            this.setState({
-                selectTipoRegalo: true
-            })
-
-            const regaloEvento = this.props.regalos.regalos.filter(r => r._id == editRegalo)
-            if (regaloEvento) {
-
-                if (regaloEvento[0].OpcionDinero == 'TRANSFERENCIA') {
-                    this.setState({
-                        inputTransferenciaChecked: true
-                    })
-                } else {
-                    this.setState({
-                        inputEfectivoChecked: true
-                    })
-                }
-                this.handlInputProps(regaloEvento)
+        //seleccionamos las key de los eventos dentro del  del reducer
+        const keyEvento = this.props.eventos.eventos.map((e, key) => {
+            if (e._id == id) {
+                return key
             }
+        })
+        let key = keyEvento.filter(k => k != undefined)//seleccionamos la key del evento activo
+
+        //si el evento no tiene el key del array de los regalos, buscamos los regalos del evento
+        if (!('regalos_key' in evento[0])) {
+            await this.props.traerRegalosEventosID(id, key[0])
         }
+        this.setState({
+            keyEvento: key[0]
+        })
+
         if (regalo) {
             this.setState({
                 selectTipoRegalo: true
             })
+            let edit = null
+            const path = this.props.location.pathname.split('/')[2]
 
-            const regaloEvento = this.props.regalos.regalos.filter(r => r._id == regalo)
 
-
-            const path = this.props.location.pathname.split('/')[3]
-            if (path == 'regalo') {
-                this.setState({
-                    inputDisabled: true
-                })
+            if (path == 'edit') {
+                edit = true
             }
+            const regaloEvento = this.props.regalos.regalos[0].filter(r => r._id == regalo)
 
+            !edit && this.setState({
+                inputDisabled: true
+            })
             if (regaloEvento) {
 
                 if (regaloEvento[0].OpcionDinero == 'TRANSFERENCIA') {
-                    this.setState({
-                        inputTransferenciaDisabled: true,
-                        inputTransferenciaChecked: true,
-                    })
+
+                    edit ?
+                        this.setState({
+                            inputTransferenciaChecked: true,
+
+                        })
+                        :
+                        this.setState({
+                            inputTransferenciaDisabled: true,
+                            inputTransferenciaChecked: true,
+
+                        })
                 } else {
-                    this.setState({
-                        inputEfectivoDisabled: true,
-                        inputEfectivoChecked: true
-                    })
+                    edit ?
+                        this.setState({
+                            inputEfectivoChecked: true
+
+                        })
+                        :
+                        this.setState({
+                            inputEfectivoDisabled: true,
+                            inputEfectivoChecked: true
+
+                        })
                 }
 
                 this.handlInputProps(regaloEvento)
@@ -136,8 +146,13 @@ class Guardar extends Component {
     }
     componentWillUnmount() {
         this.props.limpiarForm()
+        this.setState({
+            inputEfectivoDisabled: "",
+            inputEfectivoChecked: "",
+            inputTransferenciaDisabled: "",
+            inputTransferenciaChecked: "",
+        })
     }
-
     handlInputProps(regaloArray) {
         regaloArray.map(r => {
 
@@ -185,6 +200,21 @@ class Guardar extends Component {
         const target = event.target
         const id = target.id
         const value = target.value
+
+
+        if (id == "tipoRegalo") {
+            this.props.handleInputTipoRegalo(value);
+            this.setState({ selectTipoRegalo: true })
+        }
+
+        if (id == "tipo-efectivo") {
+            this.props.handleInputTipoRegaloDinero(value);
+            this.setState({ inputEfectivoChecked: true, inputTransferenciaChecked: false })
+        }
+        if (id == "tipo-transfrencia") {
+            this.props.handleInputTipoRegaloDinero(value);
+            this.setState({ inputTransferenciaChecked: true, inputEfectivoChecked: false })
+        }
         if (id == "Banco") {
             this.props.handleInputBanco(value)
         }
@@ -195,8 +225,8 @@ class Guardar extends Component {
             this.props.handleInputCbu(value)
         }
         if (id == "fotoObjeto") {
-            const tagImg = document.querySelector("#fotoTagImg")
             const imgObjeto = this.imagenObjeto.current
+            const tagImg = document.querySelector("#fotoTagImg")
             const ext = imgObjeto.files[0].type.split("/")[1]
             if (ext == 'jpg' || ext == 'png' || ext == 'jpeg') {
                 // const img = URL.createObjectURL(imgObjeto.files[0])
@@ -232,31 +262,77 @@ class Guardar extends Component {
             this.props.handleInputLink(value)
         }
 
-        if (id == "tipoRegalo") {
-            this.props.handleInputTipoRegalo(value);
-            this.setState({ selectTipoRegalo: true })
-        }
-        if (id == "tipo-efectivo") {
-            this.props.handleInputTipoRegaloDinero(value);
-            this.setState({ selectTipoRegaloDinero: false, inputEfectivoChecked: true, inputTransferenciaChecked: false })
-        }
-
-        if (id == "tipo-transfrencia") {
-            this.props.handleInputTipoRegaloDinero(value);
-            this.setState({ selectTipoRegaloDinero: true, inputTransferenciaChecked: true, inputEfectivoChecked: false })
-            
-        }
     }
-    buttonsFooter() {
-        if (!this.state.inputDisabled) {
-            return <button type="submit" id="guardar" className="btn btn-sm btn-dark mr-2">Guardar</button>
+    buttonsFooter(id) {
+        if (!this.state.inputDisabled && this.state.permisoUsuario.permisos.evento.includes("edit")) {
+            return (
+                <Fragment>
+                    <Link to={`/regalos/show/${id}`}><button type="button" className="btn btn-sm btn-dark mr-2">Volver</button></Link>
+                    <button type="submit" id="guardar" className="btn btn-sm btn-dark mr-2">Guardar {this.props.regalos.cargando_guardar && <i className="fa fa-spinner fa-spin" />}</button>
+                </Fragment>
+            )
+
+        } else {
+            return (
+                <Fragment>
+                    <Link to={`/regalos/show/${id}`}><button type="button" className="btn btn-sm btn-dark mr-2">Volver</button></Link>
+                </Fragment>
+            )
         }
 
     }
+    handleChangeSelectTipoRegalo() {
+
+        let value = null;
+
+        value = this.props.regalos.tipoRegalo;
+
+        if (value == 0) return;
+
+        if (value == this.state.valueRegaloDinero) {
+            const inputTransferencia = {
+                Banco: this.props.regalos.Banco,
+                CUIL: this.props.regalos.CUIL,
+                CBU: this.props.regalos.CBU
+            }
+            const inputChecked = {
+                inputTransferenciaDisabled: this.state.inputTransferenciaDisabled,
+                inputTransferenciaChecked: this.state.inputTransferenciaChecked,
+                inputEfectivoDisabled: this.state.inputEfectivoDisabled,
+                inputEfectivoChecked: this.state.inputEfectivoChecked
+            }
+            return <FormDinero inputChecked={inputChecked} disabled={this.state.inputDisabled} inputstransferencia={inputTransferencia} OpcionDinero={this.props.regalos.OpcionDinero} changeFn={this.handleChangeInput} />
+        }
+
+        if (value == this.state.valueRegaloObjeto) {
+            const inputObjeto = {
+                PathImg: this.props.regalos.PathImg,
+                Objeto: this.props.regalos.Objeto,
+                SKU: this.props.regalos.SKU,
+                TiendaSugerida: this.props.regalos.TiendaSugerida,
+                Link: this.props.regalos.Link,
+                url: this.state.url,
+                refImg: this.imagenObjeto
+            }
+            return <FormObjeto disabled={this.state.inputDisabled} inputsObjeto={inputObjeto} changeFn={this.handleChangeInput} />
+        }
+
+    }
+
     handleFormSubmit(event) {
         event.preventDefault()
-        const { match: { params: { id,editRegalo } } } = this.props
-      
+        const { match: { params: { id, regalo } } } = this.props
+        const path = this.props.location.pathname.split('/')[2]
+
+
+        let edit = null
+        if (path == 'edit') {
+            edit = true
+        }
+
+        const keyItem = this.props.location.state.keyItem
+
+
         const {
             tipoRegalo,
             OpcionDinero,
@@ -270,7 +346,9 @@ class Guardar extends Component {
             Link
         } = this.props.regalos
 
-        
+        //key de los regalos que identifica el array dentro del reducer de regalos
+        const keyRegalo = this.props.eventos.eventos[this.state.keyEvento].regalos_key
+
         if (this.props.regalos.tipoRegalo == this.state.valueRegaloDinero) {
             if (this.props.regalos.OpcionDinero == 'TRANSFERENCIA') {
                 if (!Banco) {
@@ -329,7 +407,7 @@ class Guardar extends Component {
                     CUIL,
                     CBU
                 }
-                this.props.guardarRegalo(nuevo_regalo, id, editRegalo)
+                this.props.guardarRegalo(nuevo_regalo, id, regalo, keyRegalo, edit, keyItem)
             } else {
                 const tagRegaloTipoDinero = document.querySelector('#tipo-efectivo');
                 const checked = tagRegaloTipoDinero.checked
@@ -338,8 +416,8 @@ class Guardar extends Component {
                         TipoRegalo: this.props.regalos.tipoRegalo,
                         OpcionDinero: this.props.regalos.OpcionDinero,
 
-                    } 
-                    this.props.guardarRegalo(nuevo_regalo, id, editRegalo)
+                    }
+                    this.props.guardarRegalo(nuevo_regalo, id, regalo, keyRegalo, edit, keyItem)
                 }
 
             }
@@ -370,121 +448,14 @@ class Guardar extends Component {
             formData.append('TiendaSugerida', TiendaSugerida)
             formData.append('Link', Link)
 
-            this.props.guardarRegalo(formData, id)
+            this.props.guardarRegalo(formData, id, regalo, keyRegalo, edit, keyItem)
         }
     }
-
-    handleSelectTipoDinero() {
-
-        if (this.props.regalos.OpcionDinero == 'TRANSFERENCIA') {
-            return (
-                <div>
-                    <div className="row form-group">
-                        <div className="col-sm-6 col-md-3 offset-md-6">
-                            <label>Nombre Banco</label>
-                        </div>
-                        <div className="col-sm-6 col-md-3 offset-md-6">
-                            <input type="text" className="form-control form-control-sm" value={this.props.regalos.Banco && this.props.regalos.Banco} disabled={this.state.inputDisabled} onChange={this.handleChangeInput} id="Banco" name="Banco" placeholder="Ingrese el nombre del Banco" />
-                        </div>
-                    </div>
-                    <div className="row form-group">
-                        <div className="col-sm-6 col-md-3 offset-md-6">
-                            <label>CUIL</label>
-                        </div>
-                        <div className="col-sm-6 col-md-3 offset-md-6">
-                            <input type="text" className="form-control form-control-sm" value={this.props.regalos.CUIL && this.props.regalos.CUIL} disabled={this.state.inputDisabled} id="CUIL" onChange={this.handleChangeInput} name="CUIL" placeholder="Ingrese código CUIL" />
-                        </div>
-                    </div>
-                    <div className="row form-group ">
-                        <div className="col-sm-6 col-md-3 offset-md-6">
-                            <label>CBU</label>
-                        </div>
-                        <div className="col-sm-6 col-md-3 offset-md-6">
-                            <input type="text" className="form-control form-control-sm" value={this.props.regalos.CBU && this.props.regalos.CBU} disabled={this.state.inputDisabled} id="CBU" onChange={this.handleChangeInput} name="CBU" placeholder="Ingrese código CBU" />
-                        </div>
-                    </div>
-                </div>
-            )
-        }
-    }
-
-
-
-
-    mostrarFormDinero() {
-        return (
-            <Fragment>
-                <div className="row">
-                    <div className="col-xs-3 p-3 col-md-3 text-center">
-                        <input type="radio" id="tipo-efectivo" checked={this.state.inputEfectivoChecked} ref={this.refSelectTipoRegaloDinero} disabled={this.state.inputTransferenciaDisabled} onChange={this.handleChangeInput} value="EFECTIVO" name="tipo-dinero" className="custom-control-input" />
-                        <label className="custom-control-label" htmlFor="tipo-efectivo" > Efectivo</label>
-                    </div>
-                    <div className="col-xs-3 p-3 col-md-3 text-center">
-                        <input type="radio" id="tipo-transfrencia" checked={this.state.inputTransferenciaChecked} disabled={this.state.inputEfectivoDisabled} ref={this.refSelectTipoRegaloDinero} onChange={this.handleChangeInput} value="TRANSFERENCIA" name="tipo-dinero" className="custom-control-input" />
-                        <label className="custom-control-label" htmlFor="tipo-transfrencia" > Transfrencia</label>
-                    </div>
-                </div>
-                {this.handleSelectTipoDinero()}
-            </Fragment>
-        )
-    }
-    mostrarFormObjeto() {
-        return (
-            <Fragment>
-                <div className="row">
-                    <div className="col-sm-12 col-md-12 col-lg-5 text-center" id="contenedor_imagen_objeto">
-                        <img src={this.props.regalos.PathImg ? this.props.regalos.PathImg : `${this.state.url}/images/example.png`} className="mr-4" id="fotoTagImg" alt="foto objeto" />
-                        <input type="file" ref={this.imagenObjeto} id="fotoObjeto" disabled={this.state.inputDisabled} name="fotoObjeto" onChange={this.handleChangeInput} />
-                    </div>
-
-                    <div className="col-sm-12 col-md-12 col-lg-7 p-3">
-                        <div className="form-group">
-                            <label htmlFor="objeto">Nombre del objeto / Nombre del servicio</label>
-                            <input type="text" value={this.props.regalos.Objeto && this.props.regalos.Objeto} className="form-control" disabled={this.state.inputDisabled} onChange={this.handleChangeInput} id="Objeto" aria-describedby="objetoHelp" placeholder="Ingrese nombre del regalo o servicio" />
-                            {/* <small id="objetoHelp" className="form-text text-muted">Nombre descriptivo del objeto</small> */}
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="objeto">SKU</label>
-                            <input type="text" value={this.props.regalos.SKU && this.props.regalos.SKU} className="form-control" disabled={this.state.inputDisabled} onChange={this.handleChangeInput} id="SKU" aria-describedby="" placeholder="Ingrese código SKU" />
-                            {/* <small id="objetoHelp" className="form-text text-muted">Nombre descriptivo del objeto</small> */}
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="tienda">Tienda sugerida</label>
-                            <input type="text" value={this.props.regalos.TiendaSugerida && this.props.regalos.TiendaSugerida} className="form-control" disabled={this.state.inputDisabled} onChange={this.handleChangeInput} id="TiendaSugerida" aria-describedby="" placeholder="Ingrese una tienda de sugerencia" />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="link">Link de sugerencia tienda online</label>
-                            <input type="text" value={this.props.regalos.Link && this.props.regalos.Link} className="form-control" disabled={this.state.inputDisabled} onChange={this.handleChangeInput} id="Link" aria-describedby="" placeholder="Ingrese una link de sugerencia" />
-                        </div>
-                    </div>
-                </div>
-            </Fragment>
-        )
-    }
-    handleChangeSelectTipoRegalo() {
-
-        let value = null;
-
-        value = this.props.regalos.tipoRegalo;
-
-        if (value == 0) return;
-
-        if (value == this.state.valueRegaloDinero) {
-            return this.mostrarFormDinero()
-        }
-
-        if (value == this.state.valueRegaloObjeto) {
-            return this.mostrarFormObjeto()
-        }
-
-    }
-
-
     render() {
 
         const { match: { params: { id } } } = this.props
 
-        console.log(this.props);
+        // console.log(this.props);
 
         if (this.props.regalos.error) {
             sweetalert(`${this.props.regalos.error}.`, 'error', 'sweet')
@@ -545,8 +516,7 @@ class Guardar extends Component {
                             {this.state.selectTipoRegalo ? this.handleChangeSelectTipoRegalo() : ''}
                             <div className="form-group row">
                                 <div className="col-sm-4 p-3">
-                                    {this.buttonsFooter()}
-                                    <Link to={`/regalos/show/${id}`}><button type="button" className="btn btn-sm btn-dark">Volver</button></Link>
+                                    {this.buttonsFooter(id)}
                                 </div>
                             </div>
                         </form>
@@ -569,8 +539,8 @@ const mapStateToProps = ({ regalos, eventos }) => {
 }
 
 const mapDispatchToProps = {
-    traerRegalosEventosID,
-    traerEventos,
+    handleInputTipoRegalo,
+    handleInputTipoRegaloDinero,
     handleInputBanco,
     handleInputCuentaCuil,
     handleInputCbu,
@@ -579,9 +549,9 @@ const mapDispatchToProps = {
     handleInputSKU,
     handleInputTiendaSugerida,
     handleInputLink,
-    handleInputTipoRegalo,
-    handleInputTipoRegaloDinero,
     guardarRegalo,
+    traerRegalosEventosID,
+    traerEventos,
     limpiarForm
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Guardar)
