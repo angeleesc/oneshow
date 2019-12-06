@@ -7,12 +7,12 @@ import { connect } from 'react-redux';
 import Mensaje from "../atoms/Mensaje";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-    getEventos, 
-    getCompanies,
-    setCompany,
-    setEvent,
-    getEventsFromCompany 
-  } from './../../redux/actions/multimedia';
+  getEventos, 
+  getCompanies,
+  setCompany,
+  setEvent,
+  getEventsFromCompany 
+} from './../../redux/actions/multimedia';
 import { mostrarElementoDeCarga, ocultarElementoDeCarga } from "./../../redux/actions/loader";
 
 class SocialWall extends Component {
@@ -23,31 +23,31 @@ class SocialWall extends Component {
         this.mostrarFiltros = true;
 
         this.state = {
-            eventoId: "",
-            mostrarIframe: false,
-            api_token: localStorage.getItem("api_token"),
-            usuario: JSON.parse(localStorage.getItem("usuario")),
-            hashtagsTwitter: [],
-            hashtagsInstagram: [],
-            publicaciones: [],
-            mostrarBotonPantallaCompleta: false,
-            estilosIframe: {
-                width: "inherit",
-                border: "none",
-                visibility: "hidden"
-            },
-            isLoading: false,
-            intervaloDeActualizacion: null,
-            intervaloDeScroll: null,
-            avisoSinContenido: false,
-            showNoHashtags: false,
-            urlParaIframe: window.location.protocol + "//" + window.location.host + "/Lib",
-            urlModerarTextoOfensivo: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessText/Screen",
-            urlModerarImagenOfensiva: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate",
-            tema: null,
-            presentacion: null,
-            intervaloActualizacion: null,
-            moderarContenido : null
+          eventoId: "",
+          mostrarIframe: false,
+          api_token: localStorage.getItem("api_token"),
+          usuario: JSON.parse(localStorage.getItem("usuario")),
+          hashtagsTwitter: [],
+          hashtagsInstagram: [],
+          publicaciones: [],
+          mostrarBotonPantallaCompleta: false,
+          estilosIframe: {
+            width: "inherit",
+            border: "none",
+            visibility: "hidden"
+          },
+          isLoading: false,
+          intervaloDeActualizacion: null,
+          intervaloDeScroll: null,
+          avisoSinContenido: false,
+          showNoHashtags: false,
+          urlParaIframe: window.location.protocol + "//" + window.location.host + "/Lib",
+          urlModerarTextoOfensivo: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessText/Screen",
+          urlModerarImagenOfensiva: "https://oneshowmoderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate",
+          tema: null,
+          presentacion: null,
+          intervaloActualizacion: null,
+          moderarContenido : true
         };
 
         this.handleCompanyChange = this.handleCompanyChange.bind(this);
@@ -189,15 +189,11 @@ class SocialWall extends Component {
               });
             }
 
-            // this.props.ocultarElementoDeCarga();
-
-            this.setState({
+            return this.setState({
               hashtagsTwitter,
               hashtagsInstagram,
               mostrarIframe: true,
             }, () => this.activarIframe());
-
-            return
           }
 
           swal(
@@ -238,8 +234,9 @@ class SocialWall extends Component {
      */
     activarIframe() {
       if (this.existenHashtagsParaEvento()) {
-        // this.props.mostrarElementoDeCarga();
-        document.getElementById("iFrameSocialWall").setAttribute("src", this.obtenerURLConParametros());
+        const url = this.obtenerURLConParametros();
+
+        document.getElementById("iFrameSocialWall").setAttribute("src", url);
       }
     }
 
@@ -261,8 +258,8 @@ class SocialWall extends Component {
             )
         ) +
         "&eventoId=" + this.state.eventoId + 
-        (this.state.tema) ? "&tema=" + this.state.tema : "" +
-        (this.state.presentacion) ? "&presentacion=" + this.state.presentacion : "";
+        (this.state.tema ? "&tema=" + this.state.tema : "") +
+        (this.state.presentacion ? "&presentacion=" + this.state.presentacion : "");
     }
 
     /**
@@ -373,8 +370,8 @@ class SocialWall extends Component {
         }
 
         if (this.state.moderarContenido) {
-            this.setState({publicaciones}, () => this.moderarContenidoDeLasPublicaciones());
-            return
+          this.setState({publicaciones}, () => this.moderarContenidoDeLasPublicaciones());
+          return
         }
 
         this.props.ocultarElementoDeCarga();
@@ -409,21 +406,21 @@ class SocialWall extends Component {
 
                 if (!this.state.publicaciones[indice]) {
                     clearInterval(intervaloDePeticiones);
-                    this.props.ocultarElementoDeCarga();
+                    // this.props.ocultarElementoDeCarga();
 
                     this.retirarPublicacionesOfensivas();
 
                     this.mostrarBotonPantallaCompleta();
-                    this.mostrarIframeSocialWall();
+                    // this.mostrarIframeSocialWall();
 
                     break;
                 }
 
-                /* if (this.state.publicaciones[indice].imagen) {
+                if (this.state.publicaciones[indice].imagen) {
                     this.moderarImagenOfensiva(this.state.publicaciones[indice]);
                 }
                 
-                this.moderarTextoOfensivo(this.state.publicaciones[indice]); */
+                this.moderarTextoOfensivo(this.state.publicaciones[indice]);
             }
 
             ultimoIndice += 5;

@@ -380,7 +380,7 @@ class BibliotecaController extends Controller
         } else if ($categoria->Nombre === 'Video') {
           
           Validator::make(['archivo' => $request->archivo], [
-            'archivo' => 'file|mimetypes:video/x-msvideo,video/mpeg,video/3gpp|mimes:mp4',
+            'archivo' => 'file|mimetypes:video/mp4,video/x-msvideo,video/mpeg,video/3gpp|mimes:mp4',
           ])->validate();
 
           $getID3 = new \getID3();
