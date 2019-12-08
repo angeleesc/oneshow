@@ -58,8 +58,6 @@ class Show extends Component {
                 Evento_id: this.state.idEvento,
                 idPlantilla
             }
-            console.log('PLANTILLA',plantilla);
-            
 
             this.props.agregarPlantillaEvento(plantilla);
 
@@ -82,7 +80,7 @@ class Show extends Component {
                 }
             })
             const result = await template.text();
-            
+
             $contenedorPlantillas.innerHTML = result
 
             const nombreEvento = document.querySelector('#nombre');
@@ -103,12 +101,12 @@ class Show extends Component {
             if (anfrition1 && this.state.evento.Anfitrion1) {
                 anfrition1.innerHTML = this.state.evento.Anfitrion1
             }
-            if (fechaMes && fechaMes && fechaDia &&  this.state.evento.Fecha) {
+            if (fechaMes && fechaMes && fechaDia && this.state.evento.Fecha) {
                 fechaMes.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[0]
                 fechaDia.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[1]
                 fechaAnio.innerHTML = this.state.evento.Fecha.split(" ")[0].split("/")[2]
             }
-            if (hora &&  this.state.evento.Fecha) {
+            if (hora && this.state.evento.Fecha) {
                 hora.innerHTML = `${this.state.evento.Fecha.split(" ")[1]} ${this.state.evento.Fecha.split(" ")[2]}`
             }
             if (dir1 && this.state.evento.Dir1) {
@@ -121,13 +119,13 @@ class Show extends Component {
             if (vestimenta && this.state.evento.Vestimenta) {
                 vestimenta.innerHTML = this.state.evento.Vestimenta
             }
-            if(fotoAnfitrion1 && this.state.evento.FotoAnfitrion1){
+            if (fotoAnfitrion1 && this.state.evento.FotoAnfitrion1) {
                 fotoAnfitrion1.src = this.state.evento.FotoAnfitrion1
             }
-            if(fotoAnfitrion2 && this.state.evento.fotoAnfitrion2){
+            if (fotoAnfitrion2 && this.state.evento.fotoAnfitrion2) {
                 fotoAnfitrion2.src = this.state.evento.FotoAnfitrion2
-            } 
-            if(fotoAnfitrion3 && this.state.evento.FotoAnfitrion3){
+            }
+            if (fotoAnfitrion3 && this.state.evento.FotoAnfitrion3) {
                 fotoAnfitrion3.src = this.state.evento.FotoAnfitrion3
             }
 
@@ -273,14 +271,10 @@ class Show extends Component {
                                         <div className="alert alert-primary mb-4" role="alert">
                                             <i className="fas fa-info-circle"></i>&nbsp;
                                                         La imagén de la invitación a subir debe tener una resolución de
-                                            <strong>1200x800</strong>
-                                            , en formato
-                                            <strong>.jpg</strong>
-                                            o
-                                            <strong>.png</strong>
-                                            y un peso aproximado entre
-                                            <strong>10KB</strong>
-                                            y <strong>10MB</strong>.
+                                            <strong>1200x800</strong>, en formato
+                                            <strong>.jpg</strong>o
+                                            <strong>.png</strong>y un peso aproximado entre
+                                            <strong>10KB</strong>y <strong>10MB</strong>.
                                             <br></br><i className="fas fa-info-circle"></i>&nbsp;&nbsp;El Pdf  debe estar en formato <strong>.pdf</strong> y un peso aproximado entre <strong>10KB</strong> y <strong>10MB</strong>.
 
                                         </div>
@@ -315,7 +309,7 @@ class Show extends Component {
                                                     className="form-control-file"
                                                     id="archivopdf"
                                                     name="archivopdf"
-                                                    
+
                                                 />
                                             </div>
                                         </div>

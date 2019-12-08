@@ -14,3 +14,4 @@ export const TIPO_REGALO = 'TIPO_REGALO';
 export const CARGANDO = 'REGALOS_CARGANDO';
 export const ERROR = 'REGALOS_ERROR';
 export const LIMPIAR_FORM = 'LIMPIAR_FORM';
+export const CARGANDO_GUARDAR = 'CARGANDO_GUARDAR';

@@ -7,7 +7,7 @@ use App\Models\MongoDB\Empresa;
 use App\Models\MongoDB\Estado;
 use App\Models\MongoDB\Evento;
 use App\Models\MongoDB\Invitacion;
-use App\Models\MongoDB\Plantilla;
+use App\Traits\PermisosTraits;
 use Auth;
 use Carbon\Carbon;
 use DataTables;
@@ -212,33 +212,32 @@ class InvitacionController extends Controller
     public function invitationTemplateAdd(Request $request)
     {
         //verifico que la respuesta venga por ajax
-        // return response()->json(['d' => $request->all()['idPlantilla'] ]); 
+        // return response()->json(['d' => $request->all()['idPlantilla'] ]);
         if ($request->post()) {
-            $input = $request->all();   
-            
+            $input = $request->all();
+
             $all = Invitacion::all();
-            if(count($all) >= 1){
+            if (count($all) >= 1) {
                 return json_encode(['code' => 'Solo puede existir una invitación para el evento']);
             }
-           
-            if(!isset($input['idPlantilla']) OR !isset($input['Evento_id'])) {
+
+            if (!isset($input['idPlantilla']) or !isset($input['Evento_id'])) {
                 $plantilla = false;
                 $evento = false;
-            }else{
+            } else {
                 $plantilla = (string) $input['idPlantilla'];
                 $evento = (string) $input['Evento_id'];
             }
-            
-           
-            if (!$plantilla OR !$evento) {
+
+            if (!$plantilla or !$evento) {
                 return response()->json(['code' => 400]);
             }
             $data = [
                 'id-evento' => new ObjectID($evento),
-                'id-plantilla' =>  $plantilla,
+                'id-plantilla' => $plantilla,
                 'activo' => true,
                 'borrado' => false,
-                'fecha' => Carbon::now()
+                'fecha' => Carbon::now(),
 
             ];
 
@@ -253,7 +252,7 @@ class InvitacionController extends Controller
                 return response()->json(['code' => 200]);
             } catch (\Exception $e) {
                 return response()->json(['code' => $e->getMessage()]);
-            }  
+            }
         }
     }
     //metodo para borrar
@@ -289,45 +288,27 @@ class InvitacionController extends Controller
         //guardo el rol del usuario
         $rol = $input['rol'];
         $idUsuario = $input['id'];
-        //acorde al rol muestro los eventos
-        if ($rol == 'ADMINISTRADOR') {
-            $eve = Evento::borrado(false);
-            //si contiene la empresa se la agrego al query de busqueda
-            if ($empresa) {
-                $eve->where(function ($q) use ($empresa) {
-                    $q->where('Empresa_id', new ObjectId($empresa));
-                });
+
+        try {
+            //acorde al rol muestro los eventos
+            $ev = PermisosTraits::permisoEvento($rol, $idUsuario, $empresa);
+
+            $eventos = [];
+            if ($ev) {
+                foreach ($ev as $e) {
+                    $invitaciones = Invitacion::borrado(false)->activo(true)->where(
+                        'Evento_id', new ObjectId($e->_id))->get();
+                    //armo la data que se muestra en la tabla de inicio de la pagina de eventos
+                    $eventos[] = [
+                        'ArchivosInvitacion' => count($invitaciones),
+                    ];
+
+                }
+                return json_encode(['code' => 200, 'data' => $eventos]);
             }
-        } else if ($rol == 'EMPRESA') {
-            $eve = Evento::borrado(false)->where('Empresa_id', new ObjectId($idUsuario));
-
-        } else if ($rol == 'EVENTO') {
-            $eve = Evento::borrado(false)->where('_id', $idUsuario);
+        } catch (\Exception $e) {
+            return json_encode(['code' => 500]);
         }
-        $eventos = [];
-        //extraigo el query con o sin los filtros
-        $ev = $eve->get();
-        //verifico que exista data sino lo devulevo vacio
-
-        if ($ev) {
-            foreach ($ev as $e) {
-                $invitaciones = Invitacion::borrado(false)->activo(true)->where(
-                    'Evento_id', new ObjectId($e->_id))->get();
-                //armo la data que se muestra en la tabla de inicio de la pagina de eventos
-                $eventos[] = [
-                    '_id' => $e->_id,
-                    'Empresa' => Empresa::find($e->Empresa_id)->Nombre,
-                    'Evento' => strtoupper($e->Nombre),
-                    'IDEvento' => $e->IDEvento,
-                    'Fecha' => $e->Fecha . ' ' . $e->Hora,
-                    'App' => $e->App,
-                    'Archivos' => count($invitaciones)                  
-                ];
-
-            }
-            return json_encode(['code' => 200, 'data' => $eventos]);
-        }
-        return json_encode(['code' => 500]);
 
     }
 
@@ -341,7 +322,7 @@ class InvitacionController extends Controller
             'Evento_id', new ObjectID($idevento))->get();
         $archivos = [];
         //verifico que exista data sino lo devulevo vacio
-       
+
         if ($invitaciones) {
 
             foreach ($invitaciones as $f) {
@@ -355,7 +336,7 @@ class InvitacionController extends Controller
                     'PlantillaId' => $f->Plantilla_id,
                 ];
             }
-            
+
             return json_encode(['code' => 200, 'data' => $archivos]);
         }
         return json_encode(['code' => 500]);
@@ -388,10 +369,10 @@ class InvitacionController extends Controller
 
         $input = $request->all();
         $all = Invitacion::all();
-        if(count($all) >= 1){
+        if (count($all) >= 1) {
             return json_encode(['code' => 'Solo puede existir una invitación para el evento']);
         }
-       
+
         $evento = (string) $input['id-evento'];
         $empresa = (string) Evento::find($evento)->Empresa_id;
         $pathSave = 'Invitacion/' . $empresa . '/' . $evento . '/';

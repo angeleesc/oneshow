@@ -48,7 +48,8 @@ class RegaloController extends Controller
 
             return json_encode(['code' => 200, 'data' => $eventos]);
         } catch (\Exception $e) {
-            return json_encode(['code' => $e->getMessage()]);
+            // $e->getMessage()
+            return json_encode(['code' => 500]);
         }
 
     }
@@ -120,6 +121,8 @@ class RegaloController extends Controller
                     $regaloEdit->Borrado = false;
                     $regaloEdit->Activo = true;
                     $regaloEdit->save();
+                    return json_encode(['regalo' => $regaloEdit]);
+                    
                 } else {
                     $newRegalo->Evento_id = new ObjectId($findEvento->_id);
                     $newRegalo->TipoRegalo = $data['TipoRegalo'];
@@ -129,7 +132,7 @@ class RegaloController extends Controller
                     $newRegalo->Activo = true;
                     $newRegalo->save();
                 }
-                return json_encode(['code' => 200]);
+                return json_encode(['regalo' => $newRegalo]);
             } elseif ($data['TipoRegalo'] == "DINERO" and $data['OpcionDinero'] == "TRANSFERENCIA") {
 
                 $validarBanco = v::stringType()->notEmpty()->length(1, 35)->validate(($data['Banco']));
@@ -150,6 +153,7 @@ class RegaloController extends Controller
                     $regaloEdit->Borrado = false;
                     $regaloEdit->Activo = true;
                     $regaloEdit->save();
+                    return json_encode(['regalo' => $regaloEdit]);
                 } else {
                     $newRegalo->Evento_id = new ObjectId($findEvento->_id);
                     $newRegalo->TipoRegalo = $data['TipoRegalo'];
@@ -161,9 +165,8 @@ class RegaloController extends Controller
                     $newRegalo->Borrado = false;
                     $newRegalo->Activo = true;
                     $newRegalo->save();
+                    return json_encode(['regalo' => $newRegalo]);
                 }
-
-                return json_encode(['code' => 200]);
             }
 
         } catch (\Exception $e) {
@@ -212,7 +215,7 @@ class RegaloController extends Controller
             $newRegalo->Borrado = false;
             $newRegalo->Activo = true;
             $newRegalo->save();
-            return json_encode(['code' => 200]);
+            return json_encode(['regalo' => $newRegalo]);
         } catch (\Exception $e) {
             // $e->getMessage()
             return json_encode(['code' => 500]);

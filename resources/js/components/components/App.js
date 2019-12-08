@@ -262,9 +262,9 @@ function App() {
                             path="/regalos/show/regalo/:id/:regalo"
                             component={RegalosGuardar}
                         />
-                        <Route
+                         <Route
                             exact
-                            path="/regalos/edit/regalo/:id/:editRegalo"
+                            path="/regalos/edit/regalo/:id/:regalo"
                             component={RegalosGuardar}
                         />
                         <Route exact path="/grupos" component={Grupos} />
