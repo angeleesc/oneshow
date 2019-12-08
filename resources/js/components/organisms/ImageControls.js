@@ -125,8 +125,7 @@ class ImageControls extends React.Component {
     });
 
     // First command execution
-    let now = (new Date()).getTime() + this.props.timeOffset;
-    const firstCommand = `IMG,1,${this.step},${selected[this.step].NombreCompleto},${this.state.vibrate ? 1 : 0},${now}`;
+    const firstCommand = `IMG,1,${this.step},${selected[this.step].NombreCompleto},${this.state.vibrate ? 1 : 0}`;
     this.props.submitCommand(firstCommand);
 
     if (this.step === selected.length - 1) {
@@ -147,9 +146,8 @@ class ImageControls extends React.Component {
       let image = current.files[this.step].NombreCompleto;
       let moment = 1;
       let vibrate = current.vibrate ? 1 : 0;
-      let now = (new Date()).getTime() + this.props.timeOffset;
 
-      let command = `IMG,${moment},${id},${image},${vibrate},${now}`;
+      let command = `IMG,${moment},${id},${image},${vibrate}`;
 
       this.props.submitCommand(command);
 

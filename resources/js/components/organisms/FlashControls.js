@@ -93,8 +93,7 @@ class FlashControls extends React.Component {
     }
 
     // First command execution
-    let now = (new Date()).getTime() + this.props.timeOffset;
-    const firstCommand = `FLH,1,${this.step},${this.step},${this.state.vibrate ? 1 : 0}, ${now}`;
+    const firstCommand = `FLH,1,${this.step},${this.step},${this.state.vibrate ? 1 : 0}`;
     this.props.submitCommand(firstCommand);
 
     if (this.step === 1) {
@@ -120,9 +119,8 @@ class FlashControls extends React.Component {
       let flash = this.step;
       let vibrate = current.vibrate ? 1 : 0;
       let moment = 1;
-      let now = (new Date()).getTime() + this.props.timeOffset;
 
-      let command = `FLH,${moment},${id},${flash},${vibrate}, ${now}`;
+      let command = `FLH,${moment},${id},${flash},${vibrate}`;
 
       this.props.submitCommand(command);
 

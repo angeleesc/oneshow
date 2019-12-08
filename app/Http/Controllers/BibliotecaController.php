@@ -380,7 +380,7 @@ class BibliotecaController extends Controller
         } else if ($categoria->Nombre === 'Video') {
           
           Validator::make(['archivo' => $request->archivo], [
-            'archivo' => 'file|mimetypes:video/x-msvideo,video/mpeg,video/3gpp|mimes:mp4',
+            'archivo' => 'file|mimetypes:video/mp4,video/x-msvideo,video/mpeg,video/3gpp|mimes:mp4',
           ])->validate();
 
           $getID3 = new \getID3();
@@ -419,10 +419,20 @@ class BibliotecaController extends Controller
 
         //verifico si fue exitoso el insert en la bd
         if($registro->save()) {
-            
+            /**
+             * Si la aplicación se encuentra en un entorno de desarrollo, simplemente
+             * copia el archivo subido a la carpeta del proyecto del seeder
+             */
             if (env('APP_ENV') === 'local') {
-              MoveFileToTorrentClient::dispatch($registro);
+              $source = storage_path('app/public/' . $registro->Path);
+              $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->id . '.' . $registro->Extension;
+              $success = copy($source, $destination);
+            
             } else {
+              /**
+               * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
+               * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
+               */
               $name = $registro->id .'.'. $fileData['extension'];
               $request->file('archivo')->storeAs(env('ONESHOW_FTP_DEST_FOLDER'), $name, 'ftp');
             }
