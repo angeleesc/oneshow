@@ -100,8 +100,7 @@ class VideoControls extends React.Component {
     });
 
     // First command execution
-    let now = (new Date()).getTime() + this.props.timeOffset;
-    const firstCommand = `VID,1,1,${selectedFile.NombreCompleto},${this.state.vibrate ? 1 : 0},${now}`;
+    const firstCommand = `VID,1,1,${selectedFile.NombreCompleto},${this.state.vibrate ? 1 : 0}`;
     this.props.submitCommand(firstCommand);
 
     // Executing a command every time a
@@ -118,9 +117,8 @@ class VideoControls extends React.Component {
       let video = current.file.NombreCompleto;
       let vibrate = current.vibrate ? 1 : 0;
       let moment = 1;
-      let now = (new Date()).getTime() + this.props.timeOffset;
 
-      let command = `VID,${moment},${id},${video},${vibrate},${now}`;
+      let command = `VID,${moment},${id},${video},${vibrate}`;
 
       this.props.submitCommand(command);
       
