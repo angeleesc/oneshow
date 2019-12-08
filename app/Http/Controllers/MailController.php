@@ -14,8 +14,8 @@ class MailController extends Controller
 {
     public function sendMailInvitados(Request $request){
         $input = $request->all();
-        //$link = "http://localhost:8000/mail/".$input['link'];
-        $link = "https://consola.oneshow.com.ar/mail/".$input['link'];
+        $link = "http://192.168.1.2:8001/mail/".$input['link'];
+        // $link = "https://consola.oneshow.com.ar/mail/".$input['link'];
         $eventoInvitado = EventoInvitado::where('LinkDatos',$input['link'])->get();
         if($eventoInvitado){
             $eventoInvitado = $eventoInvitado[0];

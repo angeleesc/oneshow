@@ -130,6 +130,7 @@ Route::group(['middleware'=>'api_token','prefix' => 'invitaciones'], function() 
     Route::post('/files', 'InvitacionController@getFiles');
     Route::post('/file/delete', 'InvitacionController@deleteFile');
     Route::post('/file/add', 'InvitacionController@addFile');
+    Route::post('/plantilla', 'InvitacionController@invitationTemplateAdd');
 });
 
 /**
@@ -223,7 +224,6 @@ Route::group(['middleware'=>'api_token','prefix' => 'planos'], function() {
     Route::get('/{id}', 'PlanoController@getPlano');
 });
 
-
 /**
  * Rutas API orientadas al controlador de Menus(menugrastronomico) 
  * (queda por restructurar)
@@ -254,7 +254,28 @@ Route::group(['middleware'=>'api_token','prefix' => 'menu'], function() {
         Route::post('/actualizar', 'MenugPlatosController@actualizar');
         Route::post('/eliminar/{id}', 'MenugPlatosController@eliminar');        
     });
-
-
     
+});
+
+/**
+ * Rutas API orientadas al controlador de Plantillas de invitación 
+ */
+//'middleware'=>'api_token',
+Route::group(['prefix' => 'plantillas'], function() {
+    //rutas de empresas
+    Route::get('/', 'PlantillaController@plantillasTraerTodas');
+});
+
+
+/**
+ * Rutas API orientadas al controlador Regalos
+ */
+// 'middleware'=>'api_token','middleware'=>'api_token'
+Route::group(['prefix' => 'regalos'], function() {
+   
+    Route::post('/get-info', 'RegaloController@getInfo');
+    Route::get('/get-regalo/{evento}', 'RegaloController@getRegalosEventoId');
+    Route::post('/add/{idEvento}/{idRegalo}', 'RegaloController@addAndEdit');
+    Route::post('/addObjeto/{idEvento}/{idRegalo}', 'RegaloController@addObjeto');
+    Route::delete('/delete/{id}', 'RegaloController@deleteRegalo');
 });

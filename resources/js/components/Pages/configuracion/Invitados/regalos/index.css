@@ -1,0 +1,49 @@
+#contenedor_imagen_objeto{
+    overflow: hidden;
+    position: relative;
+    height: 230px;
+}
+#contenedor_imagen_objeto:hover{
+    cursor: pointer;
+}
+#contenedor_imagen_objeto input{
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    outline: none;
+    height: 415px;
+    padding-top: 425px;
+    top: 0px;    
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+
+     #contenedor_imagen_objeto{
+        height: 400px;
+    }
+
+    #contenedor_imagen_objeto #fotoTagImg {
+        width: 100%;
+        height: 100%;
+    }
+}
+@media (min-width: 1280px) {
+
+  #contenedor_imagen_objeto input{
+        padding-top: 425px;
+
+    }
+}
+@media (min-width: 768px) {
+
+    #contenedor_imagen_objeto{
+       height: 400px;
+   }
+
+   #contenedor_imagen_objeto #fotoTagImg {
+       width: 100%;
+       height: 100%;
+   } 
+}
+

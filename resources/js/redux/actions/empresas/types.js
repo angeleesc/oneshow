@@ -1,0 +1,4 @@
+
+export const TRAER_EMPRESAS = 'TRAER_EMPRESAS';
+export const CARGANDO = 'EMPRESAS_CARGANDO';
+export const ERROR = 'EMPRESAS_ERROR';
