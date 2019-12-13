@@ -4,11 +4,18 @@ import Menu from "../../../components/Menu";
 import Header from "../../../components/Header";
 import { Link } from "react-router-dom";
 import $ from "jquery"
-
+import { connect } from 'react-redux';
 import "../../css/configuracion/Biblioteca.css";
 import "./css/Eventos.css";
+import * as empresasActions from '../../../../redux/actions/empresas'
+import * as eventosActions from '../../../../redux/actions/eventos'
+import * as etapasActions from '../../../../redux/actions/etapas'
+// import * as menuEtapasActions from '../../../../../redux/actions/menuEtapas'
 
-export default class Show extends React.Component {
+const { traerEmpresas } = empresasActions;
+const { traerEventos } = eventosActions
+const { traerEtapas, etapasMenu } = etapasActions
+class Show extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -42,9 +49,10 @@ export default class Show extends React.Component {
             fotoAnfitrion1: "",
             fotoAnfitrion2: "",
             fotoAnfitrion3: "",
-            url: 'http://192.168.1.2:8001',
+            url: 'http://localhost:8001',
             api_token: localStorage.getItem("api_token"),
-            isLoading: true
+            isLoading: true,
+            menuEtapa: false
         };
 
         this.mostrarItemMenu.bind(this)
@@ -65,7 +73,8 @@ export default class Show extends React.Component {
 
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        const { match: { params: { id: idEvento } } } = this.props
         axios
             .get("api/eventos/menus", {
                 headers: {
@@ -81,7 +90,6 @@ export default class Show extends React.Component {
                         Authorization: this.state.api_token
                     }
                 }).then(res => {
-                    console.log(res)
                     this.setState({
                         infoEvento: res.data.evento,
                         nombre: res.data.evento.evento.Nombre,
@@ -111,10 +119,41 @@ export default class Show extends React.Component {
                         menuAppSeleccionados: res.data.evento.evento.MenuApp,
                         isLoading: false
                     })
-                    console.log(this.state)
                     this.infoForm()
                 })
             });
+
+        if (!this.props.empresas.empresas.length) {
+            this.props.traerEmpresas()
+        }
+        if (!this.props.eventos.eventos.length) {
+            await this.props.traerEventos()
+
+        }
+        const evento = this.props.eventos.eventos.filter(e => (e._id == idEvento))
+        //seleccionamos las key de los eventos dentro del  del reducer
+        const keyEvento = this.props.eventos.eventos.map((e, key) => {
+            if (e._id == idEvento) {
+                return key
+            }
+        })
+        let key = keyEvento.filter(k => k != undefined)//seleccionamos la key del evento activo
+
+        if (!('etapa_key' in evento[0])) {//verifico si el evento ya tiene la etapa cargada
+            await this.props.traerEtapas(idEvento, key[0])
+        }
+
+
+        const eventoKeyetapa = this.props.eventos.eventos.filter(e => (e._id == idEvento))
+        this.props.etapas.etapas[eventoKeyetapa[0].etapa_key].map((etapa, index) => {
+            if (!('menu' in etapa)) {
+                this.props.etapasMenu(etapa._id, eventoKeyetapa[0].etapa_key, index);
+
+                this.setState({
+                    menuEtapa: true
+                })
+            }
+        })
     }
 
     infoForm() {
@@ -144,9 +183,50 @@ export default class Show extends React.Component {
         $('#div-edit-emp-img-new').hide();
     }
 
+    mostrarMenuEtapa(menu) {
+        return (
+            menu.map(m => (
+                <div className="row">
+                    <div className="col-md-12 p-2">
+                        <strong><i>{m.Titulo}</i></strong>
+                    </div>
+                    <div className="col-md-12 p-3">
+                        {m.Descripcion}
+                    </div>
+                </div>
+            ))
+        )
+    }
+    mostrarEtapa(etapas) {
+        return (
+            etapas.map(e => (
+                <div className="row p-3">
+                    <div className="col-md-4">
+                        <span className="horaEtapa">{e.Fecha.split("-")[0]}/{e.Fecha.split("-")[1]} - {e.Horario}</span>
+                    </div>
+                    <div className="col-md-7 text-left">
+                        <h4 className="m-0"><strong>{e.Nombre}</strong></h4>
+                        {e.menu && this.mostrarMenuEtapa(e.menu)}
+                    </div>
+                </div>
+            ))
+        )
+    }
+    menuGastronomico() {
+        const { match: { params: { id: idEvento } } } = this.props
+        const evento = this.props.eventos.eventos.filter(e => (e._id == idEvento))
+        //seleccionamos las key de los eventos dentro del  del reducer
 
+        if (this.state.menuEtapa) {
+            if (('etapa_key' in evento[0])) {//verifico si el evento ya tiene la etapa cargada
+        
+                return this.mostrarEtapa(this.props.etapas.etapas[evento[0].etapa_key])
+            }
+        }
+
+    }
     render() {
-        // console.log(this.state);
+        console.log('props', this.props);
 
         if (this.state.isLoading) {
             return (
@@ -237,6 +317,9 @@ export default class Show extends React.Component {
                                 <li className="nav-item">
                                     <a className="nav-link" id="pills-fotografia-tab" data-toggle="pill" href="#pills-fotografia" role="tab" aria-controls="pills-fotografia" aria-selected="false">Fotografias</a>
                                 </li>
+                                <li className="nav-item">
+                                    <a className="nav-link" id="pills-menu-tab" data-toggle="pill" href="#pills-menu" role="tab" aria-controls="pills-menu" aria-selected="false">Menú gastronómico</a>
+                                </li>
                             </ul>
 
                             <hr className="line-gray" />
@@ -256,28 +339,28 @@ export default class Show extends React.Component {
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm">Nombre</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="anfitrion1" name="anfitrion1" placeholder="Ingrese nombre de anfitrión" value={this.state.anfitrion1} />
+                                                <input type="text" className="form-control form-control-sm" id="anfitrion1" name="anfitrion1" placeholder="Ingrese nombre de anfitrión" value={this.state.anfitrion1} disabled />
                                             </div>
 
                                         </div>
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm">Apellido</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="apellido1" name="apellido1" placeholder="Ingrese apellido de anfitrión" value={this.state.apellido1} onChange={this.handleChange} />
+                                                <input type="text" className="form-control form-control-sm" id="apellido1" name="apellido1" placeholder="Ingrese apellido de anfitrión" value={this.state.apellido1} onChange={this.handleChange} disabled />
                                             </div>
                                         </div>
 
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm">Nombre 2</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="anfitrion2" name="anfitrion2" placeholder="Ingrese nombre de anfitrión" value={this.state.anfitrion2} onChange={this.handleChange} />
+                                                <input type="text" className="form-control form-control-sm" id="anfitrion2" name="anfitrion2" placeholder="Ingrese nombre de anfitrión" value={this.state.anfitrion2} onChange={this.handleChange} disabled />
                                             </div>
 
                                         </div>
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm">Apellido 2</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="apellido2" name="apellido2" placeholder="Ingrese apellido de anfitrión" value={this.state.apellido2} onChange={this.handleChange} />
+                                                <input type="text" className="form-control form-control-sm" id="apellido2" name="apellido2" placeholder="Ingrese apellido de anfitrión" value={this.state.apellido2} onChange={this.handleChange} disabled />
                                             </div>
 
                                         </div>
@@ -285,7 +368,7 @@ export default class Show extends React.Component {
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm">Vestimenta</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="vestimenta" name="vestimenta" placeholder="Ingrese tipo de vestimenta" value={this.state.vestimenta} onChange={this.handleChange} />
+                                                <input type="text" className="form-control form-control-sm" id="vestimenta" name="vestimenta" placeholder="Ingrese tipo de vestimenta" value={this.state.vestimenta} onChange={this.handleChange} disabled />
                                             </div>
 
                                         </div>
@@ -343,14 +426,14 @@ export default class Show extends React.Component {
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm">Dirección</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="dir1" name="dir1" placeholder="Ingrese la dirección" value={this.state.dir1} onChange={this.handleChange} />
+                                                <input type="text" className="form-control form-control-sm" id="dir1" name="dir1" placeholder="Ingrese la dirección" value={this.state.dir1} onChange={this.handleChange} disabled />
                                             </div>
                                         </div>
 
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm">Dirección 2</label>
                                             <div className="col-sm-4">
-                                                <input type="text" className="form-control form-control-sm" id="dir2" name="dir2" placeholder="Ingrese la dirección" value={this.state.dir2} onChange={this.handleChange} />
+                                                <input type="text" className="form-control form-control-sm" id="dir2" name="dir2" placeholder="Ingrese la dirección" value={this.state.dir2} onChange={this.handleChange} disabled />
                                             </div>
                                         </div>
                                         <div className="form-group row">
@@ -471,10 +554,17 @@ export default class Show extends React.Component {
                                         </div>
 
                                     </div>
+                                    <div className="tab-pane fade" id="pills-menu" role="tabpanel" aria-labelledby="pills-menu-tab">
+                                        <div className="col-sm-12 col-md-6 offset-md-3 p-2 text-center" id="menu_gastronomico">
+                                            <h3><u>MENÚ</u></h3>
+                                            {this.menuGastronomico()}
+                                        </div>
+                                    </div>
+
                                     <div className="tab-pane fade" id="pills-invitados" role="tabpanel" aria-labelledby="pills-invitados-tab">
 
                                         <div className="form-group row">
-                                            <label className="col-sm-2 col-form-label col-form-label-sm">Menús</label>
+                                            <label className="col-sm-2 col-form-label col-form-label-sm">Menú</label>
                                             <div className="col-sm-4">
                                                 {
                                                     this.mostrarItemMenu().map(i => (
@@ -508,3 +598,19 @@ export default class Show extends React.Component {
         }
     }
 }
+
+const mapStateToProps = ({ empresas, eventos, etapas, menuEtapas }) => {
+    return {
+        empresas,
+        eventos,
+        etapas,
+        menuEtapas
+    }
+}
+const mapDispatchToProps = {
+    traerEmpresas,
+    traerEventos,
+    traerEtapas,
+    etapasMenu
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Show)

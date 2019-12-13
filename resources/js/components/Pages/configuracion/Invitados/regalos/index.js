@@ -16,9 +16,10 @@ class Regalos extends Component {
             permisoUsuario: JSON.parse(localStorage.getItem("permisosUsuario")),
             opcion: "Invitacion",
             footer: "Footer",
-            selectE: false
+            selectE: false,
         };
         this.changeEmpresa = createRef();
+        this.changeEvento = createRef();
         this.handleChange = this.handleChange.bind(this);
         this.selectDeEmpresas = this.selectDeEmpresas.bind(this);
         this.mostrarTabla = this.mostrarTabla.bind(this);
@@ -33,25 +34,29 @@ class Regalos extends Component {
         }
         if (!this.props.eventos.eventos.length) {
             await this.props.traerEventos()
-            await this.props.traerEventosRegalos()
-        }else{
-            this.props.eventos.eventos.map(async e =>{
-                if(('Regalos') in e){
-                }else{
-                    await this.props.traerEventosRegalos()
-                }
-            })
         }
+        this.props.eventos.eventos.map(async e => {
+            if (('Regalos') in e) {
+            } else {
+                await this.props.traerEventosRegalos()
+            }
+        })
 
     }
     handleChange() {
         const { eventos } = this.props.eventos
-        const id = this.changeEmpresa.current.value
+        const id = (this.changeEmpresa.current != null) ? this.changeEmpresa.current.value : 0
+        let eventosEmpresa = null
+        const idEvento = this.changeEvento.current.value
 
+        if (idEvento != 0) {
+            eventosEmpresa = eventos.filter(e => e._id == idEvento)
 
-        const eventosEmpresa = eventos.filter(e => e.Empresa_id == id)
-
-        if (id == 0) {
+        } else {
+            eventosEmpresa = eventos.filter(e => e.Empresa_id == id)
+        }
+        
+        if (id == 0 && idEvento == 0) {
             return eventos.map((e, i) => (
                 this.mostrarRegalos(e, i)
             ))
@@ -60,6 +65,28 @@ class Regalos extends Component {
                 this.mostrarRegalos(e, i)
             ))
         }
+
+    }
+
+    handleChangeOption() {
+        const { eventos } = this.props.eventos
+        const id = (this.changeEmpresa.current != null) ? this.changeEmpresa.current.value : 0
+        const eventosEmpresa = eventos.filter(e => e.Empresa_id == id)
+
+        if (id == 0) {
+            return (eventos.map((e, index) => (
+                <option value={e._id} key={index}>
+                    {e.Evento}
+                </option>
+            )))
+        } else {
+            return (eventosEmpresa.map((e, index) => (
+                <option value={e._id} key={index}>
+                    {e.Evento}
+                </option>
+            )))
+        }
+
 
     }
     selectDeEmpresas() {
@@ -123,9 +150,46 @@ class Regalos extends Component {
                         </select>
                         )}
                 </div>
+                <div className="col-3">
+                    <label className="my-1 mr-2 form-control-sm">
+                        <strong>Evento</strong>
+                    </label>
+                    {(this.state.permisoUsuario.nombre === "ADMINISTRADOR" || this.state.permisoUsuario.nombre === "EMPRESA") ? (
+                        <select
+                            name="evento"
+                            id="pro-find-empresa"
+                            className="form-control form-control-sm my-1 mr-sm-2 col-12"
+                            ref={this.changeEvento}
+                            onChange={() => this.setState({ selectE: true })}
+                        >
+
+                            <option value="0">Todas</option>
+                            {this.state.selectE ? this.handleChangeOption() :
+                                this.props.eventos.eventos.map((e, index) => (
+                                    <option value={e._id} key={index}>
+                                        {e.Evento}
+                                    </option>
+                                ))}
+                        </select>
+                    ) : (
+                            <select
+                                name="evento"
+                                id="pro-find-empresa"
+                                className="form-control form-control-sm my-1 mr-sm-2 col-12"
+                                // onChange={this.handleFiltroEvento}
+                                disabled
+                            >
+                                {this.state.selectE ? this.handleChangeOption() :
+                                    this.props.eventos.eventos.map((e, index) => (
+                                        <option value={e._id} key={index}>
+                                            {e.Evento}
+                                        </option>
+                                    ))}
+                            </select>
+                        )}
+                </div>
             </div>
         )
-
     }
     mostrarRegalos(e, index) {
         return (
@@ -230,7 +294,7 @@ class Regalos extends Component {
                                 <div className="col-sm-12 col-md-12">
                                     <h1 className="page-header-heading">
                                         <i className="fas fa-gift sidebar-nav-link-logo" />
-                                        &nbsp; Eventos Regalos
+                                        &nbsp; Regalos
                                         </h1>
                                 </div>
                             </div>

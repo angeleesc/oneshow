@@ -50,11 +50,7 @@ class Guardar extends Component {
         this.imagenObjeto = createRef();
         this.handleChangeInput = this.handleChangeInput.bind(this);
         this.handleChangeSelectTipoRegalo = this.handleChangeSelectTipoRegalo.bind(this);
-        // this.mostrarFormDinero = this.mostrarFormDinero.bind(this);
-        // this.mostrarFormObjeto = this.mostrarFormObjeto.bind(this);
-        // this.handleSelectTipoDinero = this.handleSelectTipoDinero.bind(this);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
-        // this.handlInputProps = this.handlInputProps.bind(this);
         this.buttonsFooter = this.buttonsFooter.bind(this);
 
     }
@@ -105,10 +101,13 @@ class Guardar extends Component {
             if (path == 'edit') {
                 edit = true
             }
-            const regaloEvento = this.props.regalos.regalos[0].filter(r => r._id == regalo)
+
+            const keyRegalo = this.props.eventos.eventos[key[0]].regalos_key//sacamos el key regalo del evento
+
+            const regaloEvento = this.props.regalos.regalos[keyRegalo].filter(r => r._id == regalo)//seleccionamos el regalo activo
 
             !edit && this.setState({
-                inputDisabled: true
+                inputDisabled: true// si es solo para ver colocamos los input en disabled
             })
             if (regaloEvento) {
 
@@ -407,7 +406,7 @@ class Guardar extends Component {
                     CUIL,
                     CBU
                 }
-                this.props.guardarRegalo(nuevo_regalo, id, regalo, keyRegalo, edit, keyItem)
+                this.props.guardarRegalo(nuevo_regalo, id, regalo, keyRegalo, edit, keyItem, this.state.keyEvento)
             } else {
                 const tagRegaloTipoDinero = document.querySelector('#tipo-efectivo');
                 const checked = tagRegaloTipoDinero.checked
@@ -417,7 +416,7 @@ class Guardar extends Component {
                         OpcionDinero: this.props.regalos.OpcionDinero,
 
                     }
-                    this.props.guardarRegalo(nuevo_regalo, id, regalo, keyRegalo, edit, keyItem)
+                    this.props.guardarRegalo(nuevo_regalo, id, regalo, keyRegalo, edit, keyItem, this.state.keyEvento)
                 }
 
             }

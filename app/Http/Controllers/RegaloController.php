@@ -106,7 +106,7 @@ class RegaloController extends Controller
         $findEvento = Evento::find($id);
         $regaloEdit = Regalo::find($idRegalo);
         if (!$findEvento) {
-            return json_encode(['code' => new Exception(500)]);
+            return json_encode(['code' => "Evento no existe"]);
         }
         try {
             if ($data['TipoRegalo'] == "DINERO" and $data['OpcionDinero'] == "EFECTIVO") {
@@ -122,7 +122,7 @@ class RegaloController extends Controller
                     $regaloEdit->Activo = true;
                     $regaloEdit->save();
                     return json_encode(['regalo' => $regaloEdit]);
-                    
+
                 } else {
                     $newRegalo->Evento_id = new ObjectId($findEvento->_id);
                     $newRegalo->TipoRegalo = $data['TipoRegalo'];
@@ -140,7 +140,7 @@ class RegaloController extends Controller
                 $validarCBU = v::numeric()->notEmpty()->length(1, 22)->validate($data['CBU']);
 
                 if (!$validarBanco or !$validarCUIL or !$validarCBU) {
-                    return json_encode(['code' => new Exception(500)]);
+                    return json_encode(['code' => 500]);
                 }
 
                 if ($regaloEdit) {
@@ -174,7 +174,7 @@ class RegaloController extends Controller
             return json_encode(['code' => 500]);
         }
     }
-    public function addObjeto(Request $request, $id)
+    public function addObjeto(Request $request, $id, $idRegalo)
     {
 
         $input = $request->all();
@@ -182,16 +182,47 @@ class RegaloController extends Controller
         $newRegalo = new Regalo();
 
         $findEvento = Evento::find($id);
+        if (!$findEvento) {
+            return json_encode(['code' => "Evento no existe"]);
+        }
         $idEvento = $findEvento->_id;
         $empresa = Evento::find($idEvento)->Empresa_id;
         $image = $input['PathImg'];
         $validarObjeto = v::stringType()->notEmpty()->validate($input['Objeto']);
         $validarTipoRegalo = v::stringType()->notEmpty()->validate($input['TipoRegalo']);
-
+        $regaloEdit = Regalo::find($idRegalo);
         if (!$validarObjeto) {
             return json_encode(['code' => 'Error en los campos']);
         }
         try {
+            if ($regaloEdit) {
+                if ($regaloEdit->PathImg != $image) {
+                    $url = $_SERVER['DOCUMENT_ROOT'] . '/OneShow/Regalos';
+                    $pathImage = $url . '/' . $regaloEdit->Evento_id . '/' . $regaloEdit->NameImg;
+                    \unlink($pathImage);
+                    $pathSave = 'Regalos/' . $idEvento . '/';
+                    $fileDataImg = [
+                        'extension' => $image->getClientOriginalExtension(),
+                        'size' => humanFileSize($image->getSize()),
+                        'mime' => $image->getMimeType(),
+                    ];
+                    $randomName = rand(1, 1000000000);
+                    $nameImg = $randomName . '.' . $fileDataImg['extension'];
+                    Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($image));
+                    $regaloEdit->PathImg = url('/') . '/OneShow/' . $pathSave . $nameImg;
+                    $regaloEdit->NameImg = $nameImg;
+                }
+                $regaloEdit->TipoRegalo = $input['TipoRegalo'];
+                $regaloEdit->Objeto = $input['Objeto'];
+                $regaloEdit->SKU = isset($input['SKU']) ? $input['SKU'] : '';
+                $regaloEdit->TiendaSugerida = isset($input['TiendaSugerida']) ? $input['TiendaSugerida'] : '';
+                $regaloEdit->Link = isset($input['Link']) ? $input['Link'] : '';
+                $regaloEdit->Adquirido = false;
+                $regaloEdit->Borrado = false;
+                $regaloEdit->Activo = true;
+                $regaloEdit->save();
+                return json_encode(['regalo' => $regaloEdit]);
+            }
             $pathSave = 'Regalos/' . $idEvento . '/';
             $fileDataImg = [
                 'extension' => $image->getClientOriginalExtension(),

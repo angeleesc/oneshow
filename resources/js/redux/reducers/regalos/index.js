@@ -50,8 +50,6 @@ export default function (state = INITIAL_STATE, action) {
     case AGREGAR_REGALOS_EVENTO:
       return {
         ...state,
-        // regalos: action.payload,
-        // regaloSeleccionado:[],
         tipoRegalo: "",
         OpcionDinero: "",
         Banco: "",
@@ -120,7 +118,7 @@ export default function (state = INITIAL_STATE, action) {
         Objeto: "",
         TiendaSugerida: "",
         Adquirido: "",
-        Link: ""
+        Link: "",
       }
     default:
       return state;

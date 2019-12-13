@@ -16,7 +16,6 @@ class Show extends Component {
         super(props);
         this.state = {
             permisoUsuario: JSON.parse(localStorage.getItem("permisosUsuario")),
-            opcion: "Invitacion",
             footer: "Footer",
             eventoNombre: "",
             regaloKey: false
@@ -34,11 +33,6 @@ class Show extends Component {
         if (!this.props.eventos.eventos.length) {
             //si no existen los eventos los traemos del reducer
             await this.props.traerEventos()
-
-            const evento = this.props.eventos.eventos.filter(e => (e._id == id))
-            this.setState({
-                eventoNombre: evento[0].Evento,
-            })
         }
 
         const evento = this.props.eventos.eventos.filter(e => (e._id == id))
@@ -136,15 +130,11 @@ class Show extends Component {
         let key = keyEvento.filter(k => k != undefined)
         if (this.state.regaloKey) {
             if (('regalos_key' in eventos[key[0]])) {
-                let evento = this.props.eventos.eventos.filter(e => (e._id == id))
                 //una vez tenga el key de regalo verifico si tiene items o no
-
-
-                if (!regalos[evento[0].regalos_key].length) {
-
+                if (!regalos[eventos[key[0]].regalos_key].length) {
                     return <AlertMessage message={"No existen regalos"} type={"danger"} />
                 }
-                return this.mostrarRegalos(regalos[evento[0].regalos_key], id)
+                return this.mostrarRegalos(regalos[eventos[key[0]].regalos_key], id)
             }
         }
 

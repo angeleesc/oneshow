@@ -40,7 +40,6 @@ export const traerRegalosEventosID = (idEvento, key) => async (dispatch, getStat
 
         const resp = data.data.regalos;
 
-        //busco los regalos del evento que se activo
         const nuevosRegalos = resp.map((regalo) => ({
             ...regalo
         }))
@@ -148,40 +147,57 @@ export const handleInputTipoRegaloDinero = (value) => (dispatch) => {
  * @param {IDBDatabase} editEvento _id del evento
  * @param {IDBDatabase} idRegalo  _id del regalo en caso que se vaya a editar
  * @param {IDBArrayKey} keyRegalo [] => key de los regalos que identifica el array dentro del reducer de regalos
+ * @param {Boolean} edit booleano para saber si se va a editar o guardar
  * @param {IDBArrayKey} keyItem key del item que se esta editando
- */ 
-export const guardarRegalo = (regalo, editEvento, idRegalo, keyRegalo, edit, keyItem) => async (dispatch, getState) => {
+ * @param {IDBArrayKey} keyEvento key del evento dentro del array de eventos
+ */
+export const guardarRegalo = (regalo, editEvento, idRegalo, keyRegalo, edit, keyItem, keyEvento) => async (dispatch, getState) => {
     const apiToken = localStorage.getItem("api_token");
     const { regalos } = getState().regalos;
+    const { eventos } = getState().eventos;
     dispatch({
         type: CARGANDO_GUARDAR
     })
 
     let url = null;
-    
+    keyEvento
     if (regalo.TipoRegalo) {
-        
+
         url = `api/regalos/add/${editEvento}/${idRegalo}`
     } else {
         url = `api/regalos/addObjeto/${editEvento}/${idRegalo}`
     }
 
     try {
+
         const result = await axios.post(url, regalo, {
             headers: { Authorization: apiToken }
         })
         const newRegalo = result.data.regalo
-        
+
         let regalosAct = []
         if (!edit) {
 
             const regalosOld = [...regalos]
 
+
             regalosAct = [
-                ...regalosOld[keyRegalo]
+                ...regalosOld,
             ]
 
-            regalosAct.push(newRegalo)
+            regalosAct[keyRegalo].push(newRegalo)//hacemos push al regalo del evento que corresponde
+
+
+            const nuevosEventos = [...eventos]//aumentamos el contador de regalos
+            nuevosEventos[keyEvento] = {
+                ...nuevosEventos[keyEvento],
+                Regalos: regalos[keyRegalo].length
+            }
+
+            dispatch({
+                type: TRAER_EVENTOS,
+                payload: nuevosEventos
+            })
 
         } else {
 
@@ -190,9 +206,9 @@ export const guardarRegalo = (regalo, editEvento, idRegalo, keyRegalo, edit, key
             regalosOld[keyRegalo].splice(keyItem, 1)
 
             regalosAct = [
-                ...regalosOld[keyRegalo]
+                ...regalosOld,
             ]
-            regalosAct.push(newRegalo)
+            regalosAct[keyRegalo].push(newRegalo)//hacemos push al regalo del evento que corresponde
 
         }
 
@@ -202,8 +218,9 @@ export const guardarRegalo = (regalo, editEvento, idRegalo, keyRegalo, edit, key
 
         dispatch({
             type: TRAER_REGALOS,
-            payload: [regalosAct]
+            payload: regalosAct
         })
+
     } catch (error) {
 
         console.log(error);
