@@ -1,37 +1,86 @@
 import React, { Component } from "react";
+import CreatableSelect from 'react-select/creatable';
 import axios from "axios";
+
+const components = {
+  DropdownIndicator: null,
+};
+
+const createOption = label => ({
+  label, 
+  value: label,
+});
 
 export default class RedesSociales extends Component {
     constructor(props) {
         super(props);
 
-        this.hashtagsTwitter = [];
-        this.hashtagsInstagram = [];
-
         this.state = {
-            isLoading: false,
-            opcion: "Empresas",
-            api_token: localStorage.getItem("api_token"),
-            usuario: JSON.parse(localStorage.getItem("usuario"))
+          twitterValue: '',
+          twitterHashtags: [],
+          instagramValue: '',
+          instagramHashtags: [],
+          isLoading: false,
+          opcion: "Empresas",
+          api_token: localStorage.getItem("api_token"),
+          usuario: JSON.parse(localStorage.getItem("usuario"))
         };
 
+        this.handleHashtagChange = this.handleHashtagChange.bind(this);
+        this.handleHashtagSubmit = this.handleHashtagSubmit.bind(this);
+        this.handleKeyDownTwitter = this.handleKeyDownTwitter.bind(this);
+        this.handleKeyDownInsta = this.handleKeyDownInsta.bind(this);
         this.handleClick = this.handleClick.bind(this);
-        this.enviarHashtagsDelEvento = this.enviarHashtagsDelEvento.bind(this);
-        this.consultarHashtagsDelEvento = this.consultarHashtagsDelEvento.bind(this);
-        this.agregarValorAlCampo = this.agregarValorAlCampo.bind(this);
-        this.obtenerValorGuardado = this.obtenerValorGuardado.bind(this);
-
-        this.estiloIconoBoton = {
-            marginRight: '5px'
-        }
-
-        this.estiloBotonTwitter = {
-            'width': '119px'
-        }
     }
 
     componentDidMount() {
         this.consultarHashtagsDelEvento();
+    }
+
+    handleHashtagSubmit (social, value) {
+      this.setState({ [`${social}Hashtags`]: value });
+    }
+
+    handleHashtagChange (social, value) {
+      this.setState({ [`${social}Value`]: value });
+    }
+
+    handleKeyDownTwitter (event) {
+      const { twitterValue, twitterHashtags } = this.state;
+
+      if (!twitterValue)
+        return;
+
+      switch (event.key) {
+        case 'Enter':
+        case 'Tab':
+          
+          this.setState({
+            twitterValue: '',
+            twitterHashtags: [...twitterHashtags, createOption(twitterValue)],
+          });
+          
+          event.preventDefault();
+      }
+    }
+
+    handleKeyDownInsta (event) {
+      const { instagramValue, instagramHashtags } = this.state;
+
+      if (!instagramValue)
+        return;
+
+      switch (event.key) {
+        case 'Enter':
+        case 'Tab':
+          
+          this.setState({
+            instagramValue: '',
+            instagramHashtags: [...instagramHashtags, createOption(instagramValue)],
+          });
+          
+          event.preventDefault();
+      }
     }
 
     /**
@@ -94,23 +143,13 @@ export default class RedesSociales extends Component {
             }
         })
     }
-
-    /**
-     * Obtener valores de la propiedad requerida
-     * 
-     * @param {string} redSocial
-     * @return {array}
-     */
-    obtenerValorGuardado(redSocial) {
-        return this["hashtags" + redSocial];
-    }
     
     /**
      * Guardar Hashtags asignados
      * 
      * @return {void}
      */
-    handleClick() {
+    handleClick () {
         if (!this.camposEstanVacios()) {
             this.guardarHashtags('Twitter');
             this.guardarHashtags('Instagram');
@@ -121,47 +160,6 @@ export default class RedesSociales extends Component {
         }
 
         this.alertaCamposVacios();
-    }
-
-    /**
-     * Verificar si los campos estan vacios
-     * 
-     * @return {boolean}
-     */
-    camposEstanVacios() {
-        const valorCampoHashtagsTwitter = document.getElementById("campoHashtagsTwitter").value;
-        const valorCampoHashtagsInstagram = document.getElementById("campoHashtagsInstagram").value;
-        
-        return !valorCampoHashtagsTwitter && !valorCampoHashtagsInstagram;
-    }
-
-    /**
-     * Guardar Hashtags recolectados
-     * 
-     * @param {string} redSocial
-     * @return {void}
-     */
-    guardarHashtags(redSocial) {
-        const hashtags = this.obtenerHashtags(redSocial);
-
-        const nombreDePropiedad = "hashtags" + redSocial;
-
-        this[nombreDePropiedad] = hashtags;
-    }
-
-    /**
-     * Obtener los Hashtags del campo
-     * 
-     * @param {string} redSocial
-     * @return {array}
-     */
-    obtenerHashtags(redSocial) {
-        return document.getElementById("campoHashtags" + redSocial)
-            .value
-            .replace(" ", "")
-            .split(",")
-            .map((hashtag) => (hashtag && hashtag[0] != "#") ? "#" + hashtag : hashtag)
-            .filter((hashtag) => hashtag !== "");
     }
 
     /**
@@ -177,61 +175,54 @@ export default class RedesSociales extends Component {
         );
     }
 
-    /**
-     * Mostrar Hashtags registrados para el evento
-     * 
-     * @param {string} redSocial
-     * @return {void}
-     */
-    agregarValorAlCampo(redSocial) {
-        document.getElementById("campoHashtags" + redSocial).value = this.obtenerValorGuardado(redSocial).join();
-    }
-
     render() {
-        return (
-            <div>
-                <div id="sweet" className="container-fluid">
+      const { twitterValue, twitterHashtags, instagramValue, instagramHashtags } = this.state;
 
-                    <div className="alert alert-primary mb-4" role="alert">
-                        <i className="fas fa-info-circle"></i>&nbsp;
-                        Ingrese los #Hashtags separados por coma (,)
-                        <button type="button" className="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-
-                    <div className="form-group row">
-                        <label className="col-sm-2 col-form-label col-form-label-sm">
-                            <i className="fab fa-twitter" style={this.estiloIconoBoton}></i> Twitter
-                        </label>
-                        <div className="col-sm-4">
-                            <input 
-                                type="text"
-                                id="campoHashtagsTwitter"
-                                className="form-control form-control-sm"
-                                placeholder="Ingrese los hashtags para Twitter"
-                                autoComplete="false"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group row">
-                        <label className="col-sm-2 col-form-label col-form-label-sm">
-                            <i className="fab fa-instagram" style={this.estiloIconoBoton}></i> Instagram
-                        </label>
-                        <div className="col-sm-4">
-                            <input 
-                                type="text"
-                                id="campoHashtagsInstagram"
-                                className="form-control form-control-sm"
-                                placeholder="Ingrese los hashtags para Instagram"
-                                autoComplete="false"
-                            />
-                        </div>
-                    </div>
-
-                </div>
+      return (
+        <div>
+          <div id="sweet" className="container-fluid">
+            <div className="alert alert-primary mb-4" role="alert">
+              <i className="fas fa-info-circle"></i>&nbsp;
+              Ingrese los <b>#Hashtags</b> para el evento
             </div>
-        );
+            <div className="form-group">
+              <label>
+                <i className="fab fa-twitter"></i> 
+                {`  `} Twitter
+              </label>
+              <CreatableSelect 
+                components={components}
+                inputValue={twitterValue}
+                menuIsOpen={false}
+                isClearable
+                isMulti
+                onChange={(value) => this.handleHashtagSubmit('twitter', value)}
+                onInputChange={(value) => this.handleHashtagChange('twitter', value)}
+                onKeyDown={this.handleKeyDownTwitter}
+                placeholder="Escribe algo y presiona enter..."
+                value={twitterHashtags}
+              />
+            </div>
+            <div className="form-group">
+              <label>
+                <i className="fab fa-instagram"></i>
+                {`  `} Instagram
+              </label>
+              <CreatableSelect 
+                components={components}
+                inputValue={instagramValue}
+                menuIsOpen={false}
+                isClearable
+                isMulti
+                onChange={(value) => this.handleHashtagSubmit('instagram', value)}
+                onInputChange={(value) => this.handleHashtagChange('instagram', value)}
+                onKeyDown={this.handleKeyDownInsta}
+                placeholder="Escribe algo y presiona enter..."
+                value={instagramHashtags}
+              />
+            </div>
+          </div>
+        </div>
+      );
     }
 }

@@ -9,6 +9,8 @@ import plantillas from './plantillas'
 import empresas from './empresas'
 import eventos from './eventos'
 import regalos from './regalos'
+import social from './social-wall';
+
 export default combineReducers({
   app,
   auth,
@@ -19,5 +21,6 @@ export default combineReducers({
   plantillas,
   empresas,
   eventos,
-  regalos
+  regalos,
+  social
 });

@@ -1172,7 +1172,7 @@ class EventoController extends Controller
      * @param ConsultarHashtags $request
      * @return Response
      */
-    public function consultarHashtagsDelEvento(ConsultarHashtags $request)
+    public function consultarHashtagsDelEvento (ConsultarHashtags $request)
     {
         $evento = Evento::find($request->eventoId);
 
@@ -1190,6 +1190,21 @@ class EventoController extends Controller
         ], 200);
     }
 
+    public function getEventHashTags (Request $request, $eventId) {
+      Validator::make(['eventId' => $eventId], [
+        'eventId' => 'required|exists:Eventos,_id'
+      ])->validate();
+
+      $event = Evento::find($eventId);
+
+      if ($event->HashtagsTwitter || $event->HashtagsInstagram) {
+        return response()->json([
+          'hashtagsTwitter' => $event->HashtagsTwitter,
+          'hashtagsInstagram' => $event->HashtagsInstagram,
+        ]);
+      }
+    }
+
     /**
      * Actualizar Hashtags y redes sociales disponibles
      *
@@ -1198,9 +1213,14 @@ class EventoController extends Controller
      */
     public function actualizarHashtagsDelEvento(ActualizarHashtags $request)
     {
+      return response()->json([
+        'twitter' => $request->hastagsTwitter,
+        'instagram' => $request->hastagsInstagram,
+      ]);
+
         $evento = Evento::find($request->eventoId);
-        $evento->HashtagsTwitter = ($request->HashtagsTwitter) ? json_decode($request->HashtagsTwitter) : [];
-        $evento->HashtagsInstagram = ($request->HashtagsInstagram) ? json_decode($request->HashtagsInstagram) : [];
+        $evento->hashtagsTwitter = ($request->HashtagsTwitter) ? json_decode($request->HashtagsTwitter) : [];
+        $evento->hashtagsInstagram = ($request->HashtagsInstagram) ? json_decode($request->HashtagsInstagram) : [];
         $evento->save();
 
         return response()->json(['guardado' => true], 200);

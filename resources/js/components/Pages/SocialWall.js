@@ -7,12 +7,11 @@ import { connect } from 'react-redux';
 import Mensaje from "../atoms/Mensaje";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  getEventos, 
-  getCompanies,
-  setCompany,
   setEvent,
+  setCompany,
+  getCompanies,
   getEventsFromCompany 
-} from './../../redux/actions/multimedia';
+} from './../../redux/actions/social-wall';
 import { mostrarElementoDeCarga, ocultarElementoDeCarga } from "./../../redux/actions/loader";
 
 class SocialWall extends Component {
@@ -23,6 +22,12 @@ class SocialWall extends Component {
         this.mostrarFiltros = true;
 
         this.state = {
+          companies: [],
+          companyId: '',
+          events: [],
+          eventId: '',
+          loading: false,
+          
           eventoId: "",
           mostrarIframe: false,
           api_token: localStorage.getItem("api_token"),
@@ -80,12 +85,22 @@ class SocialWall extends Component {
     }
 
     /**
-     * Ejecutar despues del Render
+     * Ejecutar despues del primer Render
      * 
      * @return {void}
      */
-   componentDidMount () {
-      this.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
+    componentDidMount () {
+      this.props.getCompanies();
+    }
+
+    componentDidUpdate (prevProps, prevState) {
+      if (prevProps.eventId !== this.props.eventId) {
+        if (this.props.eventId !== '') {
+          
+        } else {
+  
+        }
+      }
     }
 
     /**
@@ -94,20 +109,7 @@ class SocialWall extends Component {
      * @return {void}
      */
     componentWillUnmount() {
-        this.limpiarIntervaloDeActualizacion();
-
-        this.props.setCompany('');
-        this.props.setEvent('');
-    }
-
-    /**
-     * Resetear valores de campos selectores
-     * 
-     * @return {void}
-     */
-    vaciarValoresDeCamposSelectores() {
-        document.getElementsByName('company')[0].value = '';
-        document.getElementsByName('event')[0].value = '';
+      this.limpiarIntervaloDeActualizacion();
     }
 
     /**
@@ -120,20 +122,28 @@ class SocialWall extends Component {
       const { value } = e.target;
 
       if (!value) {
-        this.props.setCompany('');
-        this.props.setEvent('');
-      } else {
-        this.props.setCompany(value);
-        this.props.getEventsFromCompany(value);
+        this.props.flushSocialData();
       }
 
       this.setState({
-        mostrarIframe: false,
-        hashtagsTwitter: [],
-        hashtagsInstagram: [],
-      });
+        companyId: value,
+      }, () => axios.get(`api/empresas/eventos/${value}`, {
+        headers: {
+          Authorization: this.props.apiToken,
+        }
+      }).then(res => this.setState({
+        loading: true,
+        events: res.data.map(event => ({
+          id: event._id,
+          name: event.Nombre,
+          date: event.Fecha,
+          time: event.Hora,
+          companyId: event.Empresa_id,
+          countryId: event.Pais_id,
+        }))
+      })));
     }
-  
+
     /**
      * Evento al cambiar opcion del selector de eventos
      * 
@@ -141,26 +151,27 @@ class SocialWall extends Component {
      * @return {void}
      */
     handleEventChange (e) {
-        const { value } = e.target;
-  
-        if (!value) {
-          this.props.setEvent('');
+      const { value } = e.target;
 
-          return this.setState({
-            mostrarIframe: false,
-            isLoading: false,
-          });
-        }
-
-        this.props.setEvent(value);
-  
+      if (!value) {
         this.setState({
-          eventoId: value,
-          mostrarIframe: false,
-          isLoading: true,
-          hashtagsTwitter: [],
-          hashtagsInstagram: [],
-        }, () => this.consultarHashtagsDelEvento());
+          eventId: '',
+        });
+      }
+      
+      this.setState({
+        eventId: value,
+      });
+  }
+
+    /**
+     * Resetear valores de campos selectores
+     * 
+     * @return {void}
+     */
+    vaciarValoresDeCamposSelectores() {
+        document.getElementsByName('company')[0].value = '';
+        document.getElementsByName('event')[0].value = '';
     }
 
     /**
@@ -411,16 +422,18 @@ class SocialWall extends Component {
                     this.retirarPublicacionesOfensivas();
 
                     this.mostrarBotonPantallaCompleta();
-                    // this.mostrarIframeSocialWall();
+                    this.mostrarIframeSocialWall();
 
                     break;
                 }
 
                 if (this.state.publicaciones[indice].imagen) {
-                    this.moderarImagenOfensiva(this.state.publicaciones[indice]);
+                    // this.moderarImagenOfensiva(this.state.publicaciones[indice]);
                 }
                 
                 this.moderarTextoOfensivo(this.state.publicaciones[indice]);
+
+                break;
             }
 
             ultimoIndice += 5;
@@ -433,15 +446,15 @@ class SocialWall extends Component {
      * @param {object} publicacion
      * @return {void}
      */
-    moderarTextoOfensivo(publicacion) {
-        axios.post(this.state.urlModerarTextoOfensivo, 
+    moderarTextoOfensivo (publicacion) {
+        axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessText/Screen`, 
         {
             data: publicacion.texto
         }, 
         {
             headers: {
                 'Content-Type': 'text/plain',
-                'Ocp-Apim-Subscription-Key': 'bbdb1062a9ce455a97022f6a330efd8f'
+                'Ocp-Apim-Subscription-Key': process.env.MIX_CONTENT_MODERATOR_SUB_KEY
             }
         }).then((respuesta) => {
             if (respuesta.data.Terms)
@@ -676,7 +689,7 @@ class SocialWall extends Component {
                           name="company"
                           className="form-control form-control-sm"
                           onChange={this.handleCompanyChange}
-                          value={this.state.company}
+                          value={this.state.companyId}
                         >
                           <option value="">Selecione una Empresa</option>
                           {this.props.companies.map(company => (
@@ -690,13 +703,11 @@ class SocialWall extends Component {
                         <select 
                           name="event"
                           className="form-control form-control-sm" 
-                                                        className="form-control form-control-sm" 
-                          className="form-control form-control-sm" 
                           onChange={this.handleEventChange}
-                          value={this.props.eventId}
+                          value={this.state.eventId}
                         >
                           <option value="">Seleccione un Evento</option>
-                          {this.props.eventos.map(event => (
+                          {this.state.events.map(event => (
                             <option key={event.id} value={`${event.id}`}>
                               {event.name}
                             </option>
@@ -752,10 +763,11 @@ class SocialWall extends Component {
 }
 
 const mapStateToProps = state => ({
-    companyId: state.multimedia.companyId,
-    eventId: state.multimedia.eventId,
-    companies: state.multimedia.companies,
-    eventos: state.multimedia.eventos
+  apiToken: state.auth.apiToken,
+  companyId: state.social.companyId,
+  eventId: state.social.eventId,
+  companies: state.social.companies,
+  events: state.social.events
 });
 
 const mapDispatchToProps = dispatch => ({

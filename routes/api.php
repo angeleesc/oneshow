@@ -107,7 +107,7 @@ Route::group(['middleware'=>'api_token','prefix' => 'eventos'], function() {
     Route::post('/remove-envios', 'EventoController@quitarEnvios');
     Route::post('/cola/add','EventoController@addCola');
     
-    Route::get('/redes-sociales/consultar','EventoController@consultarHashtagsDelEvento');
+    // Route::get('/redes-sociales/consultar','EventoController@consultarHashtagsDelEvento');
     Route::post('/redes-sociales/actualizar','EventoController@actualizarHashtagsDelEvento');
     
     Route::post('/RSS','EventoController@registrarPublicacionRSS');
@@ -120,6 +120,7 @@ Route::group(['middleware'=>'api_token','prefix' => 'eventos'], function() {
  * EVENT related endpoints
  */
 Route::group(['middleware' => 'api_token', 'prefix' => 'event'], function () {
+  Route::get('/{eventId}/social/hashtags', 'EventoController@getEventHashtags');
   Route::get('/{eventId}/scenes', 'SceneController@get');
   Route::post('/{eventId}/scene', 'SceneController@create');
   Route::delete('/{eventId}/scene/{sceneId}', 'SceneController@delete');
