@@ -149,6 +149,7 @@ class RegaloController extends Controller
                     return json_encode(['regalo' => $regaloEdit]);
 
                 } else {
+                    
                     $newRegalo->Evento_id = new ObjectId($findEvento->_id);
                     $newRegalo->TipoRegalo = $data['TipoRegalo'];
                     $newRegalo->OpcionDinero = $data['OpcionDinero'];
