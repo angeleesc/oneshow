@@ -124,7 +124,7 @@ class Guardar extends Component {
                             inputTransferenciaChecked: true,
 
                         })
-                } else {
+                } else if(regaloEvento[0].OpcionDinero == 'EFECTIVO') {
                     edit ?
                         this.setState({
                             inputEfectivoChecked: true
@@ -136,6 +136,12 @@ class Guardar extends Component {
                             inputEfectivoChecked: true
 
                         })
+                }else{
+                    this.setState({
+                        inputEfectivoDisabled: "",
+                        inputEfectivoChecked: ""
+
+                    })
                 }
 
                 this.handlInputProps(regaloEvento)
@@ -441,11 +447,11 @@ class Guardar extends Component {
             }
             let formData = new FormData()
             formData.append('TipoRegalo', this.props.regalos.tipoRegalo)
-            formData.append('PathImg', PathImg)
-            formData.append('Objeto', Objeto)
-            formData.append('SKU', SKU)
-            formData.append('TiendaSugerida', TiendaSugerida)
-            formData.append('Link', Link)
+            formData.append('PathImg',  this.props.regalos.PathImg)
+            formData.append('Objeto',  this.props.regalos.Objeto)
+            formData.append('SKU',  this.props.regalos.SKU)
+            formData.append('TiendaSugerida',  this.props.regalos.TiendaSugerida)
+            formData.append('Link',  this.props.regalos.Link)
 
             this.props.guardarRegalo(formData, id, regalo, keyRegalo, edit, keyItem)
         }
@@ -454,7 +460,7 @@ class Guardar extends Component {
 
         const { match: { params: { id } } } = this.props
 
-        // console.log(this.props);
+        // console.log('this.props',this.props);
 
         if (this.props.regalos.error) {
             sweetalert(`${this.props.regalos.error}.`, 'error', 'sweet')

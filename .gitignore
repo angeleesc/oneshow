@@ -1,6 +1,6 @@
 /node_modules
 /public/hot
-/public/OneShow
+./public/OneShow
 /public/storage
 /storage/*.key
 /vendor

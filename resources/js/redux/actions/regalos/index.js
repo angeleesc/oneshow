@@ -165,9 +165,12 @@ export const guardarRegalo = (regalo, editEvento, idRegalo, keyRegalo, edit, key
 
         url = `api/regalos/add/${editEvento}/${idRegalo}`
     } else {
-        url = `api/regalos/addObjeto/${editEvento}/${idRegalo}`
+        if (!edit) {
+            url = `api/regalos/add-objeto/${editEvento}`
+        } else {
+            url = `api/regalos/edit-objeto/${editEvento}/${idRegalo}`
+        }
     }
-
     try {
 
         const result = await axios.post(url, regalo, {
