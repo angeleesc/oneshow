@@ -31,7 +31,6 @@ export const traerInvitacionesEventoID = (idEvento, key) => async (dispatch, get
 
         const resp = data.data.data;
 
-        //busco los regalos del evento que se activo
 
         const nuevasInvitaciones = resp.map((invitacion) => ({
             ...invitacion

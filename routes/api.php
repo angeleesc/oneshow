@@ -284,6 +284,8 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'regalos'], function () {
     Route::post('/get-info', 'RegaloController@getInfo');
     Route::get('/get-regalo/{evento}', 'RegaloController@getRegalosEventoId');
     Route::post('/add/{idEvento}/{idRegalo}', 'RegaloController@addAndEdit');
-    Route::post('/addObjeto/{idEvento}/{idRegalo}', 'RegaloController@addObjeto');
+    // Route::patch('/add/{idEvento}/{idRegalo}', 'RegaloController@addAndEdit');
+    Route::post('/add-objeto/{idEvento}', 'RegaloController@addObjeto');
+    Route::post('/edit-objeto/{idEvento}/{idRegalo}', 'RegaloController@editObjeto');
     Route::delete('/delete/{id}', 'RegaloController@deleteRegalo');
 });
