@@ -4,7 +4,6 @@ import {
   FETCHED_SOCIAL_EVENT_HASHTAGS,
   SET_SOCIAL_COMPANY,
   SET_SOCIAL_EVENT,
-  FLUSH_SOCIAl_SELECTION,
 } from './types';
 import axios from 'axios';
 
@@ -38,18 +37,29 @@ export function getEventsFromCompany (companyId) {
   }
 }
 
-export function getEventHashtags (companyId, eventId) {
+export function getEventHashtags (eventId) {
   return (dispatch, getState) => {
     const { auth: { apiToken }} = getState();
     
-    return axios.get(`api/eventos/redes-sociales/consultar?eventoId=${eventId}`, {
+    return axios.get(`api/event/${eventId}/social/hashtags`, {
       headers: {
         Authorization: apiToken
       }
     })
-    .then(res => {
-      
-    })
+    .then(res => res.data);
+  }
+}
+
+export function updateEventHashtags (eventId, twitter, instagram) {
+  return (dispatch, getState) => {
+    const { auth: { apiToken }} = getState();
+
+    return axios.put(`api/event/${eventId}/social/hashtags`, {
+      twitter, 
+      instagram
+    }, {
+      headers: { Authorization: apiToken }
+    });
   }
 }
 

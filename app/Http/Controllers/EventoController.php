@@ -1167,66 +1167,6 @@ class EventoController extends Controller
     }
 
     /**
-     * Consultar Hashtags del Evento
-     *
-     * @param ConsultarHashtags $request
-     * @return Response
-     */
-    public function consultarHashtagsDelEvento (ConsultarHashtags $request)
-    {
-        $evento = Evento::find($request->eventoId);
-
-        if ($evento->HashtagsTwitter || $evento->HashtagsInstagram) {
-            return response()->json([
-                'hashtagsTwitter' => ($evento->HashtagsTwitter) ? json_encode($evento->HashtagsTwitter) : null,
-                'hashtagsInstagram' => ($evento->HashtagsInstagram) ? json_encode($evento->HashtagsInstagram) : null,
-                'existen' => true,
-            ], 200);
-        }
-
-        return response()->json([
-            'mensaje' => 'No existen Hashtags registrados para el evento',
-            'existen' => false,
-        ], 200);
-    }
-
-    public function getEventHashTags (Request $request, $eventId) {
-      Validator::make(['eventId' => $eventId], [
-        'eventId' => 'required|exists:Eventos,_id'
-      ])->validate();
-
-      $event = Evento::find($eventId);
-
-      if ($event->HashtagsTwitter || $event->HashtagsInstagram) {
-        return response()->json([
-          'hashtagsTwitter' => $event->HashtagsTwitter,
-          'hashtagsInstagram' => $event->HashtagsInstagram,
-        ]);
-      }
-    }
-
-    /**
-     * Actualizar Hashtags y redes sociales disponibles
-     *
-     * @param ActualizarHashtags $request
-     * @return Response
-     */
-    public function actualizarHashtagsDelEvento(ActualizarHashtags $request)
-    {
-      return response()->json([
-        'twitter' => $request->hastagsTwitter,
-        'instagram' => $request->hastagsInstagram,
-      ]);
-
-        $evento = Evento::find($request->eventoId);
-        $evento->hashtagsTwitter = ($request->HashtagsTwitter) ? json_decode($request->HashtagsTwitter) : [];
-        $evento->hashtagsInstagram = ($request->HashtagsInstagram) ? json_decode($request->HashtagsInstagram) : [];
-        $evento->save();
-
-        return response()->json(['guardado' => true], 200);
-    }
-
-    /**
      * Registrar publicacion RSS
      *
      * @param Request $request

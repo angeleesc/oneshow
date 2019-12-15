@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import CreatableSelect from 'react-select/creatable';
-import axios from "axios";
+import { connect } from 'react-redux';
+import { getEventHashtags, updateEventHashtags } from './../../../../redux/actions/social-wall';
 
 const components = {
   DropdownIndicator: null,
@@ -11,7 +12,7 @@ const createOption = label => ({
   value: label,
 });
 
-export default class RedesSociales extends Component {
+class RedesSociales extends Component {
     constructor(props) {
         super(props);
 
@@ -34,7 +35,23 @@ export default class RedesSociales extends Component {
     }
 
     componentDidMount() {
-        this.consultarHashtagsDelEvento();
+      this.props.getEventHashtags(this.props.eventoId)
+        .then(({ hashtagsTwitter, hashtagsInstagram }) => this.setState({
+          twitterHashtags: hashtagsTwitter.map(createOption),
+          instagramHashtags: hashtagsInstagram.map(createOption),
+        }));
+    }
+
+    componentDidUpdate (prevProps, prevState) {
+      if (this.state.twitterHashtags === null) {
+        this.setState({
+          twitterHashtags: [],
+        });
+      } else if (this.state.instagramHashtags === null) {
+        this.setState({
+          instagramHashtags: [],
+        });
+      }
     }
 
     handleHashtagSubmit (social, value) {
@@ -55,10 +72,10 @@ export default class RedesSociales extends Component {
         case 'Enter':
         case 'Tab':
           
-          this.setState({
+          this.setState((state) => ({
             twitterValue: '',
-            twitterHashtags: [...twitterHashtags, createOption(twitterValue)],
-          });
+            twitterHashtags: [...state.twitterHashtags, createOption(twitterValue)],
+          }));
           
           event.preventDefault();
       }
@@ -82,67 +99,6 @@ export default class RedesSociales extends Component {
           event.preventDefault();
       }
     }
-
-    /**
-     * Consultar Hashtags asignados al servidor
-     * 
-     * @return {void}
-     */
-    consultarHashtagsDelEvento() 
-    {
-        this.isLoading = true;
-
-        axios.get('api/eventos/redes-sociales/consultar?eventoId=' + this.props.eventoId, {
-            headers: {
-                Authorization: this.state.api_token
-            }
-        }).then(respuesta => {
-            if (respuesta.status === 200) {
-                this.isLoading = false;
-
-                this.hashtagsTwitter = (respuesta.data.hashtagsTwitter) ? JSON.parse(respuesta.data.hashtagsTwitter) : [];
-                this.hashtagsInstagram = (respuesta.data.hashtagsInstagram) ? JSON.parse(respuesta.data.hashtagsInstagram) : [];
-
-                this.agregarValorAlCampo('Twitter');
-                this.agregarValorAlCampo('Instagram');
-
-                return
-            }
-
-            sweetalert(
-                'Problema con la conexión',
-                'error',
-                'sweet'
-            );
-        })
-    }
-
-    /**
-     * Enviar Hashtags asignados al servidor
-     * 
-     * @return {void}
-     */
-    enviarHashtagsDelEvento() 
-    {
-        let datosDelFormulario = new FormData();
-        datosDelFormulario.append("eventoId", this.props.eventoId);
-        datosDelFormulario.append("HashtagsTwitter", JSON.stringify(this.hashtagsTwitter));
-        datosDelFormulario.append("HashtagsInstagram", JSON.stringify(this.hashtagsInstagram));
-
-        this.isLoading = true;
-
-        axios.post('api/eventos/redes-sociales/actualizar', datosDelFormulario, {
-            headers: {
-                Authorization: this.state.api_token
-            },
-        }).then(respuesta => {
-            if (respuesta.status === 200) {
-                this.isLoading = false;
-
-                setTimeout(() => window.scrollTo(0, 0), 2000);
-            }
-        })
-    }
     
     /**
      * Guardar Hashtags asignados
@@ -150,29 +106,19 @@ export default class RedesSociales extends Component {
      * @return {void}
      */
     handleClick () {
-        if (!this.camposEstanVacios()) {
-            this.guardarHashtags('Twitter');
-            this.guardarHashtags('Instagram');
+      const eventId = this.props.eventoId;
+      const twitter = this.state.twitterHashtags.map(hashtag => hashtag.value);
+      const instagram = this.state.instagramHashtags.map(hashtag => hashtag.value);
 
-            this.enviarHashtagsDelEvento();
+      console.log('hashtags', twitter, instagram);
 
-            return
-        }
-
-        this.alertaCamposVacios();
-    }
-
-    /**
-     * Levantar alerta de campos vacios
-     * 
-     * @return {void}
-     */
-    alertaCamposVacios() {
-        sweetalert(
-            'Por favor ingrese los Hashtags del Evento',
-            'error',
-            'sweet'
-        );
+      this.props.updateEventHashtags(eventId, twitter, instagram)
+        .then(res => {
+          console.log('done');
+        })
+        .catch(err => {
+          console.log('err', err);
+        })
     }
 
     render() {
@@ -183,7 +129,7 @@ export default class RedesSociales extends Component {
           <div id="sweet" className="container-fluid">
             <div className="alert alert-primary mb-4" role="alert">
               <i className="fas fa-info-circle"></i>&nbsp;
-              Ingrese los <b>#Hashtags</b> para el evento
+              Ingrese las palabras que serám buscadas como <b>#hashtags</b> para el evento
             </div>
             <div className="form-group">
               <label>
@@ -226,3 +172,11 @@ export default class RedesSociales extends Component {
       );
     }
 }
+
+const mapDispatchToProps = dispatch => ({
+  getEventHashtags: (eventId) => dispatch(getEventHashtags(eventId)),
+  updateEventHashtags: (eventId, twitter, instagram) => dispatch(updateEventHashtags(eventId, twitter, instagram)),
+});
+
+
+export default connect(null, mapDispatchToProps, null, { forwardRef: true })(RedesSociales);
