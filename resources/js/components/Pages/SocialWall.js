@@ -2,15 +2,14 @@ import axios from 'axios';
 import swal from "sweetalert2";
 import Menu from "../components/Menu";
 import Header from "../components/Header";
+import Wall from './../organisms/Wall';
 import  React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Mensaje from "../atoms/Mensaje";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  setEvent,
-  setCompany,
-  getCompanies,
-  getEventsFromCompany 
+  getEventHashtags,
+  cleanHashtags
 } from './../../redux/actions/social-wall';
 import { mostrarElementoDeCarga, ocultarElementoDeCarga } from "./../../redux/actions/loader";
 
@@ -26,7 +25,7 @@ class SocialWall extends Component {
           companyId: '',
           events: [],
           eventId: '',
-          loading: false,
+          isLoading: false,
           
           eventoId: "",
           mostrarIframe: false,
@@ -41,7 +40,6 @@ class SocialWall extends Component {
             border: "none",
             visibility: "hidden"
           },
-          isLoading: false,
           intervaloDeActualizacion: null,
           intervaloDeScroll: null,
           avisoSinContenido: false,
@@ -90,16 +88,32 @@ class SocialWall extends Component {
      * @return {void}
      */
     componentDidMount () {
-      this.props.getCompanies();
+      const { apiToken } = this.props;
+
+      axios.get(`api/empresas`, {
+        headers: {
+          Authorization: apiToken,
+        }
+      })
+      .then(res => this.setState({
+        companies: res.data.empresas.map(company => ({
+          id: company._id,
+          name: company.Nombre,
+          email: company.Correo,
+          phone: company.Telefono,
+          countryId: company.Pais_id,
+          active: company.Activo,
+        }))
+      }));
     }
 
     componentDidUpdate (prevProps, prevState) {
-      if (prevProps.eventId !== this.props.eventId) {
-        if (this.props.eventId !== '') {
-          
-        } else {
-  
-        }
+      const { companyId, eventId } = this.state;
+      
+      if (companyId  && eventId && eventId !== prevState.eventId) {
+        this.props.getEventHashtags(eventId).then(() => this.setState({
+          isLoading: false,
+        }));
       }
     }
 
@@ -121,18 +135,23 @@ class SocialWall extends Component {
     handleCompanyChange (e) {
       const { value } = e.target;
 
+      this.props.cleanHashtags();
+
       if (!value) {
-        this.props.flushSocialData();
+        return this.setState({
+          companyId: '',
+          eventId: '',
+        });
       }
 
       this.setState({
         companyId: value,
+        eventId: '',
       }, () => axios.get(`api/empresas/eventos/${value}`, {
         headers: {
           Authorization: this.props.apiToken,
         }
       }).then(res => this.setState({
-        loading: true,
         events: res.data.map(event => ({
           id: event._id,
           name: event.Nombre,
@@ -153,14 +172,11 @@ class SocialWall extends Component {
     handleEventChange (e) {
       const { value } = e.target;
 
-      if (!value) {
-        this.setState({
-          eventId: '',
-        });
-      }
-      
+      this.props.cleanHashtags();
+
       this.setState({
-        eventId: value,
+        isLoading: value ? true : false,
+        eventId: value ? value : '',
       });
   }
 
@@ -668,6 +684,8 @@ class SocialWall extends Component {
     }
 
     render() {
+      const { companies, events, companyId, eventId, isLoading } = this.state;
+
       return (
         <div>
           <Menu usuario={this.state.user} />
@@ -692,7 +710,7 @@ class SocialWall extends Component {
                           value={this.state.companyId}
                         >
                           <option value="">Selecione una Empresa</option>
-                          {this.props.companies.map(company => (
+                          {companies.map(company => (
                             <option key={company.id} value={`${company.id}`}>
                               {company.name}
                             </option>
@@ -707,7 +725,7 @@ class SocialWall extends Component {
                           value={this.state.eventId}
                         >
                           <option value="">Seleccione un Evento</option>
-                          {this.state.events.map(event => (
+                          {events.map(event => (
                             <option key={event.id} value={`${event.id}`}>
                               {event.name}
                             </option>
@@ -734,12 +752,18 @@ class SocialWall extends Component {
               </div>
             </header>
             <div id="sweet" className="container-fluid">
-              {this.state.isLoading &&
+              {isLoading &&
                 <div className="text-center">
                   <FontAwesomeIcon color="#fff" icon="sync" spin />
                 </div>
               }
-              <React.Fragment>
+              {!isLoading && companyId && eventId &&
+                <Wall
+                  companyId={companyId}
+                  eventId={eventId}
+                />
+              }
+              {/* <React.Fragment>
                 {(this.state.mostrarIframe && !this.existenHashtagsParaEvento()) &&
                   <Mensaje
                     icono="fas fa-exclamation-circle"
@@ -754,7 +778,7 @@ class SocialWall extends Component {
                   >
                   </iframe>
                 }
-              </React.Fragment>
+              </React.Fragment> */}
             </div>
           </div>
         </div>
@@ -764,20 +788,13 @@ class SocialWall extends Component {
 
 const mapStateToProps = state => ({
   apiToken: state.auth.apiToken,
-  companyId: state.social.companyId,
-  eventId: state.social.eventId,
-  companies: state.social.companies,
-  events: state.social.events
 });
 
 const mapDispatchToProps = dispatch => ({
-    setCompany: (companyId) => dispatch(setCompany(companyId)),
-    setEvent: (eventId) => dispatch(setEvent(eventId)),
-    getCompanies: () => dispatch(getCompanies()),
-    getEvents: (userId, apiToken) => dispatch(getEventos(userId, apiToken)),
-    getEventsFromCompany: (companyId) => dispatch(getEventsFromCompany(companyId)),
-    mostrarElementoDeCarga: () => dispatch(mostrarElementoDeCarga()),
-    ocultarElementoDeCarga: () => dispatch(ocultarElementoDeCarga())
+  cleanHashtags: () => dispatch(cleanHashtags()),
+  getEventHashtags: (eventId) => dispatch(getEventHashtags(eventId)),
+  mostrarElementoDeCarga: () => dispatch(mostrarElementoDeCarga()),
+  ocultarElementoDeCarga: () => dispatch(ocultarElementoDeCarga())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SocialWall);

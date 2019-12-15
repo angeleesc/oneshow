@@ -1,52 +1,26 @@
 import { 
-  FETCHED_SOCIAL_COMPANIES,
-  FETCHED_SOCIAL_EVENTS,
-  FETCHED_SOCIAL_EVENT_HASHTAGS,
-  SET_SOCIAL_COMPANY,
-  SET_SOCIAL_EVENT,
+  GET_SOCIAL_EVENT_HASHTAGS,
+  DELETE_SOCIAL_EVENT_HASHTAGS
 } from './types';
 import axios from 'axios';
 
-export function getCompanies () {
-  return (dispatch, getState) => {
-    const { auth: { apiToken } } = getState();
-
-    return axios.get('api/empresas', {
-      headers: {
-        Authorization: apiToken
-      }
-    })
-    .then(res => {
-      const { data } = res;
-
-      return dispatch(saveCompanies(data.empresas));      
-    })
-  }
-}
-
-export function getEventsFromCompany (companyId) {
-  return (dispatch, getState) => {
-    const { auth: { apiToken }} = getState();
-    
-    return axios.get(`api/empresas/eventos/${companyId}`, {
-      headers: {
-        Authorization: apiToken
-      }
-    })
-    .then(res => dispatch(saveEventos(res.data)))
-  }
-}
 
 export function getEventHashtags (eventId) {
   return (dispatch, getState) => {
-    const { auth: { apiToken }} = getState();
+    const { auth: { apiToken } } = getState();
     
     return axios.get(`api/event/${eventId}/social/hashtags`, {
       headers: {
-        Authorization: apiToken
+        Authorization: apiToken,
       }
     })
-    .then(res => res.data);
+    .then(res => {
+      const { hashtagsTwitter, hashtagsInstagram } = res.data;
+
+      dispatch(saveHashtags(hashtagsTwitter, hashtagsInstagram));
+
+      return res.data;
+    })
   }
 }
 
@@ -63,38 +37,18 @@ export function updateEventHashtags (eventId, twitter, instagram) {
   }
 }
 
-export function setCompany (companyId) {
+export function saveHashtags (twitter, instagram) {
   return {
-    type: SET_SOCIAL_COMPANY,
-    payload: { companyId }
+    type: GET_SOCIAL_EVENT_HASHTAGS,
+    payload: { 
+      twitter, 
+      instagram 
+    }
   };
 }
 
-export function setEvent (eventId) {
+export function cleanHashtags () {
   return {
-    type: SET_SOCIAL_EVENT,
-    payload: { eventId },
-  };
-}
-
-export function fetchedEventHashtags () {
-
-}
-
-export function loadingSocialWall () {
-
-}
-
-export function saveCompanies (companies) {
-  return {
-    type: FETCHED_SOCIAL_COMPANIES,
-    payload: { companies }
-  };
-}
-
-export function saveEvents (events) {
-  return {
-    type: FETCHED_SOCIAL_EVENTS,
-    payload: { events }
+    type: DELETE_SOCIAL_EVENT_HASHTAGS,
   };
 }
