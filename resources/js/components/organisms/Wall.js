@@ -47,15 +47,19 @@ class Wall extends React.Component  {
   }
 
   onFrameLoad (e) {
+    /**
+     * Filter only by twitter, instagram and rss posts
+     */
+    this.iFrameRef.current.contentDocument.getElementsByClassName("filter-label")[0].setAttribute('data-filter', '.sb-twitter, .sb-instagram, .sb-rss');    
     const rawPosts = this.iFrameRef.current.contentDocument.getElementsByClassName("sb-item");
     let posts = [];
     
-    for (let post of rawPosts){
+    for (let post of rawPosts) {
       posts.push({
         id: post.id,
-        tipo: post.classList.item(1),
-        imagen: post.getElementsByClassName('icbox').length > 0 ? post.getElementsByClassName('icbox')[0].href : null,
-        texto: post.getElementsByClassName("sb-text")[0] ? post.getElementsByClassName("sb-text")[0].innerText : "",
+        type: post.classList.item(1),
+        image: post.getElementsByClassName('icbox').length > 0 ? post.getElementsByClassName('icbox')[0].href : null,
+        text: post.getElementsByClassName("sb-text")[0] ? post.getElementsByClassName("sb-text")[0].innerText : "",
       });
     }
 
@@ -68,45 +72,48 @@ class Wall extends React.Component  {
           let post = this.state.posts[index];
           let promises = [];
 
-          console.log('post', post);
+          if (!post) {
+            clearInterval(this.intervalId);
 
-          if (!post)
-            return clearInterval(this.intervalId);
+            return setTimeout(() => {
+              this.setState({
+                isLoading: false,
+              }, () => this.iFrameRef.current.contentDocument.getElementsByClassName("filter-label")[0].click());
+            }, 1500);
+          }
           
           promises.push(new Promise((resolve, reject) => {
-            if (!post.image)
-              resolve({
+            if (post.image === null)
+              return resolve({
                 data: {
                   IsImageAdultClassified: false,
                   IsImageRacyClassified: false,
                 }
               });
 
-            return doesImageNeedModeration();
+            return this.props.doesImageNeedModeration(post.image).then(res => resolve(res));
           }));
 
           promises.push(new Promise((resolve, reject) => {
             if (!post.text)
-              resolve({
+              return resolve({
                 data: { Terms: [] },
               })
 
-            return doesTextNeedModeration();
+            return this.props.doesTextNeedModeration(post.text).then(res => resolve(res));
           }));
 
-          Promise.all(promises).then(result => {
-            console.log('result', post.id, result);
-          })
+          Promise.all(promises).then(([imgModeration, txtModeration]) => {
+            if (imgModeration.data.IsImageAdultClassified || imgModeration.data.IsImageRacyClassified || txtModeration.data.Terms) {
+              this.iFrameRef.current.contentDocument.getElementById(post.id).classList.remove(post.type);
+            }
+          });
 
           lastIndex += 5;
         }
 
       }, 1000);
     });
-
-    this.setState({
-      isLoading: false,
-    }, () => {});
   }
 
   render () {
@@ -136,6 +143,11 @@ class Wall extends React.Component  {
         }
         <iframe
           ref={this.iFrameRef}
+          style={{
+            width: '100%',
+            border: 'none',
+            height: '700px !important',
+          }}
           className={iFrameStyles}
           onLoad={this.onFrameLoad}
         >
@@ -151,8 +163,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  doesTextNeedModeration: dispatch(doesTextNeedModeration()),
-  doesImageNeedModeration: dispatch(doesImageNeedModeration()),
+  doesTextNeedModeration: (text) => dispatch(doesTextNeedModeration(text)),
+  doesImageNeedModeration: (imageURL) => dispatch(doesImageNeedModeration(imageURL)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Wall);

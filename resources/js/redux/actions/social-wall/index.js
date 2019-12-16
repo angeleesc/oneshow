@@ -39,8 +39,7 @@ export function updateEventHashtags (eventId, twitter, instagram) {
 
 export function doesTextNeedModeration (text) {
   return (dispatch, getState) => {
-    return axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessText/Screen`,
-      { data: text }, 
+    return axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessText/Screen?language=spa&classify=true`, text,
       {
         headers: {
           'Content-Type': 'text/plain',
