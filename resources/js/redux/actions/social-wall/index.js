@@ -37,6 +37,33 @@ export function updateEventHashtags (eventId, twitter, instagram) {
   }
 }
 
+export function doesTextNeedModeration (text) {
+  return (dispatch, getState) => {
+    return axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessText/Screen`,
+      { data: text }, 
+      {
+        headers: {
+          'Content-Type': 'text/plain',
+          'Ocp-Apim-Subscription-Key': process.env.MIX_CONTENT_MODERATOR_SUB_KEY
+        }
+      });
+  };
+}
+
+export function doesImageNeedModeration (imageURL) {
+  return (dispatch, getState) => {
+    return axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessImage/Evaluate`,{
+      DataRepresentation: 'URL',
+      Value: imageURL
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Ocp-Apim-Subscription-Key': process.env.MIX_CONTENT_MODERATOR_SUB_KEY,
+      }
+    });
+  };
+}
+
 export function saveHashtags (twitter, instagram) {
   return {
     type: GET_SOCIAL_EVENT_HASHTAGS,

@@ -586,7 +586,7 @@ class SocialWall extends Component {
      * 
      * @return {void}
      */
-    crearIntervaloDeActualizaciones() {
+    crearIntervaloDeActualizaciones () {
 
         let tiempoMiliseg = (this.state.intervaloActualizacion) ? this.state.intervaloActualizacion * 1000 : 20000;
 
