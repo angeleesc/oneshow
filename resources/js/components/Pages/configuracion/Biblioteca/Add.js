@@ -96,8 +96,10 @@ export default class Add extends React.Component {
                 nombreArchivo: value
               })
         }else if(name == 'categoria'){
+            const categoriaName = target.options[target.selectedIndex].text;
             this.setState({
-                idCategoria:value
+                idCategoria:value,
+                categoriaSeleccionada:categoriaName
             })
         }else{
             this.setState({
@@ -300,7 +302,7 @@ export default class Add extends React.Component {
                                                 </select>
                                             </div>
                                         </div>
-                                    {this.state.idCategoria == '5de977ea041d730dcc27618a' ? <this.ChromaSelect /> : ""}    
+                                    {this.state.categoriaSeleccionada == 'ChromaStudios' ? <this.ChromaSelect /> : ""}    
                                     </div>
                                 </div>
                                 
