@@ -42,8 +42,11 @@ import Grupos from "../Pages/configuracion/Grupos/Grupos";
 import GruposAdd from "../Pages/configuracion/Grupos/Add";
 import GruposEdit from "../Pages/configuracion/Grupos/Edit";
 import Etapas from "../Pages/configuracion/Eventos/Etapas/Etapas";
-import EtapasAdd from "../Pages/configuracion/Eventos/Etapas/Add";
-import EtapasEdit from "../Pages/configuracion/Eventos/Etapas/Edit";
+import EtapasAdd from "../Pages/configuracion/Eventos/Etapas/Guardar";
+import EtapasEdit from "../Pages/configuracion/Eventos/Etapas/Guardar";
+import MenuEtapas from "../Pages/configuracion/Eventos/Etapas/menu";
+import MenuEtapasAdd from "../Pages/configuracion/Eventos/Etapas/menu/Guardar";
+import MenuEtapasShow from "../Pages/configuracion/Eventos/Etapas/Show";
 import MailConfirmation from "../Pages/configuracion/MailConfirmation/MailConfirmation";
 import MailAsiento from "../Pages/configuracion/MailAsiento/MailAsiento";
 import Planos from "../Pages/configuracion/Planos/Planos";
@@ -154,8 +157,28 @@ function App() {
                         />
                         <Route
                             exact
-                            path="/eventos/etapas/edit/:id"
+                            path="/eventos/etapas/edit/:id/:etapa"
                             component={EtapasEdit}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/etapas/menu/:etapa"
+                            component={MenuEtapas}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/etapas/menu/show/:etapa"
+                            component={MenuEtapasShow}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/etapas/menu/add/:etapa"
+                            component={MenuEtapasAdd}
+                        />
+                        <Route
+                            exact
+                            path="/eventos/etapas/menu/edit/:etapa/:menu"
+                            component={MenuEtapasAdd}
                         />
                         <Route
                             exact
@@ -202,7 +225,7 @@ function App() {
                         />
                         <Route
                             exact
-                            path="/invitacion/add"
+                            path="/invitacion/add/:id"
                             component={InvitacionAdd}
                         />
                         <Route exact path="/invitados" component={Invitados} />
@@ -262,7 +285,7 @@ function App() {
                             path="/regalos/show/regalo/:id/:regalo"
                             component={RegalosGuardar}
                         />
-                         <Route
+                        <Route
                             exact
                             path="/regalos/edit/regalo/:id/:regalo"
                             component={RegalosGuardar}

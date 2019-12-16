@@ -106,24 +106,50 @@ class RegaloController extends Controller
         $findEvento = Evento::find($id);
         $regaloEdit = Regalo::find($idRegalo);
         if (!$findEvento) {
-            return json_encode(['code' => new Exception(500)]);
+            return json_encode(['code' => "Evento no existe"]);
         }
         try {
             if ($data['TipoRegalo'] == "DINERO" and $data['OpcionDinero'] == "EFECTIVO") {
 
                 if ($regaloEdit) {
-                    $regaloEdit->TipoRegalo = $data['TipoRegalo'];
-                    $regaloEdit->OpcionDinero = $data['OpcionDinero'];
-                    $regaloEdit->Banco = '';
-                    $regaloEdit->CUIL = '';
-                    $regaloEdit->CBU = '';
-                    $regaloEdit->Adquirido = false;
-                    $regaloEdit->Borrado = false;
-                    $regaloEdit->Activo = true;
-                    $regaloEdit->save();
+                    if (empty($regaloEdit->PathImg)) {
+
+                        $regaloEdit->TipoRegalo = $data['TipoRegalo'];
+                        $regaloEdit->OpcionDinero = $data['OpcionDinero'];
+                        $regaloEdit->Banco = '';
+                        $regaloEdit->CUIL = '';
+                        $regaloEdit->CBU = '';
+                        $regaloEdit->Adquirido = false;
+                        $regaloEdit->Borrado = false;
+                        $regaloEdit->Activo = true;
+                        $regaloEdit->save();
+                    } else {
+                        if ($regaloEdit->PathImg != "") {
+                            $url = $_SERVER['DOCUMENT_ROOT'] . '/OneShow/Regalos';
+                            $pathImage = $url . '/' . $regaloEdit->Evento_id . '/' . $regaloEdit->NameImg;
+                            \unlink($pathImage);
+                        }
+
+                        $regaloEdit->TipoRegalo = $data['TipoRegalo'];
+                        $regaloEdit->OpcionDinero = $data['OpcionDinero'];
+                        $regaloEdit->Banco = '';
+                        $regaloEdit->CUIL = '';
+                        $regaloEdit->CBU = '';
+                        $regaloEdit->PathImg = "";
+                        $regaloEdit->NameImg = "";
+                        $regaloEdit->Objeto = "";
+                        $regaloEdit->SKU = "";
+                        $regaloEdit->TiendaSugerida = "";
+                        $regaloEdit->Link = "";
+                        $regaloEdit->Adquirido = false;
+                        $regaloEdit->Borrado = false;
+                        $regaloEdit->Activo = true;
+                        $regaloEdit->save();
+                    }
                     return json_encode(['regalo' => $regaloEdit]);
-                    
+
                 } else {
+                    
                     $newRegalo->Evento_id = new ObjectId($findEvento->_id);
                     $newRegalo->TipoRegalo = $data['TipoRegalo'];
                     $newRegalo->OpcionDinero = $data['OpcionDinero'];
@@ -140,19 +166,42 @@ class RegaloController extends Controller
                 $validarCBU = v::numeric()->notEmpty()->length(1, 22)->validate($data['CBU']);
 
                 if (!$validarBanco or !$validarCUIL or !$validarCBU) {
-                    return json_encode(['code' => new Exception(500)]);
+                    return json_encode(['code' => 500]);
                 }
 
                 if ($regaloEdit) {
-                    $regaloEdit->TipoRegalo = $data['TipoRegalo'];
-                    $regaloEdit->OpcionDinero = $data['OpcionDinero'];
-                    $regaloEdit->Banco = $data['Banco'];
-                    $regaloEdit->CUIL = $data['CUIL'];
-                    $regaloEdit->CBU = $data['CBU'];
-                    $regaloEdit->Adquirido = false;
-                    $regaloEdit->Borrado = false;
-                    $regaloEdit->Activo = true;
-                    $regaloEdit->save();
+                    if (!isset($regaloEdit->PathImg)) {
+                        $regaloEdit->TipoRegalo = $data['TipoRegalo'];
+                        $regaloEdit->OpcionDinero = $data['OpcionDinero'];
+                        $regaloEdit->Banco = $data['Banco'];
+                        $regaloEdit->CUIL = $data['CUIL'];
+                        $regaloEdit->CBU = $data['CBU'];
+                        $regaloEdit->Adquirido = false;
+                        $regaloEdit->Borrado = false;
+                        $regaloEdit->Activo = true;
+                        $regaloEdit->save();
+                    } else {
+                        if ($regaloEdit->PathImg != "") {
+                            $url = $_SERVER['DOCUMENT_ROOT'] . '/OneShow/Regalos';
+                            $pathImage = $url . '/' . $regaloEdit->Evento_id . '/' . $regaloEdit->NameImg;
+                            \unlink($pathImage);
+                        }
+                        $regaloEdit->TipoRegalo = $data['TipoRegalo'];
+                        $regaloEdit->OpcionDinero = $data['OpcionDinero'];
+                        $regaloEdit->Banco = $data['Banco'];
+                        $regaloEdit->CUIL = $data['CUIL'];
+                        $regaloEdit->CBU = $data['CBU'];
+                        $regaloEdit->PathImg = "";
+                        $regaloEdit->NameImg = "";
+                        $regaloEdit->Objeto = "";
+                        $regaloEdit->SKU = "";
+                        $regaloEdit->TiendaSugerida = "";
+                        $regaloEdit->Link = "";
+                        $regaloEdit->Adquirido = false;
+                        $regaloEdit->Borrado = false;
+                        $regaloEdit->Activo = true;
+                        $regaloEdit->save();
+                    }
                     return json_encode(['regalo' => $regaloEdit]);
                 } else {
                     $newRegalo->Evento_id = new ObjectId($findEvento->_id);
@@ -171,27 +220,29 @@ class RegaloController extends Controller
 
         } catch (\Exception $e) {
             // $e->getMessage()
-            return json_encode(['code' => 500]);
+            return json_encode(['code' => $e->getMessage()]);
         }
     }
     public function addObjeto(Request $request, $id)
     {
 
-        $input = $request->all();
-
-        $newRegalo = new Regalo();
-
-        $findEvento = Evento::find($id);
-        $idEvento = $findEvento->_id;
-        $empresa = Evento::find($idEvento)->Empresa_id;
-        $image = $input['PathImg'];
-        $validarObjeto = v::stringType()->notEmpty()->validate($input['Objeto']);
-        $validarTipoRegalo = v::stringType()->notEmpty()->validate($input['TipoRegalo']);
-
-        if (!$validarObjeto) {
-            return json_encode(['code' => 'Error en los campos']);
-        }
         try {
+            $input = $request->all();
+
+            $newRegalo = new Regalo();
+
+            $findEvento = Evento::find($id);
+            if (!$findEvento) {
+                return json_encode(['code' => "Evento no existe"]);
+            }
+            $idEvento = $findEvento->_id;
+            $empresa = Evento::find($idEvento)->Empresa_id;
+            $image = $input['PathImg'];
+            $validarObjeto = v::stringType()->notEmpty()->validate($input['Objeto']);
+            $validarTipoRegalo = v::stringType()->notEmpty()->validate($input['TipoRegalo']);
+            if (!$validarObjeto) {
+                return json_encode(['code' => 'Error en los campos']);
+            }
             $pathSave = 'Regalos/' . $idEvento . '/';
             $fileDataImg = [
                 'extension' => $image->getClientOriginalExtension(),
@@ -218,8 +269,87 @@ class RegaloController extends Controller
             return json_encode(['regalo' => $newRegalo]);
         } catch (\Exception $e) {
             // $e->getMessage()
-            return json_encode(['code' => 500]);
+            return json_encode(['code' => $e->getMessage()]);
         }
+    }
+
+    public function editObjeto(Request $request, $idEvento, $idRegalo)
+    {
+
+        try {
+            $input = $request->all();
+            $findRegalo = Regalo::find($idRegalo);
+
+            if (!isset($findRegalo->PathImg)) {
+                $pathSave = 'Regalos/' . $idEvento . '/';
+                $fileDataImg = [
+                    'extension' => $input['PathImg']->getClientOriginalExtension(),
+                    'size' => humanFileSize($input['PathImg']->getSize()),
+                    'mime' => $input['PathImg']->getMimeType(),
+                ];
+
+                $randomName = rand(1, 1000000000);
+                $nameImg = $randomName . '.' . $fileDataImg['extension'];
+                Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($input['PathImg']));
+                $findRegalo->PathImg = url('/') . '/OneShow/' . $pathSave . $nameImg;
+                $findRegalo->NameImg = $nameImg;
+                $findRegalo->TipoRegalo = $input['TipoRegalo'];
+                $findRegalo->Objeto = $input['Objeto'];
+                $findRegalo->SKU = isset($input['SKU']) ? $input['SKU'] : '';
+                $findRegalo->TiendaSugerida = isset($input['TiendaSugerida']) ? $input['TiendaSugerida'] : '';
+                $findRegalo->Link = isset($input['Link']) ? $input['Link'] : '';
+                $findRegalo->Adquirido = false;
+                $findRegalo->Borrado = false;
+                $findRegalo->Activo = true;
+                $findRegalo->OpcionDinero = "";
+                $findRegalo->Banco = "";
+                $findRegalo->CUIL = "";
+                $findRegalo->CBU = "";
+                $findRegalo->save();
+                return json_encode(['regalo' => $findRegalo]);
+
+            } else {
+                if ($findRegalo->PathImg != $input['PathImg']) {
+                    $url = $_SERVER['DOCUMENT_ROOT'] . '/OneShow/Regalos';
+                    if ($findRegalo->PathImg != "") {
+                       
+                        $pathImage = $url . '/' . $findRegalo->Evento_id . '/' . $findRegalo->NameImg;
+                        \unlink($pathImage);
+                    }
+                    
+                    $pathSave = 'Regalos/' . $idEvento . '/';
+                    $fileDataImg = [
+                        'extension' => $input['PathImg']->getClientOriginalExtension(),
+                        'size' => humanFileSize($input['PathImg']->getSize()),
+                        'mime' => $input['PathImg']->getMimeType(),
+                    ];
+                    
+                    $randomName = rand(1, 1000000000);
+                    $nameImg = $randomName . '.' . $fileDataImg['extension'];
+                    Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($input['PathImg']));
+                    $findRegalo->PathImg = url('/') . '/OneShow/' . $pathSave . $nameImg;
+                    $findRegalo->NameImg = $nameImg;
+                }
+                $findRegalo->TipoRegalo = $input['TipoRegalo'];
+                $findRegalo->Objeto = $input['Objeto'];
+                $findRegalo->SKU = isset($input['SKU']) ? $input['SKU'] : '';
+                $findRegalo->TiendaSugerida = isset($input['TiendaSugerida']) ? $input['TiendaSugerida'] : '';
+                $findRegalo->Link = isset($input['Link']) ? $input['Link'] : '';
+                $findRegalo->OpcionDinero = "";
+                $findRegalo->Banco = "";
+                $findRegalo->CUIL = "";
+                $findRegalo->CBU = "";
+                $findRegalo->Adquirido = false;
+                $findRegalo->Borrado = false;
+                $findRegalo->Activo = true;
+                $findRegalo->save();
+                return json_encode(['regalo' => $findRegalo]);
+            }
+
+        } catch (\Exception $e) {
+            return json_encode(['error' => $e->getMessage()]);
+        }
+
     }
 
     public function deleteRegalo($id)

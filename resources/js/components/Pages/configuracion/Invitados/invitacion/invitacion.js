@@ -34,15 +34,16 @@ class Invitacion extends Component {
         }
         if (!this.props.eventos.eventos.length) {
             await this.props.traerEventos()
-            await this.props.traerEventosInvitaciones()
-        }else{
-            this.props.eventos.eventos.map(async e =>{
-                if(('ArchivosInvitacion') in e){
-                }else{
-                    await this.props.traerEventosInvitaciones()
-                }
-            })
-        } 
+            // await this.props.traerEventosInvitaciones()
+        }
+
+        this.props.eventos.eventos.map(async e => {
+            if (('ArchivosInvitacion') in e) {
+            } else {
+                await this.props.traerEventosInvitaciones()
+            }
+        })
+
     }
 
     handleChange() {
@@ -220,7 +221,7 @@ class Invitacion extends Component {
         ))
     }
     render() {
-        console.log('props', this.props);
+        // console.log('props', this.props);
 
         return (
             <Fragment>

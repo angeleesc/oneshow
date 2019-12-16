@@ -87,7 +87,7 @@ export const traerEventosRegalos = () => async (dispatch, getState) => {
             )
 
         const resp = data.data.data
-
+        
         const eventosActualizados = resp.map((e, key) => ({
             ...eventos[key],
             ...e
@@ -102,7 +102,7 @@ export const traerEventosRegalos = () => async (dispatch, getState) => {
         //    console.log('error',error);
         dispatch({
             type: ERROR,
-            payload: 'Algo ha salido mal al treaer los eventos'
+            payload: 'Algo ha salido mal al treaer los regalos'
         })
     }
 }

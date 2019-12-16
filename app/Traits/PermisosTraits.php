@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\MongoDB\Evento;
+use MongoDB\BSON\ObjectId;
 
 trait PermisosTraits
 {
