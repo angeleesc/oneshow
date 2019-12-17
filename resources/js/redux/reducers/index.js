@@ -7,8 +7,13 @@ import alert from './alert';
 import loader from './loader';
 import plantillas from './plantillas'
 import empresas from './empresas'
+import invitaciones from './invitaciones'
 import eventos from './eventos'
 import regalos from './regalos'
+import social from './social-wall';
+import etapas from './etapas'
+import menuEtapas from './menuEtapas'
+
 export default combineReducers({
   app,
   auth,
@@ -18,6 +23,10 @@ export default combineReducers({
   loader,
   plantillas,
   empresas,
+  invitaciones,
+  etapas,
+  menuEtapas,
   eventos,
+  social,
   regalos
 });

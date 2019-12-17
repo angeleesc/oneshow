@@ -108,8 +108,8 @@ export default class Multimedia extends Component {
 
     iniciarMQTT(){
         var reconnectTimeout = 2000;
-        var host="mqtt.oneshow.com.ar"; //change this
-        var port=11344;
+        var host=process.env.MIX_MQTT_HOST; //change this
+        var port=parseInt(process.env.MIX_MQTT_PORT);
         
         function onConnect() {
       // Once a connection has been made, make a subscription and send a message.
@@ -140,8 +140,8 @@ MQTTconnect();
     enviarComando(fechainicio,fechafin){
        
          var reconnectTimeout = 2000;
-        var host="mqtt.oneshow.com.ar"; //change this
-        var port=11344;
+        var host=process.env.MIX_MQTT_HOST; //change this
+        var port=parseInt(process.env.MIX_MQTT_PORT);
         var self=this;
         var envio=false;
         function onConnect() {
@@ -230,8 +230,8 @@ MQTTconnect();
     enviarComandoQuitar(title,parametro,fechainicio,fechafin){
        
          var reconnectTimeout = 2000;
-        var host="mqtt.oneshow.com.ar"; //change this
-        var port=11344;
+        var host=process.env.MIX_MQTT_HOST; //change this
+        var port=parseInt(process.env.MIX_MQTT_PORT);
         var self=this;
         function onConnect() {
       // Once a connection has been made, make a subscription and send a message.

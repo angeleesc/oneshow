@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-//controlador encargado de la seccion de los usuarios
+
 class PlantillaController extends Controller
 {
 
-    //metodo para llamar la vista principal de usuarios
+  
     public function plantillasTraerTodas()
     {
 

@@ -5,3 +5,12 @@
 .boton-negado {
     color: #d9534f;
 }
+
+#menu_gastronomico{
+    background: #FDF4F9;
+    color: darkslategray;
+}
+
+.horaEtapa{
+    font-size: .8em;
+}
