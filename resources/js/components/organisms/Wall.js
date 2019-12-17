@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  doesPostNeedModeration,
   doesTextNeedModeration,
   doesImageNeedModeration,
 } from './../../redux/actions/social-wall';
@@ -19,6 +20,7 @@ class Wall extends React.Component  {
 
     this.onFrameLoad = this.onFrameLoad.bind(this);
     this.onPostsUpdate = this.onPostsUpdate.bind(this);
+    this.promisesAll = this.promisesAll.bind(this);
 
     this.intervalId = '';
     this.observer = new MutationObserver(this.onPostsUpdate);
@@ -54,11 +56,22 @@ class Wall extends React.Component  {
     }
   }
 
+  async promisesAll (promises) {
+    let results = [];
+    
+    for(const promise of promises) {
+      result.push(await promise());
+      console.log('Promise done');
+    }
+
+    return results;
+  };
+
   /**
    * Una vez traidas las publicaciones, llama al moderador y revisa cada una de las publicaciones
    * que inicialmente llegaron al wall
    */
-  onFrameLoad (e) {
+  async onFrameLoad (e) {
     /**
      * Filtra para que solo aparezcan las publicaciones que tienen la clase
      * correspondiente a twitter, instagram o rss
@@ -81,114 +94,73 @@ class Wall extends React.Component  {
       });
     }
 
-    this.setState({ posts }, () => {
-      this.intervalId = setInterval(() => {
-        let index = 0;
-        let lastIndex = 5;
+    for (let post of posts) {
+      console.log('text:', post.text);
+      
+      const result = await this.props.doesPostNeedModeration(post.text, post.image);
+      await (new Promise(resolve => setTimeout(() => resolve({}), 1000)));
+      
+      if (result.moderation) {  
+        this.iFrameRef.current.contentDocument.getElementById(post.id).classList.remove(post.type);
+      }
+      
+      console.log('result:', result);
+    }
 
-        for (index = lastIndex - 5; index < lastIndex; index++) {
-          let post = this.state.posts[index];
-          let promises = [];
-
-          if (!post) {
-            clearInterval(this.intervalId);
-
-            return setTimeout(() => {
-              this.setState({
-                isLoading: false,
-              }, () => this.iFrameRef.current.contentDocument.getElementsByClassName("filter-label")[0].click());
-            }, 1500);
-          }
-          
-          promises.push(new Promise((resolve, reject) => {
-            if (post.image === null)
-              return resolve({
-                data: {
-                  IsImageAdultClassified: false,
-                  IsImageRacyClassified: false,
-                }
-              });
-
-            return this.props.doesImageNeedModeration(post.image).then(res => resolve(res));
-          }));
-
-          promises.push(new Promise((resolve, reject) => {
-            if (!post.text)
-              return resolve({
-                data: { Terms: [] },
-              })
-
-            return this.props.doesTextNeedModeration(post.text).then(res => resolve(res));
-          }));
-
-          Promise.all(promises).then(([imgModeration, txtModeration]) => {
-            if (imgModeration.data.IsImageAdultClassified || imgModeration.data.IsImageRacyClassified || txtModeration.data.Terms) {
-              // Le quita la clase de la red social de la cual
-              // vino la publicación para que no aparezca más en pantalla
-              this.iFrameRef.current.contentDocument.getElementById(post.id).classList.remove(post.type);
-            }
-          });
-
-          lastIndex += 5;
-        }
-
-      }, 1000);
-    });
+    this.setState(state => ({
+      isLoading: false,
+      posts: [
+        ...state.posts,
+        ...posts
+      ]
+    }), () => this.iFrameRef.current.contentDocument.getElementsByClassName("filter-label")[0].click());
   }
 
-  onPostsUpdate (mutationList, observer) {
+  async onPostsUpdate (mutationList, observer) {
     const [record] = mutationList;
     let posts = [];
+    let toSave = [];
 
-    record.addedNodes.forEach(node => posts.push({
-      id: node.id,
-      type: node.classList.item(1),
-      image: node.getElementsByClassName('icbox').length > 0 ? node.getElementsByClassName('icbox')[0].href : null,
-      text: node.getElementsByClassName("sb-text")[0] ? node.getElementsByClassName("sb-text")[0].innerText : "",
-    }));
+    record.addedNodes.forEach(node => {
+      let post = {
+        id: node.id,
+        type: node.classList.item(1),
+        image: node.getElementsByClassName('icbox').length > 0 ? node.getElementsByClassName('icbox')[0].href : null,
+        text: node.getElementsByClassName("sb-text")[0] ? node.getElementsByClassName("sb-text")[0].innerText : "",
+      };
 
-    posts = posts.filter((post, i) => {
-      const exists = this.state.posts.find(p => p.id === post.id) ? true : false;
-
-      if (exists) {
-        return false;        
-      } else {
-        record.addedNodes[i].classList.remove(post.id);
-        return true;
+      posts.push(post);
+      
+      node.classList.remove(post.type);
+      
+      if (!this.state.posts.find(p => p.id === post.id)) {
+        toSave.push(post);
       }
     });
 
     this.iFrameRef.current.contentDocument.getElementsByClassName("filter-label")[0].click();
 
-    const promises = posts.map(post => new Promise((resolve, reject) => {
-      if (post.text) {
-        this.props.doesTextNeedModeration(post.text).then(res => {
-          if (!res.data.Terms) {
-            this.iFrameRef.current.contentDocument.getElementById(post.id).classList.add(post.type);
-          }
-
-          resolve({});
-        });
-      } else {
-        resolve({});
+    for (let post of posts) {
+      console.log('text:', post.text);
+      
+      const result = await this.props.doesPostNeedModeration(post.text, post.image);
+      await (new Promise(resolve => setTimeout(() => resolve({}), 1000)));
+      
+      if (!result.moderation) {  
+        this.iFrameRef.current.contentDocument.getElementById(post.id).classList.add(post.type);
       }
+      
+      console.log('result:', result);
+    }
+
+    this.iFrameRef.current.contentDocument.getElementsByClassName("filter-label")[0].click();
+
+    this.setState(state => ({
+      posts: [
+        ...state.posts,
+        ...toSave
+      ]
     }));
-
-    Promise.all(promises).then(() => {
-      this.iFrameRef.current.contentDocument.getElementsByClassName("filter-label")[0].click();
-
-      console.log('Done');
-
-      this.setState(state => ({
-        posts: [
-          ...state.posts,
-          ...posts
-        ]
-      }))
-    })
-    .catch(err => {
-      this.iFrameRef.current.contentDocument.getElementsByClassName("filter-label")[0].click();
-    });
   }
 
   render () {
@@ -238,6 +210,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  doesPostNeedModeration: (text, image) => dispatch(doesPostNeedModeration(text, image)),
   doesTextNeedModeration: (text) => dispatch(doesTextNeedModeration(text)),
   doesImageNeedModeration: (imageURL) => dispatch(doesImageNeedModeration(imageURL)),
 });

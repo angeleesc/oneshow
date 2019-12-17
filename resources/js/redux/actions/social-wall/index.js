@@ -37,6 +37,44 @@ export function updateEventHashtags (eventId, twitter, instagram) {
   }
 }
 
+export function doesPostNeedModeration (text, imageURL) {
+  return (dispatch, getState) => {
+    return axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessText/Screen?language=spa&classify=true`, text,
+    {
+      headers: {
+        'Content-Type': 'text/plain',
+        'Ocp-Apim-Subscription-Key': process.env.MIX_CONTENT_MODERATOR_SUB_KEY
+      }
+    })
+    .then(res => {
+      if (res.data.Terms) {
+        return Promise.resolve({ moderation: true });
+      } else {
+        if (!imageURL) {
+          return Promise.resolve({ moderation: false});
+        }
+
+        return axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessImage/Evaluate`, {
+          DataRepresentation: 'URL',
+          Value: imageURL
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Ocp-Apim-Subscription-Key': process.env.MIX_CONTENT_MODERATOR_SUB_KEY,
+          }
+        })
+        .then(res => {
+          if (res.data.IsImageAdultClassified || res.data.IsImageRacyClassified) {
+            return Promise.resolve({ moderation: true });
+          } else {
+            return Promise.resolve({ moderation: false });
+          }
+        });
+      }
+    });
+  }
+}
+
 export function doesTextNeedModeration (text) {
   return (dispatch, getState) => {
     return axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessText/Screen?language=spa&classify=true`, text,
