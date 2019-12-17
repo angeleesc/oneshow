@@ -2,17 +2,15 @@ import axios from 'axios';
 import swal from "sweetalert2";
 import Menu from "../components/Menu";
 import Header from "../components/Header";
+import Wall from './../organisms/Wall';
 import  React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Mensaje from "../atoms/Mensaje";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  getEventos, 
-  getCompanies,
-  setCompany,
-  setEvent,
-  getEventsFromCompany 
-} from './../../redux/actions/multimedia';
+  getEventHashtags,
+  cleanHashtags
+} from './../../redux/actions/social-wall';
 import { mostrarElementoDeCarga, ocultarElementoDeCarga } from "./../../redux/actions/loader";
 
 class SocialWall extends Component {
@@ -23,6 +21,12 @@ class SocialWall extends Component {
         this.mostrarFiltros = true;
 
         this.state = {
+          companies: [],
+          companyId: '',
+          events: [],
+          eventId: '',
+          isLoading: false,
+          
           eventoId: "",
           mostrarIframe: false,
           api_token: localStorage.getItem("api_token"),
@@ -36,7 +40,6 @@ class SocialWall extends Component {
             border: "none",
             visibility: "hidden"
           },
-          isLoading: false,
           intervaloDeActualizacion: null,
           intervaloDeScroll: null,
           avisoSinContenido: false,
@@ -80,12 +83,38 @@ class SocialWall extends Component {
     }
 
     /**
-     * Ejecutar despues del Render
+     * Ejecutar despues del primer Render
      * 
      * @return {void}
      */
-   componentDidMount () {
-      this.props.getCompanies().then(() => this.props.ocultarElementoDeCarga());
+    componentDidMount () {
+      const { apiToken } = this.props;
+
+      axios.get(`api/empresas`, {
+        headers: {
+          Authorization: apiToken,
+        }
+      })
+      .then(res => this.setState({
+        companies: res.data.empresas.map(company => ({
+          id: company._id,
+          name: company.Nombre,
+          email: company.Correo,
+          phone: company.Telefono,
+          countryId: company.Pais_id,
+          active: company.Activo,
+        }))
+      }));
+    }
+
+    componentDidUpdate (prevProps, prevState) {
+      const { companyId, eventId } = this.state;
+      
+      if (companyId  && eventId && eventId !== prevState.eventId) {
+        this.props.getEventHashtags(eventId).then(() => this.setState({
+          isLoading: false,
+        }));
+      }
     }
 
     /**
@@ -94,20 +123,7 @@ class SocialWall extends Component {
      * @return {void}
      */
     componentWillUnmount() {
-        this.limpiarIntervaloDeActualizacion();
-
-        this.props.setCompany('');
-        this.props.setEvent('');
-    }
-
-    /**
-     * Resetear valores de campos selectores
-     * 
-     * @return {void}
-     */
-    vaciarValoresDeCamposSelectores() {
-        document.getElementsByName('company')[0].value = '';
-        document.getElementsByName('event')[0].value = '';
+      this.limpiarIntervaloDeActualizacion();
     }
 
     /**
@@ -119,21 +135,34 @@ class SocialWall extends Component {
     handleCompanyChange (e) {
       const { value } = e.target;
 
+      this.props.cleanHashtags();
+
       if (!value) {
-        this.props.setCompany('');
-        this.props.setEvent('');
-      } else {
-        this.props.setCompany(value);
-        this.props.getEventsFromCompany(value);
+        return this.setState({
+          companyId: '',
+          eventId: '',
+        });
       }
 
       this.setState({
-        mostrarIframe: false,
-        hashtagsTwitter: [],
-        hashtagsInstagram: [],
-      });
+        companyId: value,
+        eventId: '',
+      }, () => axios.get(`api/empresas/eventos/${value}`, {
+        headers: {
+          Authorization: this.props.apiToken,
+        }
+      }).then(res => this.setState({
+        events: res.data.map(event => ({
+          id: event._id,
+          name: event.Nombre,
+          date: event.Fecha,
+          time: event.Hora,
+          companyId: event.Empresa_id,
+          countryId: event.Pais_id,
+        }))
+      })));
     }
-  
+
     /**
      * Evento al cambiar opcion del selector de eventos
      * 
@@ -141,26 +170,24 @@ class SocialWall extends Component {
      * @return {void}
      */
     handleEventChange (e) {
-        const { value } = e.target;
-  
-        if (!value) {
-          this.props.setEvent('');
+      const { value } = e.target;
 
-          return this.setState({
-            mostrarIframe: false,
-            isLoading: false,
-          });
-        }
+      this.props.cleanHashtags();
 
-        this.props.setEvent(value);
-  
-        this.setState({
-          eventoId: value,
-          mostrarIframe: false,
-          isLoading: true,
-          hashtagsTwitter: [],
-          hashtagsInstagram: [],
-        }, () => this.consultarHashtagsDelEvento());
+      this.setState({
+        isLoading: value ? true : false,
+        eventId: value ? value : '',
+      });
+  }
+
+    /**
+     * Resetear valores de campos selectores
+     * 
+     * @return {void}
+     */
+    vaciarValoresDeCamposSelectores() {
+        document.getElementsByName('company')[0].value = '';
+        document.getElementsByName('event')[0].value = '';
     }
 
     /**
@@ -411,16 +438,18 @@ class SocialWall extends Component {
                     this.retirarPublicacionesOfensivas();
 
                     this.mostrarBotonPantallaCompleta();
-                    // this.mostrarIframeSocialWall();
+                    this.mostrarIframeSocialWall();
 
                     break;
                 }
 
                 if (this.state.publicaciones[indice].imagen) {
-                    this.moderarImagenOfensiva(this.state.publicaciones[indice]);
+                    // this.moderarImagenOfensiva(this.state.publicaciones[indice]);
                 }
                 
                 this.moderarTextoOfensivo(this.state.publicaciones[indice]);
+
+                break;
             }
 
             ultimoIndice += 5;
@@ -433,15 +462,15 @@ class SocialWall extends Component {
      * @param {object} publicacion
      * @return {void}
      */
-    moderarTextoOfensivo(publicacion) {
-        axios.post(this.state.urlModerarTextoOfensivo, 
+    moderarTextoOfensivo (publicacion) {
+        axios.post(`${process.env.MIX_CONTENT_MODERATOR_BASE_URL}/ProcessText/Screen`, 
         {
             data: publicacion.texto
         }, 
         {
             headers: {
                 'Content-Type': 'text/plain',
-                'Ocp-Apim-Subscription-Key': 'bbdb1062a9ce455a97022f6a330efd8f'
+                'Ocp-Apim-Subscription-Key': process.env.MIX_CONTENT_MODERATOR_SUB_KEY
             }
         }).then((respuesta) => {
             if (respuesta.data.Terms)
@@ -557,7 +586,7 @@ class SocialWall extends Component {
      * 
      * @return {void}
      */
-    crearIntervaloDeActualizaciones() {
+    crearIntervaloDeActualizaciones () {
 
         let tiempoMiliseg = (this.state.intervaloActualizacion) ? this.state.intervaloActualizacion * 1000 : 20000;
 
@@ -655,6 +684,8 @@ class SocialWall extends Component {
     }
 
     render() {
+      const { companies, events, companyId, eventId, isLoading } = this.state;
+
       return (
         <div>
           <Menu usuario={this.state.user} />
@@ -676,10 +707,10 @@ class SocialWall extends Component {
                           name="company"
                           className="form-control form-control-sm"
                           onChange={this.handleCompanyChange}
-                          value={this.state.company}
+                          value={this.state.companyId}
                         >
                           <option value="">Selecione una Empresa</option>
-                          {this.props.companies.map(company => (
+                          {companies.map(company => (
                             <option key={company.id} value={`${company.id}`}>
                               {company.name}
                             </option>
@@ -690,13 +721,11 @@ class SocialWall extends Component {
                         <select 
                           name="event"
                           className="form-control form-control-sm" 
-                                                        className="form-control form-control-sm" 
-                          className="form-control form-control-sm" 
                           onChange={this.handleEventChange}
-                          value={this.props.eventId}
+                          value={this.state.eventId}
                         >
                           <option value="">Seleccione un Evento</option>
-                          {this.props.eventos.map(event => (
+                          {events.map(event => (
                             <option key={event.id} value={`${event.id}`}>
                               {event.name}
                             </option>
@@ -723,12 +752,18 @@ class SocialWall extends Component {
               </div>
             </header>
             <div id="sweet" className="container-fluid">
-              {this.state.isLoading &&
+              {isLoading &&
                 <div className="text-center">
                   <FontAwesomeIcon color="#fff" icon="sync" spin />
                 </div>
               }
-              <React.Fragment>
+              {!isLoading && companyId && eventId &&
+                <Wall
+                  companyId={companyId}
+                  eventId={eventId}
+                />
+              }
+              {/* <React.Fragment>
                 {(this.state.mostrarIframe && !this.existenHashtagsParaEvento()) &&
                   <Mensaje
                     icono="fas fa-exclamation-circle"
@@ -743,7 +778,7 @@ class SocialWall extends Component {
                   >
                   </iframe>
                 }
-              </React.Fragment>
+              </React.Fragment> */}
             </div>
           </div>
         </div>
@@ -752,20 +787,14 @@ class SocialWall extends Component {
 }
 
 const mapStateToProps = state => ({
-    companyId: state.multimedia.companyId,
-    eventId: state.multimedia.eventId,
-    companies: state.multimedia.companies,
-    eventos: state.multimedia.eventos
+  apiToken: state.auth.apiToken,
 });
 
 const mapDispatchToProps = dispatch => ({
-    setCompany: (companyId) => dispatch(setCompany(companyId)),
-    setEvent: (eventId) => dispatch(setEvent(eventId)),
-    getCompanies: () => dispatch(getCompanies()),
-    getEvents: (userId, apiToken) => dispatch(getEventos(userId, apiToken)),
-    getEventsFromCompany: (companyId) => dispatch(getEventsFromCompany(companyId)),
-    mostrarElementoDeCarga: () => dispatch(mostrarElementoDeCarga()),
-    ocultarElementoDeCarga: () => dispatch(ocultarElementoDeCarga())
+  cleanHashtags: () => dispatch(cleanHashtags()),
+  getEventHashtags: (eventId) => dispatch(getEventHashtags(eventId)),
+  mostrarElementoDeCarga: () => dispatch(mostrarElementoDeCarga()),
+  ocultarElementoDeCarga: () => dispatch(ocultarElementoDeCarga())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SocialWall);
