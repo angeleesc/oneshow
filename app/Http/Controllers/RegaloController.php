@@ -272,7 +272,7 @@ class RegaloController extends Controller
             if (env('APP_ENV') === 'local') {
                 $source = storage_path('app/public/' . $newRegalo->PathImg);
                 $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
-                $success = copy($source, $destination);
+                // $success = copy($source, $destination);
 
             } else {
                 /**
@@ -329,7 +329,7 @@ class RegaloController extends Controller
                 if (env('APP_ENV') === 'local') {
                     $source = storage_path('app/public/' . $newRegalo->PathImg);
                     $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
-                    $success = copy($source, $destination);
+                    // $success = copy($source, $destination);
 
                 } else {
                     /**
@@ -368,7 +368,7 @@ class RegaloController extends Controller
                     if (env('APP_ENV') === 'local') {
                         $source = storage_path('app/public/' . $findRegalo->PathImg);
                         $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $findRegalo->_id . '.' . $fileDataImg['extension'];
-                        $success = copy($source, $destination);
+                        // $success = copy($source, $destination);
 
                     } else {
                         /**

@@ -24,14 +24,14 @@ export default function FormPlantilla(props) {
         const id = selectRef.current.value
         const $contenedorPlantillas = document.querySelector("#contenedor-plantilla");
         if (id !== "0") {
-            
+
             const template = await fetch(`${url}plantillas/${id}/index.html`, {
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             })
             const result = await template.text();
-            
+
             $contenedorPlantillas.innerHTML = result
 
             const nombreEvento = document.querySelector('#nombre');

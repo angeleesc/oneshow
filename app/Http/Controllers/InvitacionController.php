@@ -153,7 +153,7 @@ class InvitacionController extends Controller
             $input = $request->all();
             $evento = (string) $input['id-evento'];
             $empresa = (string) Evento::find($evento)->Empresa_id;
-            $pathSave = 'Invitacion/' . $empresa . '/' . $evento . '/';
+            $pathSave = $empresa . '/Invitacion/' . $evento;
             $archivoimg = $input['archivoimg'];
             $fileDataImg = [
                 'extension' => $archivoimg->getClientOriginalExtension(),
@@ -169,7 +169,7 @@ class InvitacionController extends Controller
                     'mime' => $archivopdf->getMimeType(),
                 ];
                 $namePdf = 'invitacion-pdf.' . $fileDataPdf['extension'];
-                Storage::disk('public_oneshow')->put($pathSave . $namePdf, File::get($archivopdf));
+                $pathPdf = $request->file('archivopdf')->storeAs($pathSave, $namePdf, 'public');
             } else {
                 $fileDataPdf = [
                     'extension' => '',
@@ -178,14 +178,17 @@ class InvitacionController extends Controller
                 ];
                 $namePdf = '';
             }
-            Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($archivoimg));
+            // Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($archivoimg));
+
+            $path = $request->file('archivoimg')->storeAs($pathSave, $nameImg, 'public');
+
             //capturo los datos y los acomodo en un arreglo
             $data = [
                 'id-evento' => new ObjectID($input['id-evento']),
                 'modo' => $input['tipo'] == 'v' ? 'VERTICAL' : 'HORIZONTAL',
-                'pathimg' => url('/') . '/OneShow/' . $pathSave . $nameImg,
+                'pathimg' => $path,
                 'sizeimg' => $fileDataImg['size'],
-                'pathpdf' => $archivopdf ? url('/') . '/OneShow/' . $pathSave . $namePdf : '',
+                'pathpdf' => $archivopdf ? $pathPdf : '',
                 'sizepdf' => $fileDataPdf['size'],
                 'activo' => true,
                 'borrado' => false,
@@ -201,7 +204,27 @@ class InvitacionController extends Controller
             $registro->Fecha = Carbon::now();
             $registro->Activo = $data['activo'];
             $registro->Borrado = $data['borrado'];
+            if (env('APP_ENV') === 'local') {
+                $source = storage_path('app/public/' . $registro->PathImg);
+                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataImg['extension'];
+                // $success = copy($source, $destination);
+                if($archivopdf){
+                    $sourcePdf = storage_path('app/public/' . $registro->PathPdf);
+                    $destinationPdf = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataPdf['extension'];
+                }
 
+            } else {
+                /**
+                 * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
+                 * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
+                 */
+                $name = $registro->_id . '.' . $fileDataImg['extension'];
+                $request->file('archivoimg')->storeAs('ROOT/files', $name, 'ftp');
+                if($archivopdf){
+                    $namePdf = $registro->_id . '.' . $fileDataPdf['extension'];
+                    $request->file('archivopdf')->storeAs('ROOT/files', $namePdf, 'ftp');
+                }
+            }
             //verifico si fue exitoso el insert en la bd
             if ($registro->save()) {
                 return response()->json(['code' => 200]);
@@ -220,7 +243,8 @@ class InvitacionController extends Controller
             $errorEvento = new Exception("El evento no existe");
             $eventoF = $findEvento->_id;
             $empresa = $findEvento->Empresa_id;
-            $pathSave = 'Invitacion/' . $empresa . '/' . $eventoF . '/';
+
+            $pathSave = $empresa . '/Invitacion/' . $eventoF;
 
             if (!$findEvento) {
                 return json_encode(['error' => $errorEvento->getMessage()]);
@@ -252,7 +276,8 @@ class InvitacionController extends Controller
                         'mime' => $archivopdf->getMimeType(),
                     ];
                     $namePdf = 'invitacion-pdf.' . $fileDataPdf['extension'];
-                    Storage::disk('public_oneshow')->put($pathSave . $namePdf, File::get($archivopdf));
+                    $path = $request->file('archivopdf')->storeAs($pathSave, $namePdf, 'public');
+
                 } else {
                     $fileDataPdf = [
                         'extension' => '',
@@ -267,7 +292,7 @@ class InvitacionController extends Controller
                     'id-plantilla' => $plantilla,
                     'activo' => true,
                     'borrado' => false,
-                    'pathpdf' => $archivopdf ? url('/') . '/OneShow/' . $pathSave . $namePdf : '',
+                    'pathpdf' => $archivopdf ? $path : '',
                     'sizepdf' => $fileDataPdf['size'],
                     'fecha' => Carbon::now(),
 
@@ -282,6 +307,20 @@ class InvitacionController extends Controller
                 $registro->PathPdf = $data['pathpdf'];
                 $registro->SizePdf = $data['sizepdf'];
                 $registro->save();
+                // Storage::disk('public_oneshow')->put($pathSave . $namePdf, File::get($archivopdf));
+                if (env('APP_ENV') === 'local') {
+                    $source = storage_path('app/public/' . $registro->PathPdf);
+                    $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataPdf['extension'];
+                    // $success = copy($source, $destination);
+
+                } else {
+                    /**
+                     * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
+                     * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
+                     */
+                    $name = $newRegalo->_id . '.' . $fileDataImg['extension'];
+                    $request->file('PathImg')->storeAs('ROOT/files', $name, 'ftp');
+                }
                 return response()->json(['invitacion' => $registro]);
             } catch (\Exception $e) {
 
@@ -387,8 +426,16 @@ class InvitacionController extends Controller
             $registro = Invitacion::find($id);
             //valido que de verdad sea borrado en caso de que no arrojo un error
             if ($registro->delete()) {
-                Storage::disk('public_oneshow')->delete($registro->PathImg);
-                Storage::disk('public_oneshow')->delete($registro->PathPdf);
+                // Storage::disk('public_oneshow')->delete($registro->PathImg);
+                // Storage::disk('public_oneshow')->delete($registro->PathPdf);
+                Storage::disk('public')->delete([
+                    $registro->PathPdf,
+                    'torrents/' . $id . '.torrent',
+                ]);
+                Storage::disk('public')->delete([
+                    $registro->PathImg,
+                    'torrents/' . $id . '.torrent',
+                ]);
                 return json_encode(['code' => 200]);
             }
             return json_encode(['code' => 500]);
@@ -409,7 +456,7 @@ class InvitacionController extends Controller
         $errorValidarCampos = new Exception("Campos inválidos");
         $evento = $findEvento->_id;
         $empresa = $findEvento->Empresa_id;
-        $pathSave = 'Invitacion/' . $empresa . '/' . $evento . '/';
+        $pathSave = $empresa . '/Invitacion/' . $evento;
 
         if ($all >= 1) {
             return json_encode(['error' => $maxinvitacion->getMessage()]);
@@ -441,7 +488,7 @@ class InvitacionController extends Controller
                     'mime' => $archivopdf->getMimeType(),
                 ];
                 $namePdf = 'invitacion-pdf.' . $fileDataPdf['extension'];
-                Storage::disk('public_oneshow')->put($pathSave . $namePdf, File::get($archivopdf));
+                $pathPdf = $request->file('archivopdf')->storeAs($pathSave, $namePdf, 'public');
             } else {
                 $fileDataPdf = [
                     'extension' => '',
@@ -450,14 +497,14 @@ class InvitacionController extends Controller
                 ];
                 $namePdf = '';
             }
-            Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($archivoimg));
+            $path = $request->file('archivoimg')->storeAs($pathSave, $nameImg, 'public');
             //capturo los datos y los acomodo en un arreglo
             $data = [
-                'id-evento' => new ObjectID($evento),
+                'id-evento' => new ObjectID($idEvento),
                 'modo' => $input['tipo'] == 'v' ? 'VERTICAL' : 'HORIZONTAL',
-                'pathimg' => url('/') . '/OneShow/' . $pathSave . $nameImg,
+                'pathimg' => $path,
                 'sizeimg' => $fileDataImg['size'],
-                'pathpdf' => $archivopdf ? url('/') . '/OneShow/' . $pathSave . $namePdf : '',
+                'pathpdf' => $archivopdf ? $pathPdf : '',
                 'sizepdf' => $fileDataPdf['size'],
                 'activo' => true,
                 'borrado' => false,
@@ -474,6 +521,27 @@ class InvitacionController extends Controller
             $registro->Activo = $data['activo'];
             $registro->Borrado = $data['borrado'];
             $registro->save();
+            if (env('APP_ENV') === 'local') {
+                $source = storage_path('app/public/' . $registro->PathImg);
+                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataImg['extension'];
+                // $success = copy($source, $destination);
+                if($archivopdf){
+                    $sourcePdf = storage_path('app/public/' . $registro->PathPdf);
+                    $destinationPdf = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataPdf['extension'];
+                }
+
+            } else {
+                /**
+                 * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
+                 * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
+                 */
+                $name = $registro->_id . '.' . $fileDataImg['extension'];
+                $request->file('archivoimg')->storeAs('ROOT/files', $name, 'ftp');
+                if($archivopdf){
+                    $namePdf = $registro->_id . '.' . $fileDataPdf['extension'];
+                    $request->file('archivopdf')->storeAs('ROOT/files', $namePdf, 'ftp');
+                }
+            }
             return response()->json(['invitacion' => $registro]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
