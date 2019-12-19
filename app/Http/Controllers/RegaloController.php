@@ -149,7 +149,7 @@ class RegaloController extends Controller
                     return json_encode(['regalo' => $regaloEdit]);
 
                 } else {
-                    
+
                     $newRegalo->Evento_id = new ObjectId($findEvento->_id);
                     $newRegalo->TipoRegalo = $data['TipoRegalo'];
                     $newRegalo->OpcionDinero = $data['OpcionDinero'];
@@ -243,7 +243,7 @@ class RegaloController extends Controller
             if (!$validarObjeto) {
                 return json_encode(['code' => 'Error en los campos']);
             }
-            $pathSave = 'Regalos/' . $idEvento . '/';
+            $pathSave = $empresa . '/Regalos/' . $idEvento;
             $fileDataImg = [
                 'extension' => $image->getClientOriginalExtension(),
                 'size' => humanFileSize($image->getSize()),
@@ -252,11 +252,12 @@ class RegaloController extends Controller
 
             $randomName = rand(1, 1000000000);
             $nameImg = $randomName . '.' . $fileDataImg['extension'];
-            Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($image));
+            // Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($image));
+            $path = $request->file('PathImg')->storeAs($pathSave, $nameImg, 'public');
 
             $newRegalo->Evento_id = new ObjectId($idEvento);
             $newRegalo->TipoRegalo = $input['TipoRegalo'];
-            $newRegalo->PathImg = url('/') . '/OneShow/' . $pathSave . $nameImg;
+            $newRegalo->PathImg = $path;
             $newRegalo->NameImg = $nameImg;
             $newRegalo->Objeto = $input['Objeto'];
             $newRegalo->SKU = isset($input['SKU']) ? $input['SKU'] : '';
@@ -266,6 +267,20 @@ class RegaloController extends Controller
             $newRegalo->Borrado = false;
             $newRegalo->Activo = true;
             $newRegalo->save();
+            if (env('APP_ENV') === 'local') {
+                $source = storage_path('app/public/' . $newRegalo->PathImg);
+                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
+                $success = copy($source, $destination);
+
+            } else {
+                /**
+                 * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
+                 * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
+                 */
+                $name = $newRegalo->_id . '.' . $fileDataImg['extension'];
+                $request->file('PathImg')->storeAs('ROOT/files', $name, 'ftp');
+            }
+
             return json_encode(['regalo' => $newRegalo]);
         } catch (\Exception $e) {
             // $e->getMessage()
@@ -312,18 +327,18 @@ class RegaloController extends Controller
                 if ($findRegalo->PathImg != $input['PathImg']) {
                     $url = $_SERVER['DOCUMENT_ROOT'] . '/OneShow/Regalos';
                     if ($findRegalo->PathImg != "") {
-                       
+
                         $pathImage = $url . '/' . $findRegalo->Evento_id . '/' . $findRegalo->NameImg;
                         \unlink($pathImage);
                     }
-                    
+
                     $pathSave = 'Regalos/' . $idEvento . '/';
                     $fileDataImg = [
                         'extension' => $input['PathImg']->getClientOriginalExtension(),
                         'size' => humanFileSize($input['PathImg']->getSize()),
                         'mime' => $input['PathImg']->getMimeType(),
                     ];
-                    
+
                     $randomName = rand(1, 1000000000);
                     $nameImg = $randomName . '.' . $fileDataImg['extension'];
                     Storage::disk('public_oneshow')->put($pathSave . $nameImg, File::get($input['PathImg']));
@@ -355,15 +370,17 @@ class RegaloController extends Controller
     public function deleteRegalo($id)
     {
 
-        $url = $_SERVER['DOCUMENT_ROOT'] . '/OneShow/Regalos';
+        // $url = $_SERVER['DOCUMENT_ROOT'] . '/OneShow/Regalos';
         //valido que venga el id sino mando un error
 
         try {
             if ($id) {
                 $registro = Regalo::find($id);
                 if ($registro->delete()) {
-                    $pathImg = $url . '/' . $registro->Evento_id . '/' . $registro->NameImg;
-                    \unlink($pathImg);
+                    Storage::disk('public')->delete([
+                        $registro->PathImg,
+                        'torrents/' . $id . '.torrent',
+                    ]);
                 }
                 return json_encode(['code' => 200]);
             }

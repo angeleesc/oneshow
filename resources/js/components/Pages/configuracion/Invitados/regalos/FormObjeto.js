@@ -20,7 +20,7 @@ export default function FormObjeto(props) {
         <Fragment>
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-5 text-center" id="contenedor_imagen_objeto">
-                    <img src={PathImg ? PathImg : `${url}/images/example.png`} className="mr-4" id="fotoTagImg" alt="foto objeto" />
+                    <img src={PathImg ? `${url}/storage/${PathImg}` : `${url}/images/example.png`} className="mr-4" id="fotoTagImg" alt="foto objeto" />
                     <input type="file" ref={refImg} id="fotoObjeto" disabled={disabled} name="fotoObjeto" onChange={props.changeFn} />
                 </div>
 
