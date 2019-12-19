@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidateArchivo;
 use App\Models\MongoDB\Biblioteca;
 use App\Models\MongoDB\CategoriaBiblioteca;
+use App\Models\MongoDB\CategoriaChroma;
 use App\Models\MongoDB\Empresa;
 use App\Models\MongoDB\Estado;
 use App\Models\MongoDB\Evento;
@@ -260,17 +261,6 @@ class BibliotecaController extends Controller
                     'Empresa'   => Empresa::find($e->Empresa_id)->Nombre,
                     'Empresa_id' => strtolower($e->Empresa_id),
                     'Evento'    => strtoupper($e->Nombre),
-                    'Anfitrion1' => strtoupper($e->Anfitrion1),
-                    'Anfitrion2' => $e->Anfitrion2,
-                    'Apelllido1' => $e->Apelllido1,
-                    'Apelllido2' => $e->Apelllido2,
-                    'Logo' => $e->Logo,
-                    'Dir1' => $e->Dir1,
-                    'Dir2' => $e->Dir2,
-		    'Vestimenta' => $e->Vestimenta,
-                    'FotoAnfitrion1' => $e->FotoAnfitrion1,
-		    'FotoAnfitrion2' => $e->FotoAnfitrion2,
-		    'FotoAnfitrion3' => $e->FotoAnfitrion3,
                     'IDEvento'  => $e->IDEvento,
                     'Fecha'     => $e->Fecha. ' '.$e->Hora,
                     'App'       => $e->App,
@@ -327,6 +317,7 @@ class BibliotecaController extends Controller
 
         $data['estados'] = Estado::borrado(false)->get();
         $data['categorias'] = CategoriaBiblioteca::borrado(false)->activo(true)->orderBy('Nombre', 'ASC')->get();
+        $data['categoriasChroma'] = CategoriaChroma::borrado(false)->activo(true)->orderBy('Nombre', 'ASC')->get();
 
         if($data){
             return json_encode(['code' => 200,'data'=>$data]);
@@ -377,10 +368,16 @@ class BibliotecaController extends Controller
           $audio = new Mp3Info($request->archivo->path());
           $duration = floor($audio->duration * 1000);
 
+        } else if ($categoria->Nombre === 'Chroma Studios') {
+          
+        Validator::make(['archivo' => $request->archivo], [
+            'archivo' => 'file|image',
+          ])->validate();
+
         } else if ($categoria->Nombre === 'Video') {
           
           Validator::make(['archivo' => $request->archivo], [
-            'archivo' => 'file|mimetypes:video/x-msvideo,video/mpeg,video/3gpp|mimes:mp4',
+            'archivo' => 'file|mimetypes:video/mp4,video/x-msvideo,video/mpeg,video/3gpp|mimes:mp4',
           ])->validate();
 
           $getID3 = new \getID3();
@@ -398,6 +395,7 @@ class BibliotecaController extends Controller
             'path'             => $path,
             'size'             => $fileData['size'],
             'categoria'        => new ObjectId($input['categoria']),
+            'categoriaChroma'  => new ObjectId($input['categoriaChroma']),
             'activo'           => true,
             'borrado'          => false
         ];
@@ -412,6 +410,7 @@ class BibliotecaController extends Controller
         $registro->Extension                 = $fileData['extension'];
         $registro->Size                      = $data['size'];
         $registro->CategoriaBiblioteca_id    = $data['categoria'];
+        $registro->CategoriasChroma_id       = $data['categoriaChroma'];
         $registro->Fecha                     = Carbon::now();
         $registro->Activo                    = $data['activo'];
         $registro->Duracion                  = $duration;
@@ -419,10 +418,20 @@ class BibliotecaController extends Controller
 
         //verifico si fue exitoso el insert en la bd
         if($registro->save()) {
-            
+            /**
+             * Si la aplicación se encuentra en un entorno de desarrollo, simplemente
+             * copia el archivo subido a la carpeta del proyecto del seeder
+             */
             if (env('APP_ENV') === 'local') {
-              MoveFileToTorrentClient::dispatch($registro);
+              $source = storage_path('app/public/' . $registro->Path);
+              $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->id . '.' . $registro->Extension;
+              $success = copy($source, $destination);
+            
             } else {
+              /**
+               * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
+               * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
+               */
               $name = $registro->id .'.'. $fileData['extension'];
               $request->file('archivo')->storeAs('ROOT/files', $name, 'ftp');
             }

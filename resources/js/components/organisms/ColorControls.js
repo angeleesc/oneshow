@@ -98,7 +98,8 @@ class ColorControls extends React.Component {
     }
 
     // First command execution
-    const firstCommand = `COL,${1},${this.step},${this.state.colors[this.step]},${this.state.vibrate ? 1 : 0}`;
+    let now = (new Date()).getTime() - this.props.timeOffset;
+    const firstCommand = `COL,${1},${this.step},${this.state.colors[this.step]},${this.state.vibrate ? 1 : 0},${now}`;
     this.props.submitCommand(firstCommand);
 
     if (this.step === (this.state.colors.length - 1)) {
@@ -124,8 +125,9 @@ class ColorControls extends React.Component {
       let color = current.colors[this.step];
       let vibrate = current.vibrate ? 1 : 0;
       let moment = 1;
+      let now = (new Date()).getTime() - this.props.timeOffset;
 
-      let command = `COL,${moment},${id},${color},${vibrate}`;
+      let command = `COL,${moment},${id},${color},${vibrate},${now}`;
 
       this.props.submitCommand(command);
 
@@ -222,7 +224,8 @@ class ColorControls extends React.Component {
   }
 }
 
-const mapStateToProps = ({ show }) => ({
+const mapStateToProps = ({ show, app }) => ({
+  timeOffset: app.timeOffset,
   color: show.color,
   selectedSceneId: show.scenes.selected,
   selectedScene: show.scenes.items.find(item => {

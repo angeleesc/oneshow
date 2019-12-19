@@ -1,6 +1,7 @@
 <?php
     include('./social-stream/social-stream.php');
 
+
     /**
      * Obtener hashtags de Twitter con #
      * 
@@ -23,8 +24,8 @@
     function obtenerRedesAConsultar() {
         $redes = array();
 
-        $hashtagsTwitter = (json_decode($_GET['hashtagsTwitter'])) ? json_decode($_GET['hashtagsTwitter']) : [];
-        $hashtagsInstagram = (json_decode($_GET['hashtagsInstagram'])) ? json_decode($_GET['hashtagsInstagram']) : [];
+        $hashtagsTwitter = explode(',', $_GET['hashtagsTwitter']);
+        $hashtagsInstagram = explode(',', $_GET['hashtagsInstagram']);
 
         $hashtagsTwitter = obtenerHashtagsConSimbolo($hashtagsTwitter);
 

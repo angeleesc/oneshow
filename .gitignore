@@ -1,6 +1,5 @@
 /node_modules
 /public/hot
-./public/OneShow
 /public/storage
 /storage/*.key
 /vendor
@@ -18,8 +17,8 @@ yarn-error.log
 /public/Lib/social-stream/log.txt
 
 # Compilation generated files
-# /public/js/app.js
-# /public/js/vendor.js
-# /public/css/vendor.css
-# /public/css/main.css
-# /public/webfonts
+/public/js/app.js
+/public/js/vendor.js
+/public/css/vendor.css
+/public/css/main.css
+/public/webfonts

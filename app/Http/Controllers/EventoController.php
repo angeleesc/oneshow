@@ -1167,46 +1167,6 @@ class EventoController extends Controller
     }
 
     /**
-     * Consultar Hashtags del Evento
-     *
-     * @param ConsultarHashtags $request
-     * @return Response
-     */
-    public function consultarHashtagsDelEvento(ConsultarHashtags $request)
-    {
-        $evento = Evento::find($request->eventoId);
-
-        if ($evento->HashtagsTwitter || $evento->HashtagsInstagram) {
-            return response()->json([
-                'hashtagsTwitter' => ($evento->HashtagsTwitter) ? json_encode($evento->HashtagsTwitter) : null,
-                'hashtagsInstagram' => ($evento->HashtagsInstagram) ? json_encode($evento->HashtagsInstagram) : null,
-                'existen' => true,
-            ], 200);
-        }
-
-        return response()->json([
-            'mensaje' => 'No existen Hashtags registrados para el evento',
-            'existen' => false,
-        ], 200);
-    }
-
-    /**
-     * Actualizar Hashtags y redes sociales disponibles
-     *
-     * @param ActualizarHashtags $request
-     * @return Response
-     */
-    public function actualizarHashtagsDelEvento(ActualizarHashtags $request)
-    {
-        $evento = Evento::find($request->eventoId);
-        $evento->HashtagsTwitter = ($request->HashtagsTwitter) ? json_decode($request->HashtagsTwitter) : [];
-        $evento->HashtagsInstagram = ($request->HashtagsInstagram) ? json_decode($request->HashtagsInstagram) : [];
-        $evento->save();
-
-        return response()->json(['guardado' => true], 200);
-    }
-
-    /**
      * Registrar publicacion RSS
      *
      * @param Request $request
@@ -1286,7 +1246,11 @@ class EventoController extends Controller
     public function actualizarConfiguracionSocialWall(Request $request)
     {
         $evento = Evento::find($request->eventoId);
-        $evento->SocialWall = $request->preferencias;
+        $evento->SocialWall = [
+            'tema' => $request->tema,
+            'presentacion' => $request->presentacion,
+            'moderarContenido' => $request->moderarContenido
+        ];
         $evento->save();
 
         return response()->json(['creado' => true]);

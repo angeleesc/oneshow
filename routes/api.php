@@ -2,6 +2,7 @@
 
 Route::post('/login', 'LoginController@login');
 Route::post('/logout', 'LoginController@logout')->middleware('api_token');
+Route::get('/server/time', 'AgendaController@getCurrentServerTime')->middleware('api_token');;
 
 /**
  * Recover password endpoints
@@ -99,10 +100,9 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'eventos'], function () {
     Route::get('/usuario/{id}', 'EventoController@getEventosUsuario');
     Route::post('/envios', 'EventoController@getEnvios');
     Route::post('/remove-envios', 'EventoController@quitarEnvios');
-    Route::post('/cola/add', 'EventoController@addCola');
-
-    Route::get('/redes-sociales/consultar', 'EventoController@consultarHashtagsDelEvento');
-    Route::post('/redes-sociales/actualizar', 'EventoController@actualizarHashtagsDelEvento');
+    Route::post('/cola/add','EventoController@addCola');
+    
+    Route::post('/RSS','EventoController@registrarPublicacionRSS');
 
     Route::post('/RSS', 'EventoController@registrarPublicacionRSS');
 
@@ -114,9 +114,12 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'eventos'], function () {
  * EVENT related endpoints
  */
 Route::group(['middleware' => 'api_token', 'prefix' => 'event'], function () {
-    Route::get('/{eventId}/scenes', 'SceneController@get');
-    Route::post('/{eventId}/scene', 'SceneController@create');
-    Route::delete('/{eventId}/scene/{sceneId}', 'SceneController@delete');
+  Route::get('/{eventId}/social/hashtags', 'SocialWallController@getEventHashtags');
+  Route::put('/{eventId}/social/hashtags', 'SocialWallController@updateEventHashtags');
+
+  Route::get('/{eventId}/scenes', 'SceneController@get');
+  Route::post('/{eventId}/scene', 'SceneController@create');
+  Route::delete('/{eventId}/scene/{sceneId}', 'SceneController@delete');
 });
 
 Route::group(['middleware' => 'api_token', 'prefix' => 'invitaciones'], function () {

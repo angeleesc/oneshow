@@ -75,6 +75,17 @@ class ImageControls extends React.Component {
         }, () => this.startCommand())
       }
     }
+
+    if (prevProps.eventId !== this.props.eventId) {
+      this.props.getFilesFromEvent('Imagen').then(files => {
+        this.setState({ 
+          files: files.map(file => ({...file, selected: false }))
+        });
+      })
+      .catch(e => {
+        console.log('Error', e);
+      })
+    }
   }
 
   endCurrentShow () {
@@ -240,7 +251,9 @@ class ImageControls extends React.Component {
   }
 }
 
-const mapStateToProps = ({ show }) => ({
+const mapStateToProps = ({ app, show, multimedia }) => ({
+  timeOffset: app.timeOffset,
+  eventId: multimedia.eventId,
   image: show.image,
   selectedSceneId: show.scenes.selected,
   selectedScene: show.scenes.items.find(item => {

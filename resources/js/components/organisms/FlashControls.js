@@ -192,7 +192,8 @@ class FlashControls extends React.Component {
   }
 }
 
-const mapStateToProps = ({ show }) => ({
+const mapStateToProps = ({ app, show }) => ({
+  timeOffser: app.timeOffser,
   flash: show.flash,
   selectedSceneId: show.scenes.selected,
   selectedScene: show.scenes.items.find(item => {

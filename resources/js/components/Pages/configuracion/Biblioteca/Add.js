@@ -18,6 +18,7 @@ export default class Add extends React.Component {
             archivos: [],
             api_token: localStorage.getItem("api_token"),
             categorias: [],
+            categoriasChroma: [],
             categoriaSeleccionada: "",
             estados: [],
             fileText: 'Elegir Archivo',
@@ -27,6 +28,7 @@ export default class Add extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleFileChange = this.handleFileChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.ChromaSelect = this.ChromaSelect.bind(this);
         this.fileInput = React.createRef();
     }
 
@@ -45,11 +47,32 @@ export default class Add extends React.Component {
             this.setState({
                 isLoading : false,
                 categorias : res.data.data.categorias,
+                categoriasChroma : res.data.data.categoriasChroma,
                 idCategoria: res.data.data.categorias[0]._id,
+                idCategoriaChroma: res.data.data.categoriasChroma[2]._id,
                 nombreArchivo: '',
                 estados: res.data.data.estados
             })
         });
+    }
+
+    ChromaSelect() {
+        return(
+        <div className="form-group row">
+            <label className="col-sm-2 col-form-label col-form-label-sm">Efecto Chroma</label>
+            <div className="col-sm-4">
+                <select className="form-control form-control-sm" id="categoriaChroma" name="categoriaChroma" value={this.state.value} onChange={this.handleInputChange} required>
+                    <option value="">Seleccione</option>
+                    { this.state.categoriasChroma.map((e, index) => {
+                        return (
+                            <option key={index} value={e._id}>{e.Nombre}</option>
+                        )
+                        })
+                    }
+                </select>
+            </div>
+        </div>
+        );
     }
 
     handleFileChange (e) {
@@ -72,9 +95,15 @@ export default class Add extends React.Component {
             this.setState({
                 nombreArchivo: value
               })
+        }else if(name == 'categoria'){
+            const categoriaName = target.options[target.selectedIndex].text;
+            this.setState({
+                idCategoria:value,
+                categoriaSeleccionada:categoriaName
+            })
         }else{
             this.setState({
-                idCategoria:value
+                idCategoriaChroma:value
             })
         }
     }
@@ -92,6 +121,7 @@ export default class Add extends React.Component {
     formData.append("id-evento", this.state.eventoid);
     formData.append("name", this.state.nombreArchivo);
     formData.append("categoria",this.state.idCategoria);
+    formData.append("categoriaChroma",this.state.idCategoriaChroma);
     formData.append("archivo", (this.fileInput.current.files[0] === undefined) ? '' : this.fileInput.current.files[0] );
     
     axios.post('api/biblioteca/evento/add-file',formData,{
@@ -272,8 +302,10 @@ export default class Add extends React.Component {
                                                 </select>
                                             </div>
                                         </div>
+                                    {this.state.categoriaSeleccionada == 'ChromaStudios' ? <this.ChromaSelect /> : ""}    
                                     </div>
                                 </div>
+                                
                                 <div className="form-group row">
                                     <div className="col-sm-4">
                                         <button type="submit" id="save-file" className="btn btn-sm btn-dark mr-2">Guardar</button>
