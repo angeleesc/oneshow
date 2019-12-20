@@ -34,7 +34,7 @@ class Guardar extends Component {
             permisoUsuario: JSON.parse(localStorage.getItem("permisosUsuario")),
             opcion: "Invitacion",
             footer: "Footer",
-            url: "http://localhost:8001",
+            url: process.env.MIX_HOST,
             eventoNombre: "",
             valueRegaloObjeto: 'OBJETO',
             valueRegaloDinero: 'DINERO',
@@ -526,7 +526,7 @@ class Guardar extends Component {
                             </div>
                         </form>
                         <footer className="content-wrapper-footer">
-                            <span>{this.state.footer}</span>
+                            {/* <span>{this.state.footer}</span> */}
                         </footer>
                     </div>
                 </div>

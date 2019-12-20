@@ -269,19 +269,10 @@ class RegaloController extends Controller
             $newRegalo->Borrado = false;
             $newRegalo->Activo = true;
             $newRegalo->save();
-            if (env('APP_ENV') === 'local') {
-                $source = storage_path('app/public/' . $newRegalo->PathImg);
-                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
-                // $success = copy($source, $destination);
 
-            } else {
-                /**
-                 * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
-                 * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
-                 */
-                $name = $newRegalo->_id . '.' . $fileDataImg['extension'];
-                $request->file('PathImg')->storeAs('ROOT/files', $name, 'ftp');
-            }
+            $source = storage_path('app/public/' . $newRegalo->PathImg);
+            $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
+            // $success = copy($source, $destination);
 
             return json_encode(['regalo' => $newRegalo]);
         } catch (\Exception $e) {
@@ -326,19 +317,10 @@ class RegaloController extends Controller
                 $findRegalo->CUIL = "";
                 $findRegalo->CBU = "";
                 $findRegalo->save();
-                if (env('APP_ENV') === 'local') {
-                    $source = storage_path('app/public/' . $newRegalo->PathImg);
-                    $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
-                    // $success = copy($source, $destination);
+                $source = storage_path('app/public/' . $newRegalo->PathImg);
+                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
+                // $success = copy($source, $destination);
 
-                } else {
-                    /**
-                     * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
-                     * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
-                     */
-                    $name = $newRegalo->_id . '.' . $fileDataImg['extension'];
-                    $request->file('PathImg')->storeAs('ROOT/files', $name, 'ftp');
-                }
                 return json_encode(['regalo' => $findRegalo]);
 
             } else {
@@ -365,19 +347,11 @@ class RegaloController extends Controller
 
                     $findRegalo->PathImg = $path;
                     $findRegalo->NameImg = $nameImg;
-                    if (env('APP_ENV') === 'local') {
-                        $source = storage_path('app/public/' . $findRegalo->PathImg);
-                        $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $findRegalo->_id . '.' . $fileDataImg['extension'];
-                        // $success = copy($source, $destination);
 
-                    } else {
-                        /**
-                         * Si la aplicación se encuentra en un entorno de producción, entonces envía el archivo
-                         * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
-                         */
-                        $name = $findRegalo->_id . '.' . $fileDataImg['extension'];
-                        $request->file('PathImg')->storeAs('ROOT/files', $name, 'ftp');
-                    }
+                    $source = storage_path('app/public/' . $findRegalo->PathImg);
+                    $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $findRegalo->_id . '.' . $fileDataImg['extension'];
+                    // $success = copy($source, $destination);
+
                 }
                 $findRegalo->TipoRegalo = $input['TipoRegalo'];
                 $findRegalo->Objeto = $input['Objeto'];

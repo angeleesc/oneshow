@@ -304,7 +304,7 @@ class Regalos extends Component {
                         {this.selectDeEmpresas()}
                         {this.mostrarTabla()}
                         <footer className="content-wrapper-footer">
-                            <span>{this.state.footer}</span>
+                            {/* <span>{this.state.footer}</span> */}
                         </footer>
                     </div>
                 </div>

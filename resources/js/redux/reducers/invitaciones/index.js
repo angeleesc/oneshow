@@ -66,6 +66,7 @@ export default function (state = INITIAL_STATE, action) {
 
         case LIMPIAR_FORM:
             return {
+                ...state,
                 inputTipo: "",
                 inputImagen: "",
                 inputPdf: "",
