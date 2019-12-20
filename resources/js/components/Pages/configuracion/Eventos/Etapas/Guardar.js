@@ -258,7 +258,7 @@ class Guardar extends Component {
                     <div id="sweet" className="container-fluid">
                         {this.mostrarForm()}
                         <footer className="content-wrapper-footer">
-                            <span>{this.state.footer}</span>
+                            {/* <span>{this.state.footer}</span> */}
                         </footer>
                     </div>
                 </div>

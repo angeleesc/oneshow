@@ -25,7 +25,7 @@ export default function FormPlantilla(props) {
         const $contenedorPlantillas = document.querySelector("#contenedor-plantilla");
         if (id !== "0") {
 
-            const template = await fetch(`${url}/plantillas/${id}/index.html`, {
+            const template = await fetch(`${url}plantillas/${id}/index.html`, {
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
@@ -41,6 +41,7 @@ export default function FormPlantilla(props) {
             const fechaAnio = document.querySelector('#fecha #fecha-anio');
             const hora = document.querySelector('#hora');
             const dir1 = document.querySelector('#dir1');
+            const dir2 = document.querySelector('#dir2');
             const vestimenta = document.querySelector('#vestimenta');
             const fotoAnfitrion1 = document.querySelector('#fotoAnfitrion1');
             const fotoAnfitrion2 = document.querySelector('#fotoAnfitrion2');

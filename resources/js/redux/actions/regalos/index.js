@@ -178,9 +178,6 @@ export const guardarRegalo = (regalo, editEvento, idRegalo, keyRegalo, edit, key
         })
         const newRegalo = result.data.regalo
 
-
-        console.log('result.data', result);
-        console.log('regalo', regalo);
         let regalosAct = []
         if (!edit) {
 
@@ -229,7 +226,7 @@ export const guardarRegalo = (regalo, editEvento, idRegalo, keyRegalo, edit, key
 
     } catch (error) {
 
-        console.log(error);
+        // console.log(error);
 
         dispatch({
             type: ERROR,

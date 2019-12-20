@@ -63,7 +63,7 @@ export default class Welcome extends Component {
                         </div>
                         {/**esto de abajo es de php, es el texto que cambia con el menu */}
                         <footer className="content-wrapper-footer">
-                            <span>{this.state.footer}</span>
+                            {/* <span>{this.state.footer}</span> */}
                         </footer>
                     </div>
                 </div>

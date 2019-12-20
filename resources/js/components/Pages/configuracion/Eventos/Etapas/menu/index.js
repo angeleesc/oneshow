@@ -263,7 +263,7 @@ class MenuEtapas extends Component {
                     <div id="sweet" className="container-fluid">
                         {this.mostrarTabla()}
                         <footer className="content-wrapper-footer">
-                            <span>{this.state.footer}</span>
+                            {/* <span>{this.state.footer}</span> */}
                         </footer>
                     </div>
                 </div>
