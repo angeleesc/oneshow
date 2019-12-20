@@ -433,7 +433,7 @@ class BibliotecaController extends Controller
                * por FTP a la carpeta "files" del proyecto "seeder" que se encuentra en otro servidor
                */
               $name = $registro->id .'.'. $fileData['extension'];
-              $request->file('archivo')->storeAs('ROOT/files', $name, 'ftp');
+              $request->file('archivo')->storeAs(env('ONESHOW_FTP_DEST_FOLDER'), $name, 'ftp');
             }
 
 
