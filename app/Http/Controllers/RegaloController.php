@@ -317,8 +317,8 @@ class RegaloController extends Controller
                 $findRegalo->CUIL = "";
                 $findRegalo->CBU = "";
                 $findRegalo->save();
-                $source = storage_path('app/public/' . $newRegalo->PathImg);
-                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
+                $source = storage_path('app/public/' . $findRegalo->PathImg);
+                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $findRegalo->_id . '.' . $fileDataImg['extension'];
                 // $success = copy($source, $destination);
 
                 return json_encode(['regalo' => $findRegalo]);
