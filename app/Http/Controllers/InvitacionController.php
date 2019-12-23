@@ -206,11 +206,10 @@ class InvitacionController extends Controller
             $registro->Borrado = $data['borrado'];
 
             $source = storage_path('app/public/' . $registro->PathImg);
-            $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataImg['extension'];
-            // $success = copy($source, $destination);
+   
             if ($archivopdf) {
                 $sourcePdf = storage_path('app/public/' . $registro->PathPdf);
-                $destinationPdf = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataPdf['extension'];
+
             }
 
             //verifico si fue exitoso el insert en la bd
@@ -297,8 +296,7 @@ class InvitacionController extends Controller
                 $registro->save();
                 // Storage::disk('public_oneshow')->put($pathSave . $namePdf, File::get($archivopdf));
                 $source = storage_path('app/public/' . $registro->PathPdf);
-                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataPdf['extension'];
-                // $success = copy($source, $destination);
+
 
                 return response()->json(['invitacion' => $registro]);
             } catch (\Exception $e) {
@@ -501,11 +499,10 @@ class InvitacionController extends Controller
             $registro->Borrado = $data['borrado'];
             $registro->save();
             $source = storage_path('app/public/' . $registro->PathImg);
-            $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataImg['extension'];
-            // $success = copy($source, $destination);
+
             if ($archivopdf) {
                 $sourcePdf = storage_path('app/public/' . $registro->PathPdf);
-                $destinationPdf = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->_id . '.' . $fileDataPdf['extension'];
+
             }
 
             return response()->json(['invitacion' => $registro]);
