@@ -271,8 +271,7 @@ class RegaloController extends Controller
             $newRegalo->save();
 
             $source = storage_path('app/public/' . $newRegalo->PathImg);
-            $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
-            // $success = copy($source, $destination);
+
 
             return json_encode(['regalo' => $newRegalo]);
         } catch (\Exception $e) {
@@ -317,9 +316,8 @@ class RegaloController extends Controller
                 $findRegalo->CUIL = "";
                 $findRegalo->CBU = "";
                 $findRegalo->save();
-                $source = storage_path('app/public/' . $newRegalo->PathImg);
-                $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $newRegalo->_id . '.' . $fileDataImg['extension'];
-                // $success = copy($source, $destination);
+                $source = storage_path('app/public/' . $findRegalo->PathImg);
+
 
                 return json_encode(['regalo' => $findRegalo]);
 
@@ -349,8 +347,6 @@ class RegaloController extends Controller
                     $findRegalo->NameImg = $nameImg;
 
                     $source = storage_path('app/public/' . $findRegalo->PathImg);
-                    $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $findRegalo->_id . '.' . $fileDataImg['extension'];
-                    // $success = copy($source, $destination);
 
                 }
                 $findRegalo->TipoRegalo = $input['TipoRegalo'];
