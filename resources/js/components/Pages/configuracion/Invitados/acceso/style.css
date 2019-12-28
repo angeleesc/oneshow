@@ -1,0 +1,39 @@
+#container-btn button {
+    width: 80%;
+}
+@media (min-width: 700px) and (max-width: 1024px) and (orientation: landscape) {
+    #title-nav {
+        font-size: 1.5em;
+    }
+
+    .label-invitado {
+        font-size: 1.4em;
+    }
+
+    .select-invitado {
+        font-size: 1.3em;
+    }
+
+    #btn-qr {
+        width: 210px;
+    }
+
+    #qricon {
+        color: white;
+    }
+
+    #container-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .td-invitado {
+        padding: 20px !important;
+    }
+    #container-btn button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+}
