@@ -7,6 +7,7 @@ use App\Models\MongoDB\Evento;
 use App\Models\MongoDB\EventoInvitado;
 use App\Models\MongoDB\Grupo;
 use App\Models\MongoDB\Invitado;
+use App\Models\MongoDB\TipoDocumento;
 use DB;
 use Endroid\QrCode\QrCode;
 use Exception;
@@ -41,6 +42,8 @@ class InvitadoController extends Controller
 
         if (count($existeInvitado) == 0) {
             $data = [
+                'tipoDocumento' => new ObjectId($input['tipoDocumento']),
+                'documento' => $input['documento'],
                 'nombre' => strtoupper($input['nombre']),
                 'apellido' => strtoupper($input['apellido']),
                 'correo' => $input['correo'],
@@ -49,7 +52,10 @@ class InvitadoController extends Controller
                 'esInvitadoAdicional' => (boolean) false,
                 'borrado' => false,
             ];
+      
             $invitado = new Invitado;
+            $invitado->tipoDocumento = $data['tipoDocumento'];
+            $invitado->documento = $data['documento'];
             $invitado->Nombre = $data['nombre'];
             $invitado->Apellido = $data['apellido'];
             $invitado->Correo = $data['correo'];
@@ -401,9 +407,11 @@ class InvitadoController extends Controller
                 "apellido" => $registroInvitado->Apellido,
                 "correo" => $registroInvitado->Correo,
                 "telefono" => $registroInvitado->Telefono,
+                "tipoDocumento" => $registroInvitado->tipoDocumento,
+                "documento" => $registroInvitado->documento,
                 "etapas" => $registroEventoInvitado->Etapas,
                 "grupo_id" => $registroEventoInvitado->Grupo_id,
-                "cantidad_menores" => $registroEventoInvitado->CantidadInvitadosMenores,
+                "cantidad_menores" => $registroEventoInvitado->CantidadInvitadosMenores,    
                 "cantidad_mayores" => $registroEventoInvitado->CantidadInvitadosMayores,
             ];
             //valido que de verdad sea borrado en caso de que no arrojo un error
@@ -446,6 +454,8 @@ class InvitadoController extends Controller
                         'CheckIn' => $data[$i]->CheckIn,
                         'Grupo' => $grupo,
                         'Grupo_id' => $grupoId,
+                        "tipoDocumento" => TipoDocumento::find($dataInvitado->tipoDocumento)->TipoDocumento,
+                        "documento"=> $dataInvitado->documento,
                         'Etapas' => count($data[$i]->Etapas),
                         'Evento' => Evento::find($data[$i]->Evento_id)->Nombre, //esto se debe cambiar en el futuro
                         'Evento_id' => $data[$i]->Evento_id,
@@ -478,6 +488,8 @@ class InvitadoController extends Controller
                         'esInvitadoAdicional' => $dataInvitado->EsInvitadoAdicional,
                         'Grupo' => $grupo,
                         'Grupo_id' => $grupoId,
+                        "tipoDocumento" => TipoDocumento::find($dataInvitado->tipoDocumento)->TipoDocumento,
+                        "documento"=> $dataInvitado->documento,
                         'CheckIn' => isset($dataInvitado->CheckIn) ? $dataInvitado->CheckIn : false,
                         'Etapas' => count($data[$i]->Etapas),
                         'Evento' => Evento::find($data[$i]->Evento_id)->Nombre, //esto se debe cambiar en el futuro
@@ -518,6 +530,8 @@ class InvitadoController extends Controller
                         'esInvitadoAdicional' => $dataInvitado->EsInvitadoAdicional,
                         'Grupo' => $grupo,
                         'Grupo_id' => $grupoId,
+                        "tipoDocumento" => TipoDocumento::find($dataInvitado->tipoDocumento)->TipoDocumento,
+                        "documento"=> $dataInvitado->documento,
                         'CheckIn' => isset($dataInvitado->CheckIn) ? $dataInvitado->CheckIn : false,
                         'Etapas' => count($data[$i]->Etapas),
                         'Evento' => Evento::find($data[$i]->Evento_id)->Nombre, //esto se debe cambiar en el futuro
@@ -559,7 +573,11 @@ class InvitadoController extends Controller
                 if ($input['grupo_id'] != "no aplica") {
                     $grupoId = ($input['grupo_id']);
                 }
+               
+            
                 $data = [
+                    'tipoDocumento' => new ObjectId($input['tipoDocumento']),
+                    'documento' => $input['documento'],
                     'nombre' => strtoupper($input['nombre']),
                     'apellido' => strtoupper($input['apellido']),
                     'correo' => $input['correo'],
@@ -572,7 +590,8 @@ class InvitadoController extends Controller
                 $invitado->Apellido = $data['apellido'];
                 $invitado->Correo = $data['correo'];
                 $invitado->Telefono = $data['telefono'];
-
+                $invitado->tipoDocumento = $data['tipoDocumento'];
+                $invitado->documento = $data['documento'];
                 $eventoInvitado->Grupo_id = $data['Grupo_id'];
                 $eventoInvitado->Etapas = $data['Etapas'];
                 if ($eventoInvitado->Evento_id != $data['Evento_id']) {
@@ -916,6 +935,8 @@ class InvitadoController extends Controller
                         'Qr' => $dataInvitado->Qr,
                         'Grupo' => $grupo,
                         'Grupo_id' => $grupoId,
+                        "tipoDocumento" => TipoDocumento::find($dataInvitado->tipoDocumento)->TipoDocumento,
+                        "documento"=> $dataInvitado->documento,
                         'Etapas' => count($data[$i]->Etapas),
                         'Evento' => Evento::find($data[$i]->Evento_id)->Nombre, //esto se debe cambiar en el futuro
                         'Evento_id' => $data[$i]->Evento_id,
@@ -947,6 +968,8 @@ class InvitadoController extends Controller
                         'esInvitadoAdicional' => $dataInvitado->EsInvitadoAdicional,
                         'Grupo' => $grupo,
                         'Grupo_id' => $grupoId,
+                        "tipoDocumento" => TipoDocumento::find($dataInvitado->tipoDocumento)->TipoDocumento,
+                        "documento"=> $dataInvitado->documento,
                         'CheckIn' => $data[$i]->CheckIn,
                         'Qr' => $dataInvitado->Qr,
                         'Etapas' => count($data[$i]->Etapas),
@@ -989,6 +1012,8 @@ class InvitadoController extends Controller
                         'Grupo_id' => $grupoId,
                         'CheckIn' => $data[$i]->CheckIn,
                         'Qr' => $dataInvitado->Qr,
+                        "tipoDocumento" => TipoDocumento::find($dataInvitado->tipoDocumento)->TipoDocumento,
+                        "documento"=> $dataInvitado->documento,
                         'Etapas' => count($data[$i]->Etapas),
                         'Evento' => Evento::find($data[$i]->Evento_id)->Nombre, //esto se debe cambiar en el futuro
                         'Evento_id' => $data[$i]->Evento_id,

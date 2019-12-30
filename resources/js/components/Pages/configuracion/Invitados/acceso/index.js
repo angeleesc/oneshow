@@ -259,6 +259,7 @@ class Acceso extends Component {
             <tr key={index} id={invitado._id}>
                 <td className="text-center td-invitado">{invitado.Nombre}</td>
                 <td className="text-center td-invitado">{invitado.Apellido}</td>
+                <td className="text-center td-invitado">{invitado.tipoDocumento} {invitado.documento}</td>
                 <td className="text-center td-invitado">
                     {invitado.esInvitadoAdicional ? (
                         <span>ADICIONAL</span>
@@ -358,6 +359,7 @@ class Acceso extends Component {
                                 <img src="/images/arrow_drop_down-24px.svg" />{" "}
                             </a>
                         </th>
+                        <th className="text-center">DOCUMENTO</th>
                         <th className="text-center">INVITADO</th>
                         <th className="text-center">GRUPO</th>
                         <th className="text-center">EVENTO</th>

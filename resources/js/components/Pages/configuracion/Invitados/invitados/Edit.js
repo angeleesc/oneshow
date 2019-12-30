@@ -25,6 +25,9 @@ export default class Edit extends Component {
             cantidadMenores:0,
             adicionalMayores:0,
             adicionalMenores:0,
+            tiposDocumentos: [],
+            tipoDocumento: "",
+            documento: "",
             etapasSeleccionadas:[],
             etapas:[],
             opcion: "Invitados",
@@ -83,6 +86,7 @@ export default class Edit extends Component {
                                 etapas:res.data.etapas
                             })
                         })
+                        
                         this.setState({
                             nombre : r.nombre,
                             apellido: r.apellido,
@@ -91,6 +95,8 @@ export default class Edit extends Component {
                             correo: r.correo,
                             etapasSeleccionadas: etapas,
                             telefono: r.telefono,
+                            tipoDocumento: r.tipoDocumento.$oid,
+                            documento: r.documento,
                             idEventoInvitado: r.id,
                             cantidadMayores:parseInt(r.cantidad_mayores, 10),
                             cantidadMayores:parseInt(r.cantidad_menores,10),
@@ -98,7 +104,17 @@ export default class Edit extends Component {
                         });
                     })
             })
-            
+            axios.get("api/usuarios/selects",{
+                headers: {
+                    Authorization: this.state.api_token
+                }
+            }).then(res => {
+                let r = res.data.data;
+                this.setState({
+                    tiposDocumentos:r.tipodocumentos,
+
+                });
+            });
         });
     }
 
@@ -133,6 +149,12 @@ export default class Edit extends Component {
         })
     }
 
+    soloNumeros(e){
+        var key = window.event ? e.which : e.keyCode;
+        if (key < 48 || key > 57) {
+          e.preventDefault();
+        }
+    }
     handleChangeMulti(e){
         this.setState({etapasSeleccionadas: [...e.target.selectedOptions].map(o => o.value)});
         console.log(this.state.etapasSeleccionadas);
@@ -168,6 +190,7 @@ export default class Edit extends Component {
 
 
     handleSubmit(e){
+        
         e.preventDefault();
         console.log(this.state.grupo);
         console.log(this.state.evento);
@@ -181,6 +204,8 @@ export default class Edit extends Component {
         formData.append("grupo_id",this.state.grupo);
         formData.append("evento_id",this.state.evento);
         formData.append("etapas",this.state.etapasSeleccionadas);
+        formData.append("tipoDocumento",this.state.tipoDocumento);
+        formData.append("documento",this.state.documento);
         formData.append("adicionales_mayores",this.state.adicionalMayores);
         formData.append("adicionales_menores",this.state.adicionalMenores);
         $('#save-invitado').prepend('<i class="fa fa-spinner fa-spin"></i> ');
@@ -288,8 +313,39 @@ export default class Edit extends Component {
                                     <div className="tab-pane fade show active" id="pills-datos" role="tabpanel" aria-labelledby="pills-datos-tab">
 
                                     <div className="form-group row">
+                                        <label className="col-sm-4 col-form-label col-form-label-sm">
+                                            Tipo Documento
+                                        </label>
+                                        <div className="col-sm-4">
+                                            <select
+                                                className="form-control form-control-sm"
+                                                id="tipo-documento"
+                                                name="tipoDocumento"
+                                                onChange={this.handleChange}
+                                                defaultValue={this.state.tipoDocumento}
+                                                required
+                                            >
+                                               
+                                                {this.state.tiposDocumentos.map((e, index) => {
+                                                    return (
+                                                        <option value={e._id} key={index} >
+                                                            {e.TipoDocumento}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="form-group row">
+                                        <label className="col-sm-4 col-form-label col-form-label-sm">Documento</label>
+                                        <div className="col-sm-4">
+                                            <input type="text" onKeyPress={this.soloNumeros} className="form-control form-control-sm" id="documento" maxLength="8" minLength="8" required name="documento" placeholder="Ingrese el documento" value={this.state.documento} onChange={this.handleChange}/>
+                                        </div>
+                                    </div>
+                                    <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Evento</label>
                                             <div className="col-sm-4">
+                                               
                                                 <select className="form-control form-control-sm" id="evento" name="evento" defaultValue={this.state.evento} onChange={this.handleEvento} >
                                                 {this.state.eventos.map(
                                                     (e, index) => {
