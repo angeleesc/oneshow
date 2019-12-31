@@ -55,7 +55,7 @@ export default class Invitados extends Component {
                 }
             )
             .then(res => {
-                console.log(res);
+                console.log('res',res);
                 this.setState({
                     invitados: res.data.invitados,
                     invitadosCompletos: res.data.invitados,

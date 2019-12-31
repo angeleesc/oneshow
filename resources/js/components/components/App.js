@@ -2,9 +2,9 @@ import React from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./../../redux";
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import Alert from './../molecules/Alert';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import Alert from "./../molecules/Alert";
 import Loader from "./../atoms/Loader";
 /**
  * A continuacion se importan todos los componentes que seran
@@ -35,6 +35,8 @@ import Invitados from "../Pages/configuracion/Invitados/invitados/Invitados";
 import InvitadosAdd from "../Pages/configuracion/Invitados/invitados/Add";
 import InvitadosShow from "../Pages/configuracion/Invitados/invitados/Show";
 import InvitadosEdit from "../Pages/configuracion/Invitados/invitados/Edit";
+import AccesoInvitado from "../Pages/configuracion/Invitados/acceso";
+import Qr from "../Pages/configuracion/Invitados/acceso/Qr";
 import Regalos from "../Pages/configuracion/Invitados/regalos";
 import RegalosShow from "../Pages/configuracion/Invitados/regalos/Show";
 import RegalosGuardar from "../Pages/configuracion/Invitados/regalos/Guardar";
@@ -63,9 +65,9 @@ import PlanoCopiaAdd from "../Pages/configuracion/Planos/PlanosBaseCopiaAdd";
 import MenuGastronomico from "../Pages/configuracion/MenuGastronomico/MenuGastronomico";
 import EdicionAsiento from "../Pages/configuracion/Invitados/invitados/EdicionAsiento";
 import SocialWall from "../Pages/SocialWall";
-import RecuperarPassword from './RecuperarPassword';
-import ChangePassword from './ChangePassword';
-import NewPassword from './../Pages/NewPassword';
+import RecuperarPassword from "./RecuperarPassword";
+import ChangePassword from "./ChangePassword";
+import NewPassword from "./../Pages/NewPassword";
 
 library.add(fas);
 
@@ -81,12 +83,36 @@ function App() {
               asi como sus respectivos componentes renderi ados en cada una */}
                         <Route exact path="/" component={Login} />
                         <Route exact path="/welcome" component={Welcome} />
-                        <Route exact path="/multimedia" component={Multimedia} />
-                        <Route exact path="/social-wall" component={SocialWall} />
-                        <Route exact path="/biblioteca" component={Biblioteca} />
-                        <Route exact path="/cambiar-password" component={ChangePassword} />
-                        <Route exact path="/recover-password" component={RecuperarPassword} />
-                        <Route exact path="/user/change/password/:token" component={NewPassword} />
+                        <Route
+                            exact
+                            path="/multimedia"
+                            component={Multimedia}
+                        />
+                        <Route
+                            exact
+                            path="/social-wall"
+                            component={SocialWall}
+                        />
+                        <Route
+                            exact
+                            path="/biblioteca"
+                            component={Biblioteca}
+                        />
+                        <Route
+                            exact
+                            path="/cambiar-password"
+                            component={ChangePassword}
+                        />
+                        <Route
+                            exact
+                            path="/recover-password"
+                            component={RecuperarPassword}
+                        />
+                        <Route
+                            exact
+                            path="/user/change/password/:token"
+                            component={NewPassword}
+                        />
                         <Route
                             exact
                             path="/biblioteca/evento/:id"
@@ -98,7 +124,11 @@ function App() {
                             component={AddEventoBiblioteca}
                         />
                         <Route exact path="/empresas" component={Empresas} />
-                        <Route exact path="/empresas/add" component={AddEmpresa} />
+                        <Route
+                            exact
+                            path="/empresas/add"
+                            component={AddEmpresa}
+                        />
                         <Route
                             exact
                             path="/empresas/show/:id"
@@ -206,7 +236,11 @@ function App() {
                             component={PlanosEdit}
                         />
                         <Route exact path="/usuarios" component={Usuarios} />
-                        <Route exact path="/usuarios/add" component={UsuariosAdd} />
+                        <Route
+                            exact
+                            path="/usuarios/add"
+                            component={UsuariosAdd}
+                        />
                         <Route
                             exact
                             path="/usuarios/edit/:id"
@@ -217,7 +251,11 @@ function App() {
                             path="/usuarios/show/:id"
                             component={UsuariosShow}
                         />
-                        <Route exact path="/invitacion" component={Invitacion} />
+                        <Route
+                            exact
+                            path="/invitacion"
+                            component={Invitacion}
+                        />
                         <Route
                             exact
                             path="/invitacion/show/:id"
@@ -265,11 +303,7 @@ function App() {
                             path="/planos/edicion-asiento/"
                             component={EdicionAsiento}
                         />
-                        <Route
-                            exact
-                            path="/regalos"
-                            component={Regalos}
-                        />
+                        <Route exact path="/regalos" component={Regalos} />
                         <Route
                             exact
                             path="/regalos/show/:id"
@@ -290,6 +324,12 @@ function App() {
                             path="/regalos/edit/regalo/:id/:regalo"
                             component={RegalosGuardar}
                         />
+                        <Route
+                            exact
+                            path="/acceso"
+                            component={AccesoInvitado}
+                        />
+                        <Route exact path="/qr" component={Qr} />
                         <Route exact path="/grupos" component={Grupos} />
                         <Route exact path="/grupos/add" component={GruposAdd} />
                         <Route
@@ -302,7 +342,11 @@ function App() {
                             path="/mail/:id"
                             component={MailConfirmation}
                         />
-                        <Route exact path="/event/:id" component={MailAsiento} />
+                        <Route
+                            exact
+                            path="/event/:id"
+                            component={MailAsiento}
+                        />
                         <Route
                             exact
                             path="/menu-gastronomico/"

@@ -24,6 +24,8 @@ export default class Show extends Component {
             etapas:[],
             invitadosAdicionalesMayores:0,
             invitadosAdicionalesMenores:0,
+            tipoDocumento: "",
+            documento: "",
             opcion: "Invitados",
             footer: "Footer",
             eventos: JSON.parse(localStorage.getItem("eventos")),
@@ -87,12 +89,24 @@ export default class Show extends Component {
                             correo: r.correo,
                             etapasSeleccionadas: etapas,
                             telefono: r.telefono,
+                            tipoDocumento: r.tipoDocumento.$oid,
+                            documento: r.documento,
                             idEventoInvitado: r.id,
                             isLoading: false
                         });
                     })
             })
-            
+            axios.get("api/usuarios/selects",{
+                headers: {
+                    Authorization: this.state.api_token
+                }
+            }).then(res => {
+                let r = res.data.data;
+                this.setState({
+                    tiposDocumentos:r.tipodocumentos,
+
+                });
+            });
         });
     }
 
@@ -167,7 +181,36 @@ export default class Show extends Component {
                             <form id="form-add-usuario" className="form-change-password form" encType="multipart/form-data" onSubmit={this.handleSubmit}>
                                 <div className="tab-content" id="pills-tabContent">
                                     <div className="tab-pane fade show active" id="pills-datos" role="tabpanel" aria-labelledby="pills-datos-tab">
-
+                                    <div className="form-group row">
+                                        <label className="col-sm-4 col-form-label col-form-label-sm">
+                                            Tipo Documento
+                                        </label>
+                                        <div className="col-sm-4">
+                                            <select
+                                                className="form-control form-control-sm"
+                                                id="tipo-documento"
+                                                name="tipoDocumento"
+                                                disabled
+                                                defaultValue={this.state.tipoDocumento}
+                                                
+                                            >
+                                               
+                                                {this.state.tiposDocumentos.map((e, index) => {
+                                                    return (
+                                                        <option value={e._id} key={index} >
+                                                            {e.TipoDocumento}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="form-group row">
+                                        <label className="col-sm-4 col-form-label col-form-label-sm">Documento</label>
+                                        <div className="col-sm-4">
+                                            <input type="text"  disabled onKeyPress={this.soloNumeros} className="form-control form-control-sm" id="documento" maxLength="8" minLength="8" required name="documento" placeholder="Ingrese el documento" value={this.state.documento} onChange={this.handleChange}/>
+                                        </div>
+                                    </div>
                                     <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Evento</label>
                                             <div className="col-sm-4">
