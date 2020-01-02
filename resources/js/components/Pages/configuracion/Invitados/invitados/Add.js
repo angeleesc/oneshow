@@ -20,6 +20,9 @@ export default class Add extends Component {
             grupo:"",
             etapasSeleccionadas:[],
             etapas:[],
+            tiposDocumentos: [],
+            tipoDocumento: "",
+            documento: "",
             invitadosAdicionalesMayores:0,
             invitadosAdicionalesMenores:0,
             opcion: "Invitados",
@@ -69,10 +72,28 @@ export default class Add extends Component {
                 
                 
             })
+            axios.get("api/usuarios/selects",{
+                headers: {
+                    Authorization: this.state.api_token
+                }
+            }).then(res => {
+                let r = res.data.data;
+                this.setState({
+                    tiposDocumentos:r.tipodocumentos,
+
+                });
+            });
             
         });
     }
 
+
+    soloNumeros(e){
+        var key = window.event ? e.which : e.keyCode;
+        if (key < 48 || key > 57) {
+          e.preventDefault();
+        }
+    }
 
     handleChange(event){
         const target = event.target;
@@ -122,6 +143,8 @@ export default class Add extends Component {
         formData.append("grupo-id",this.state.grupo);
         formData.append("evento-id",this.state.evento);
         formData.append("etapas",this.state.etapasSeleccionadas);
+        formData.append("tipoDocumento",this.state.tipoDocumento);
+        formData.append("documento",this.state.documento);
         formData.append("invitados-adicionales-mayores",this.state.invitadosAdicionalesMayores);
         formData.append("invitados-adicionales-menores",this.state.invitadosAdicionalesMenores);
         $('#save-invitado').prepend('<i class="fa fa-spinner fa-spin"></i> ');
@@ -225,6 +248,36 @@ export default class Add extends Component {
                                 <div className="tab-content" id="pills-tabContent">
                                     <div className="tab-pane fade show active" id="pills-datos" role="tabpanel" aria-labelledby="pills-datos-tab">
 
+                                    <div className="form-group row">
+                                        <label className="col-sm-4 col-form-label col-form-label-sm">
+                                            Tipo Documento
+                                        </label>
+                                        <div className="col-sm-4">
+                                            <select
+                                                className="form-control form-control-sm"
+                                                id="tipo-documento"
+                                                name="tipoDocumento"
+                                                onChange={this.handleChange}
+                                                value={this.state.tipoDocumento}
+                                                required
+                                            >
+                                                <option value="">Seleccione</option>
+                                                {this.state.tiposDocumentos.map((e, index) => {
+                                                    return (
+                                                        <option value={e._id} key={index}>
+                                                            {e.TipoDocumento}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="form-group row">
+                                        <label className="col-sm-4 col-form-label col-form-label-sm">Documento</label>
+                                        <div className="col-sm-4">
+                                            <input type="text" onKeyPress={this.soloNumeros} className="form-control form-control-sm" id="documento" maxLength="8" minLength="8" required name="documento" placeholder="Ingrese el documento" value={this.state.documento} onChange={this.handleChange}/>
+                                        </div>
+                                    </div>
                                     <div className="form-group row">
                                             <label className="col-sm-4 col-form-label col-form-label-sm">Evento</label>
                                             <div className="col-sm-4">

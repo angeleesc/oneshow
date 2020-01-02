@@ -141,6 +141,8 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'invitados'], function ()
     Route::post('/all', 'InvitadoController@getInvitados');
     Route::get('/eliminar-todos', 'InvitadoController@eliminarTodos');
     Route::post('/one', 'InvitadoController@getInvitado');
+    Route::post('/checkin/{id}/{idEvento}', 'InvitadoController@checkIn');
+    Route::get('/checkinQr/{id}/{idEvento}', 'InvitadoController@checkinQr');
 });
 
 /**
@@ -292,3 +294,5 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'regalos'], function () {
     Route::post('/edit-objeto/{idEvento}/{idRegalo}', 'RegaloController@editObjeto');
     Route::delete('/delete/{id}', 'RegaloController@deleteRegalo');
 });
+
+

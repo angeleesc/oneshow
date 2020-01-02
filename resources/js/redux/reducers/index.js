@@ -13,7 +13,7 @@ import regalos from './regalos'
 import social from './social-wall';
 import etapas from './etapas'
 import menuEtapas from './menuEtapas'
-
+import invitados from './invitados'
 export default combineReducers({
   app,
   auth,
@@ -28,5 +28,6 @@ export default combineReducers({
   menuEtapas,
   eventos,
   social,
-  regalos
+  regalos,
+  invitados
 });
