@@ -465,6 +465,22 @@ class BibliotecaController extends Controller
         }
     }
 
+    private function recurse_copy($src, $dst) {
+        $dir = opendir($src);
+        @mkdir($dst);
+        while(false !== ( $file = readdir($dir)) ) {
+            if (( $file != '.' ) && ( $file != '..' )) {
+                if ( is_dir($src . '/' . $file) ) {
+                    $this->recurse_copy($src . '/' . $file,$dst . '/' . $file);
+                }
+                else {
+                    copy($src . '/' . $file,$dst . '/' . $file);
+                }
+            }
+        }
+        closedir($dir);
+    }
+
     /**
      * Maneja una solicitud para guardar archivos multiples en el servidor
      * y en la base de datos
@@ -563,9 +579,9 @@ class BibliotecaController extends Controller
 
                 if (env('APP_ENV') === 'local') 
                 {
-                    $source      = storage_path('app/public/' . $registro->Path);
-                    $destination = base_path(env('ONESHOW_FTP_FAKE_MOSAIC_FOLDER')) . '/' . $registro->id . '.' . $registro->Extension;
-                    $success = copy($source, $destination);
+                    $source = storage_path('app/public/' . $empresa . '/' . $registro->Evento_id);
+                    $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER'));
+                    $success = $this->recurse_copy($source, $destination);
                 }
             }
 
