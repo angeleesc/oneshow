@@ -346,13 +346,21 @@ class BibliotecaController extends Controller
             'mime'      => $archivo->getMimeType()
         ];
 
-        //dd($fileData);
+        $categoria = CategoriaBiblioteca::where('_id', new ObjectId($input['categoria']))->first();
+
+        $duration = null;
+
         //creo el nombre del archivo
-        $name = $input['name'].'.'.$fileData['extension'];
+        if($categoria->Nombre === 'Base Mosaico') 
+        {
+            $name = 'base-mosaic' . '.' . $fileData['extension'];
+        }
+        else 
+        {
+            $name = $input['name'].'.'.$fileData['extension'];
+        }
 
         $path = $request->file('archivo')->storeAs($pathSave, $name, 'public');
-        $categoria = CategoriaBiblioteca::where('_id', new ObjectId($input['categoria']))->first();
-        $duration = null;
 
         if ($categoria->Nombre === 'Imagen') {
           Validator::make(['archivo' => $request->archivo], [
@@ -370,9 +378,9 @@ class BibliotecaController extends Controller
 
         } else if ($categoria->Nombre === 'Chroma Studios') {
           
-        Validator::make(['archivo' => $request->archivo], [
-            'archivo' => 'file|image',
-          ])->validate();
+            Validator::make(['archivo' => $request->archivo], [
+                'archivo' => 'file|image',
+            ])->validate();
 
         } else if ($categoria->Nombre === 'Video') {
           
@@ -384,6 +392,10 @@ class BibliotecaController extends Controller
           $video = $getID3->analyze($request->archivo->path());
 
           $duration = floor($video['playtime_seconds'] * 1000);
+        } else if($categoria->Nombre === 'Base Mosaico') {
+            Validator::make(['archivo' => $request->archivo], [
+                'archivo' => 'file|image',
+            ])->validate();
         }
 
         // Storage::disk('public_oneshow')->put($pathSave.$name, File::get($archivo));
@@ -400,21 +412,31 @@ class BibliotecaController extends Controller
             'borrado'          => false
         ];
 
-
         //procedo a guardarlos en la bd
-        $registro = new Biblioteca;
-        $registro->Evento_id                 = $data['id-evento'];
-        $registro->Nombre                    = $data['nombre'];
-        $registro->NombreCompleto            = $data['nombrec'];
-        $registro->Path                      = $data['path'];
-        $registro->Extension                 = $fileData['extension'];
-        $registro->Size                      = $data['size'];
-        $registro->CategoriaBiblioteca_id    = $data['categoria'];
-        $registro->CategoriasChroma_id       = $data['categoriaChroma'];
-        $registro->Fecha                     = Carbon::now();
-        $registro->Activo                    = $data['activo'];
-        $registro->Duracion                  = $duration;
-        $registro->Borrado                   = $data['borrado'];
+        $biblioteca = new Biblioteca;
+
+        if($categoria->Nombre === 'Base Mosaico') 
+        {
+            $registro = $biblioteca
+            ->where('Evento_id',              new ObjectID($evento))
+            ->where('CategoriaBiblioteca_id', new ObjectID($input['categoria']))
+            ->first();
+        }
+
+        if(is_null($registro)) $registro = new Biblioteca;
+
+        $registro->Evento_id              = $data['id-evento'];
+        $registro->Nombre                 = $data['nombre'];
+        $registro->NombreCompleto         = $data['nombrec'];
+        $registro->Path                   = $data['path'];
+        $registro->Extension              = $fileData['extension'];
+        $registro->Size                   = $data['size'];
+        $registro->CategoriaBiblioteca_id = $data['categoria'];
+        $registro->CategoriasChroma_id    = $data['categoriaChroma'];
+        $registro->Fecha                  = Carbon::now();
+        $registro->Activo                 = $data['activo'];
+        $registro->Duracion               = $duration;
+        $registro->Borrado                = $data['borrado'];
 
         //verifico si fue exitoso el insert en la bd
         if($registro->save()) {
@@ -436,14 +458,127 @@ class BibliotecaController extends Controller
               $request->file('archivo')->storeAs(env('ONESHOW_FTP_DEST_FOLDER'), $name, 'ftp');
             }
 
-
             return response()->json(['code' => 200]);
 
         } else {
             return response()->json(['code' => 500]);
         }
-        
+    }
 
+    /**
+     * Maneja una solicitud para guardar archivos multiples en el servidor
+     * y en la base de datos
+     * 
+     * @param  \Illuminate\Http\Request
+     * @return string json response
+     */
+    public function addFiles(Request $request) 
+    {
+        $input    = $request->all();
+        $evento   = (string) $input['id-evento'];
+        $empresa  = (string) Evento::find($evento)->Empresa_id;
+        $pathSave = $empresa.'/'.$evento.'/';
+
+        $categoria = CategoriaBiblioteca
+            ::where('_id', new ObjectId($input['categoria']))
+            ->first();
+
+        if($categoria->Nombre === 'Foto Mosaico') 
+        {
+            $files = $input['archivos'];
+
+            // Eliminar colección previa si existe
+            $b = new Biblioteca();
+
+            $collection = $b
+                ->where('Evento_id', new ObjectId($evento))
+                ->where('CategoriaBiblioteca_id', new ObjectId($input['categoria']))
+                ->get();
+
+            if(!is_null($collection)) 
+            {
+                foreach ($collection as $image) 
+                {
+                    $e = Biblioteca::find($image->_id);
+                    
+                    if ($e->delete()) 
+                    {
+                        Storage::disk('public')->delete([
+                            $image->Path,
+                            'torrents/' . $image->_id . '.torrent'
+                        ]);
+                    }
+                }   
+            }
+
+            foreach ($files as $key => $file) 
+            {
+                Validator::make(
+                    ['archivo' => $file],
+                    ['archivo' => 'file|image'])
+                ->validate();
+
+                $fileData = [
+                    'extension' => $file->getClientOriginalExtension(),
+                    'size'      => humanFileSize($file->getSize()),
+                    'mime'      => $file->getMimeType()
+                ];
+
+                $name = $input['name'] . '-' . $key . '.'.$fileData['extension'];
+                $path = $file->storeAs($pathSave, $name, 'public');
+
+                $data = [
+                    'id-evento'       => new ObjectID($input['id-evento']),
+                    'nombre'          => $input['name'],
+                    'nombrec'         => $name,
+                    'path'            => $path,
+                    'size'            => $fileData['size'],
+                    'categoria'       => new ObjectId($input['categoria']),
+                    'categoriaChroma' => new ObjectId($input['categoriaChroma']),
+                    'activo'          => true,
+                    'borrado'         => false
+                ];
+        
+                //procedo a guardarlos en la bd
+                $registro = new Biblioteca;
+                $registro->Evento_id                 = $data['id-evento'];
+                $registro->Nombre                    = $data['nombre'];
+                $registro->NombreCompleto            = $data['nombrec'];
+                $registro->Path                      = $data['path'];
+                $registro->Extension                 = $fileData['extension'];
+                $registro->Size                      = $data['size'];
+                $registro->CategoriaBiblioteca_id    = $data['categoria'];
+                $registro->CategoriasChroma_id       = $data['categoriaChroma'];
+                $registro->Fecha                     = Carbon::now();
+                $registro->Activo                    = $data['activo'];
+                $registro->Duracion                  = null;
+                $registro->Borrado                   = $data['borrado'];
+
+                if( ! $registro->save()) 
+                {
+                    return response()->json([
+                        'code' => 500
+                    ]);
+                }
+
+                if (env('APP_ENV') === 'local') 
+                {
+                    $source      = storage_path('app/public/' . $registro->Path);
+                    $destination = base_path(env('ONESHOW_FTP_FAKE_MOSAIC_FOLDER')) . '/' . $registro->id . '.' . $registro->Extension;
+                    $success = copy($source, $destination);
+                }
+            }
+
+            return response()->json([
+                'code' => 200
+            ]);
+        } 
+        else 
+        {
+            return response()->json([
+                'code' => 500,
+            ]);
+        }
     }
 
     public function downloadTorrent (Request $request) {

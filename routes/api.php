@@ -66,6 +66,7 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'biblioteca'], function (
     Route::post('/evento/files/delete', 'BibliotecaController@deleteFile');
     Route::get('/evento/files/data-add', 'BibliotecaController@getDataAdd');
     Route::post('/evento/add-file', 'BibliotecaController@addFile');
+    Route::post('/evento/add-files', 'BibliotecaController@addFiles');
 });
 
 /**
