@@ -231,11 +231,15 @@ class MosaicWall extends Component {
                         {
                           this.state.mosaic == '' 
                             ?
-                              <h1 className="text-white">
+                              <h1 className="text-center text-white">
                                 Mosaico no disponible
                               </h1>
                             :
-                              <img src={this.state.mosaic}></img>
+                              <img 
+                                className="image-fluid" 
+                                src={this.state.mosaic}
+                                style={{ width: "100%" }}
+                              ></img>
                         }
                     </div>
                   )
