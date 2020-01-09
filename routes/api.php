@@ -62,6 +62,7 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'empresas'], function () 
 Route::group(['middleware' => 'api_token', 'prefix' => 'biblioteca'], function () {
     //rutas de empresas
     Route::post('/', 'BibliotecaController@getBibliotecasRol');
+    Route::post('/evento/files/mosaic', 'BibliotecaController@getMosaic');
     Route::post('/evento/files', 'BibliotecaController@getFilesEvento');
     Route::post('/evento/files/delete', 'BibliotecaController@deleteFile');
     Route::get('/evento/files/data-add', 'BibliotecaController@getDataAdd');

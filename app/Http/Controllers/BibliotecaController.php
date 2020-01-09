@@ -288,6 +288,20 @@ class BibliotecaController extends Controller
         return $eventos;
     }
 
+    public function getMosaic(Request $request) 
+    {
+        $input = $request->all();
+
+        $path = public_path('output/'.$input['company'].'/'.$input['evento'].'/output.jpg');
+        
+        return response()->json([
+            'code'     => 200,
+            'response' => File::exists($path) 
+                ? 'output/'.$input['company'].'/'.$input['evento'].'/output.jpg'
+                : false
+        ]);
+    }
+
     /**
      * metodo para obtener todos los archivos asociados a un evento
      * $request variable que recibe el id del evento
@@ -296,7 +310,10 @@ class BibliotecaController extends Controller
         //capturo el id de la empresa para buscar los eventos en base a ella
         $idevento = $request->evento;
 
-        $files = Biblioteca::borrado(false)->activo(true)->where('Evento_id', new ObjectID($idevento))->get();
+        $files = Biblioteca::borrado(false)
+            ->activo(true)
+            ->where('Evento_id', new ObjectID($idevento))
+            ->get();
 
         $archivos = [];
 
