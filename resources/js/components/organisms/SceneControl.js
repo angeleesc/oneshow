@@ -1,9 +1,10 @@
 import React from 'react';
 import ConsoleControl from './../molecules/ConsoleControl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { executeScene, executionDone } from './../../redux/actions/show';
+import { executeScene, executionDone, endRunningShow} from './../../redux/actions/show';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
+
 
 class SceneControl extends React.Component {
   constructor (props) {
@@ -16,6 +17,7 @@ class SceneControl extends React.Component {
 
     this.waitingTime = 2000;
     this.startScene = this.startScene.bind(this);
+    this.endCurrentShow = this.endCurrentShow.bind(this);
   }
 
   startScene () {
@@ -35,6 +37,19 @@ class SceneControl extends React.Component {
         current: null,
       }, () => this.props.executionDone());
     }, this.waitingTime);
+  }
+
+  endCurrentShow () {
+    this.props.endRunningShow('color');
+    this.props.submitCommand(`REM,0,1,COL`);
+    this.props.endRunningShow('flash');
+    this.props.submitCommand(`REM,0,1,FLH`);
+    this.props.endRunningShow('audio');
+    this.props.submitCommand(`REM,0,1,AUD`);
+    this.props.endRunningShow('video');
+    this.props.submitCommand(`REM,0,1,VID`);
+    this.props.endRunningShow('image');
+    this.props.submitCommand(`REM,0,1,IMG`);
   }
 
   render () {
@@ -66,6 +81,14 @@ class SceneControl extends React.Component {
         >
           <FontAwesomeIcon icon="paper-plane" color="#fff"/>
         </button>
+        
+          <button 
+            onClick={this.endCurrentShow}
+            className="btn btn-sm btn-block btn-danger mt-3 py-0 rounded"
+          >
+            <FontAwesomeIcon icon="stop" color="#fff"/>
+          </button>
+              
       </div>
     );  
   }
@@ -77,6 +100,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   executeScene: (sceneId) => dispatch(executeScene(sceneId)),
+  endRunningShow: (scene) => dispatch(endRunningShow(scene)),
   executionDone: () => dispatch(executionDone()),
 });
 

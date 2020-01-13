@@ -30,7 +30,7 @@ class MailRecoveryPassword extends Mailable
      */
     public function build()
     {
-        return $this->from('soporte@onemenu.cl', 'ONE Show')
+        return $this->from('soporte@oneshow.com.ar', 'ONE Show')
                     ->subject('Recuperación de Contraseña')
                     ->view('Mail.recovery-password')
                     ->with(['token' => $this->token]);

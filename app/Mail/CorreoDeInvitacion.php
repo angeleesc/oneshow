@@ -30,6 +30,7 @@ class CorreoDeInvitacion extends Mailable
      */
     public function build()
     {
-        return $this->view('Mail.correo-invitacion');
+        return $this->from('invitacion@oneshow.com.ar', 'ONE Show')
+                    ->view('Mail.correo-invitacion');
     }
 }
