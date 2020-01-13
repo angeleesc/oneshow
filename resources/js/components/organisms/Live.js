@@ -5,6 +5,7 @@ import AudioControls from './AudioControls';
 import VideoControls from './VideoControls';
 import ImageControls from './ImageControls';
 import SceneControl from './SceneControl';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classnames from 'classnames';
 import { getScenesFromShow } from './../../redux/actions/show';
 import { connect } from 'react-redux';
