@@ -186,6 +186,22 @@ class Menu extends Component {
               Social Wall
             </Link>
           </li>
+          <li className={'sidebar-nav-link' + this.isActive('/mosaic-wall')}>
+            <Link
+              to={{
+                  pathname: "/mosaic-wall",
+                  state: {
+                    usuario: JSON.parse(localStorage.getItem("usuario")),
+                    api_token: localStorage.getItem("api_token")
+                  }
+              }}
+            >
+              <span className="sidebar-nav-link-logo">
+                <FontAwesomeIcon icon="photo-video" /> {" "}
+              </span>
+              Mosaic Wall
+            </Link>
+          </li>
           <li className={'sidebar-nav-link sidebar-nav-link-group' + (config.open ? ' active' : '')}>
             <a 
               href="/configuracion"

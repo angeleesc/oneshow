@@ -63,6 +63,7 @@ import PlanoCopiaAdd from "../Pages/configuracion/Planos/PlanosBaseCopiaAdd";
 import MenuGastronomico from "../Pages/configuracion/MenuGastronomico/MenuGastronomico";
 import EdicionAsiento from "../Pages/configuracion/Invitados/invitados/EdicionAsiento";
 import SocialWall from "../Pages/SocialWall";
+import MosaicWall from "../Pages/MosaicWall";
 import RecuperarPassword from './RecuperarPassword';
 import ChangePassword from './ChangePassword';
 import NewPassword from './../Pages/NewPassword';
@@ -83,6 +84,7 @@ function App() {
                         <Route exact path="/welcome" component={Welcome} />
                         <Route exact path="/multimedia" component={Multimedia} />
                         <Route exact path="/social-wall" component={SocialWall} />
+                        <Route exact path="/mosaic-wall" component={MosaicWall} />
                         <Route exact path="/biblioteca" component={Biblioteca} />
                         <Route exact path="/cambiar-password" component={ChangePassword} />
                         <Route exact path="/recover-password" component={RecuperarPassword} />

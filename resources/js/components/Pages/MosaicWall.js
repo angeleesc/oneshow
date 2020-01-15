@@ -27,19 +27,6 @@ class MosaicWall extends Component {
         super();
         this.state = {
           mosaic: '',
-          url: "",
-          correo: "",
-          password: "",
-          eventos: [],
-          envios:[],
-          companyId: '',
-          sectores: [],
-          sector: '',
-          archivo: '',
-          fechainicio: '',
-          fechafin: '',
-          flash:'',
-          flash2:'',
           color:'#ffffff',
           usuario: JSON.parse(localStorage.getItem("usuario")),
           permisoUsuario: JSON.parse(localStorage.getItem("permisosUsuario")),
@@ -58,12 +45,7 @@ class MosaicWall extends Component {
          */
         this.handleCompanyChange = this.handleCompanyChange.bind(this);
         this.handleEventChange = this.handleEventChange.bind(this);
-        this.sendGivenMqttCommand = this.sendGivenMqttCommand.bind(this);
 
-        //this.mqttHost = process.env.MIX_MQTT_HOST;
-        //this.mqttPort = parseInt(process.env.MIX_MQTT_PORT);
-        //this.mqttClientId = uuidv4();
-        //this.mqttClient = new Paho.MQTT.Client(this.mqttHost, this.mqttPort, this.mqttClientId);
     }
 
     componentDidMount () {
@@ -73,25 +55,6 @@ class MosaicWall extends Component {
 
       this.props.getTimestampDiff()
         .then(() => console.log('Server time fetched'));
-
-      // Subscribing to broker
-      // this.mqttClient.connect({
-      //   useSSL: process.env.MIX_MQTT_SSL === 'true' ? true : false,
-      //   onSuccess: () => console.log('Connected!!'),
-      //   onFailure: e => console.log(e)
-      // });
-    }
-
-    componentWillUnmount () {
-      // this.mqttClient.disconnect();
-    }
-
-    sendGivenMqttCommand (command) {
-      const { companyId, eventId } = this.props;
-
-      console.log('command', command);
-      
-      this.mqttClient.send(`/${companyId}/${eventId}`, command);
     }
 
     handleCompanyChange (e) {
@@ -115,14 +78,12 @@ class MosaicWall extends Component {
         return this.props.setEvent('');
       }
 
-      const { companyId, eventId } = this.props;
-
       axios
       .post(
           "api/biblioteca/evento/files/mosaic",
           { 
-            evento: eventId,
-            company: companyId
+            evento: this.props.eventId,
+            company: this.props.companyId
           },
           {
               headers: {
@@ -218,7 +179,7 @@ class MosaicWall extends Component {
             enabled={this.props.fullscreen}
             onChange={isFull => this.props.setFullscreenState(isFull)}
           >
-            <div id="sweet" className="container-fluid">
+            <div id="sweet" className="">
               {
                 this.props.eventId === '' 
                 ? 
@@ -236,7 +197,7 @@ class MosaicWall extends Component {
                               </h1>
                             :
                               <img 
-                                className="image-fluid" 
+                                className="" 
                                 src={this.state.mosaic}
                                 style={{ width: "100%" }}
                               ></img>

@@ -292,12 +292,13 @@ class BibliotecaController extends Controller
     {
         $input = $request->all();
 
-        $path = public_path('output/'.$input['company'].'/'.$input['evento'].'/output.jpg');
+        $path = Storage::disk('public')->path('/').'/mosaics/'.$input['company'].'/'.$input['evento'].'/output.jpg';
         
         return response()->json([
             'code'     => 200,
+            'prut'     => $path,
             'response' => File::exists($path) 
-                ? 'output/'.$input['company'].'/'.$input['evento'].'/output.jpg'
+                ? 'storage/mosaics/'.$input['company'].'/'.$input['evento'].'/output.jpg'
                 : false
         ]);
     }
@@ -391,7 +392,7 @@ class BibliotecaController extends Controller
             ])->validate();
 
             $name = 'base-mosaic' . '.' . $fileData['extension'];
-            $pathSave = 'mosaics/' . $empresa . '/' . $evento . '/';
+            $pathSave = 'mosaics/' . $empresa . '/' . $evento . '/base/';
             $path = $request->file('archivo')->storeAs($pathSave, $name, 'public');
         }
         else 
@@ -415,7 +416,7 @@ class BibliotecaController extends Controller
           $audio = new Mp3Info($request->archivo->path());
           $duration = floor($audio->duration * 1000);
 
-        } else if ($categoria->Nombre === 'Chroma Studios') {
+        } else if ($categoria->Nombre === 'Croma Estudio') {
           
             Validator::make(['archivo' => $request->archivo], [
                 'archivo' => 'file|image',
@@ -483,11 +484,7 @@ class BibliotecaController extends Controller
              */
             if (env('APP_ENV') === 'local') {
               $source = storage_path('app/public/' . $registro->Path);
-              $destination = 
-                $categoria->Nombre !== 'Base Mosaico' 
-                    ? base_path(env('ONESHOW_FTP_FAKE_FOLDER'))   . '/' . $registro->id . '.' . $registro->Extension
-                    : base_path(env('ONESHOW_FTP_MOSAIC_FOLDER')) . '/' . $empresa      . '/' . $registro->Evento_id 
-                        . '/' . $registro->NombreCompleto . '.' . $registro->Extension;
+              $destination = base_path(env('ONESHOW_FTP_FAKE_FOLDER')) . '/' . $registro->id . '.' . $registro->Extension;
               $success = copy($source, $destination);
             } else {
               /**
@@ -558,7 +555,7 @@ class BibliotecaController extends Controller
         $input    = $request->all();
         $evento   = (string) $input['id-evento'];
         $empresa  = (string) Evento::find($evento)->Empresa_id;
-        $pathSave = 'mosaics/' . $empresa . '/' . $evento . '/';
+        $pathSave = 'mosaics/' . $empresa . '/' . $evento . '/galeria/';
 
         $categoria = CategoriaBiblioteca
             ::where('_id', new ObjectId($input['categoria']))
@@ -666,7 +663,7 @@ class BibliotecaController extends Controller
 
             $data_string = json_encode($data);
 
-            $ch = curl_init(env('ONESHOW_MOSAIC_SERVER'));
+            $ch = curl_init('http://127.0.0.1:8000/mosaic/push');
                                                                  
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
