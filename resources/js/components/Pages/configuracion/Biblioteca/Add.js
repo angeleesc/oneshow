@@ -38,12 +38,13 @@ export default class Add extends React.Component {
      */
     componentDidMount() {
         this.state.eventoid = this.props.match.params.id;
+
         axios.get('api/biblioteca/evento/files/data-add',{
             headers: {
                 Authorization: this.state.api_token
             }
         }).then(res => {
-            console.log(res);
+            // console.log("Component did mount: ", res);
             this.setState({
                 isLoading : false,
                 categorias : res.data.data.categorias,
@@ -122,54 +123,88 @@ export default class Add extends React.Component {
     formData.append("name", this.state.nombreArchivo);
     formData.append("categoria",this.state.idCategoria);
     formData.append("categoriaChroma",this.state.idCategoriaChroma);
-    formData.append("archivo", (this.fileInput.current.files[0] === undefined) ? '' : this.fileInput.current.files[0] );
     
-    axios.post('api/biblioteca/evento/add-file',formData,{
-      headers: {
-        Authorization: this.state.api_token
+    if(this.fileInput.current.files.length > 1) {
+      for (let i = 0; i < this.fileInput.current.files.length; i++) {
+        let file = this.fileInput.current.files[i];
+        formData.append('archivos[' + i + ']', file);
       }
-    }).then(res=>{
+
+      axios.post('api/biblioteca/evento/add-files', formData, {
+        headers: {
+          Authorization: this.state.api_token
+        }
+      })
+      .then((res) => {
+        $('button#save-file').find('i.fa').remove();
+        if(res.data.code === 200) {
+          Swal.fire({
+          text: "Archivo agregado exitosamente",
+          type: "success",
+          showCancelButton: false,
+          confirmButtonColor: "#343a40",
+          confirmButtonText: "OK",
+          target: document.getElementById('sweet')
+          }).then((result) => {
+            if (result.value) {
+              this.props.history.push(`/biblioteca/evento/${
+              this.state.eventoid
+              }`)
+            }
+          });
+        } 
+        else if(res.data.code === 500){
+          sweetalert('Error al agregar archivo. Consulte al Administrador.', 'error', 'sweet');
+        }
+      });
+    } 
+    else {
+      formData.append("archivo", (this.fileInput.current.files[0] === undefined) ? '' : this.fileInput.current.files[0] );
+      axios.post('api/biblioteca/evento/add-file',formData,{
+        headers: {
+          Authorization: this.state.api_token
+        }
+      })
+      .then(res=>{
         $('button#save-file').find('i.fa').remove()
         if(res.data.code === 200) {
 
-            Swal.fire({
-                text: "Archivo agregado exitosamente",
-                type: "success",
-                showCancelButton: false,
-                confirmButtonColor: "#343a40",
-                confirmButtonText: "OK",
-                target: document.getElementById('sweet')
-            }).then((result) => {
-
-                if (result.value) {
-                    this.props.history.push(`/biblioteca/evento/${
-                        this.state.eventoid
-                    }`)
-                }
-
-            });
+        Swal.fire({
+        text: "Archivo agregado exitosamente",
+        type: "success",
+        showCancelButton: false,
+        confirmButtonColor: "#343a40",
+        confirmButtonText: "OK",
+        target: document.getElementById('sweet')
+        }).then((result) => {
+        if (result.value) {
+          this.props.history.push(`/biblioteca/evento/${
+          this.state.eventoid
+          }`)
+        }
+        });
 
         }else if(res.data.code === 500){
-            sweetalert('Error al agregar archivo. Consulte al Administrador.', 'error', 'sweet');
+        sweetalert('Error al agregar archivo. Consulte al Administrador.', 'error', 'sweet');
         }
-    }).catch(error => {
-      $('button#save-file').find('i.fa').remove();
+      }).catch(error => {
+        $('button#save-file').find('i.fa').remove();
 
-      if (error.response.status === 422) {
-        const { errors } = error.response.data;
-        
-        if (errors.archivo) {
-          const [text] = errors.archivo;
-          
-          sweetalert(text, 'error', 'sweet');
+        if (error.response.status === 422) {
+          const { errors } = error.response.data;
+          if (errors.archivo) {
+            const [text] = errors.archivo;
 
+            sweetalert(text, 'error', 'sweet');
+
+          } else {
+            sweetalert('Existe un error en el formulario, revise e intente de nuevo.', 'error', 'sweet'); 
+          }
         } else {
-          sweetalert('Existe un error en el formulario, revise e intente de nuevo.', 'error', 'sweet'); 
+          sweetalert('Ha ocurrido un error, por favor intentelo de nuevo', 'error', 'sweet');
         }
-      } else {
-        sweetalert('Ha ocurrido un error, por favor intentelo de nuevo', 'error', 'sweet');
+      })
       }
-    })
   }
 
     render() {
@@ -268,7 +303,8 @@ export default class Add extends React.Component {
                                                   name="archivo" 
                                                   className="custom-file-input"
                                                   onChange={this.handleFileChange}
-                                                  ref={this.fileInput} 
+                                                  ref={this.fileInput}
+                                                  multiple="multiple" 
                                                   required
                                                 />
                                                 <label 
