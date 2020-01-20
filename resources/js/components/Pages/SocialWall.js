@@ -3,6 +3,8 @@ import swal from "sweetalert2";
 import Menu from "../components/Menu";
 import Header from "../components/Header";
 import Wall from './../organisms/Wall';
+import Fullscreen from "react-full-screen";
+import { toggleFullscreen, setFullscreenState } from './../../redux/actions/app';
 import  React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Mensaje from "../atoms/Mensaje";
@@ -735,22 +737,23 @@ class SocialWall extends Component {
                     </div>
                   </div>
                   <div className="col-md-3">
-                    {this.state.mostrarBotonPantallaCompleta &&
-                      <div className="ml-auto">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-dark ml-4"
-                          onClick={this.colocarPantallaCompleta}
-                        >
-                          <i className="fas fa-arrows-alt" />
-                          {` `} Fullscreen
-                        </button>
-                      </div>
-                    }
+                    <div className="col-md-1 text-center">
+                      <span style={{ cursor: 'pointer' }}>
+                        <FontAwesomeIcon
+                          onClick={() => this.props.toggleFullscreen()}
+                          icon="expand-arrows-alt"
+                          color="#fff" 
+                        />
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </header>
+            <Fullscreen 
+            enabled={this.props.fullscreen}
+            onChange={isFull => this.props.setFullscreenState(isFull)}
+            >
             <div id="sweet" className="container-fluid">
               {isLoading &&
                 <div className="text-center">
@@ -780,6 +783,7 @@ class SocialWall extends Component {
                 }
               </React.Fragment> */}
             </div>
+            </Fullscreen>
           </div>
         </div>
       );
@@ -788,11 +792,14 @@ class SocialWall extends Component {
 
 const mapStateToProps = state => ({
   apiToken: state.auth.apiToken,
+  fullscreen: state.app.fullscreen,
 });
 
 const mapDispatchToProps = dispatch => ({
   cleanHashtags: () => dispatch(cleanHashtags()),
   getEventHashtags: (eventId) => dispatch(getEventHashtags(eventId)),
+  toggleFullscreen: () => dispatch(toggleFullscreen()),
+  setFullscreenState: (state) => dispatch(setFullscreenState(state)),
   mostrarElementoDeCarga: () => dispatch(mostrarElementoDeCarga()),
   ocultarElementoDeCarga: () => dispatch(ocultarElementoDeCarga())
 });
