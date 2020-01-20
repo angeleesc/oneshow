@@ -293,13 +293,26 @@ class BibliotecaController extends Controller
         $input = $request->all();
 
         $path = Storage::disk('public')->path('/').'/mosaics/'.$input['company'].'/'.$input['evento'].'/output.jpg';
-        
+        $biblioteca = new Biblioteca;
+
+        $collection = $biblioteca
+                ->where('Evento_id', new ObjectId($input['evento']))
+                ->where('CategoriaBiblioteca_id', new ObjectId('5e18b34d041d730c7c422cba'))
+                ->first();
+
+        if (!$collection) {
+            return response()->json([
+                'code'     => 200,
+                'response' => false
+                ]);
+        }
+
         return response()->json([
             'code'     => 200,
             'response' => File::exists($path) 
                 ? 'storage/mosaics/'.$input['company'].'/'.$input['evento'].'/output.jpg'
-                : false
-        ]);
+                : 'generando'
+            ]);
     }
 
     /**
@@ -384,7 +397,7 @@ class BibliotecaController extends Controller
         $duration = null;
 
         //creo el nombre del archivo
-        if($categoria->Nombre === 'Base Mosaico') 
+        if($categoria->Nombre === 'Foto Base Mosaico') 
         {
             Validator::make(['archivo' => $request->archivo], [
                 'archivo' => 'file|image',
@@ -452,7 +465,7 @@ class BibliotecaController extends Controller
 
         $registro = false;
 
-        if($categoria->Nombre === 'Base Mosaico') 
+        if($categoria->Nombre === 'Foto Base Mosaico') 
         {
             $registro = $biblioteca
                 ->where('Evento_id',              new ObjectID($evento))
@@ -556,11 +569,10 @@ class BibliotecaController extends Controller
         $empresa  = (string) Evento::find($evento)->Empresa_id;
         $pathSave = 'mosaics/' . $empresa . '/' . $evento . '/galeria/';
 
-        $categoria = CategoriaBiblioteca
-            ::where('_id', new ObjectId($input['categoria']))
+        $categoria = CategoriaBiblioteca::where('_id', new ObjectId($input['categoria']))
             ->first();
 
-        if($categoria->Nombre === 'Foto Mosaico') 
+        if($categoria->Nombre === 'Fotos Mosaico') 
         {
             $files = $input['archivos'];
 
@@ -673,6 +685,13 @@ class BibliotecaController extends Controller
             );
             curl_exec($ch);
             curl_close($ch);
+
+            $outPath = 'storage/mosaics/' . $empresa . '/' . $evento . '/output.jpg';
+
+            if(File::exists($outPath)) 
+            {
+                File::delete($outPath);
+            }
 
             return response()->json([
                 'code' => 200

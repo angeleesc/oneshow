@@ -73,7 +73,6 @@ class MosaicWall extends Component {
 
     handleEventChange (e) {
       const { value } = e.target;
-
       if (!value) {
         return this.props.setEvent('');
       }
@@ -82,7 +81,7 @@ class MosaicWall extends Component {
       .post(
           "api/biblioteca/evento/files/mosaic",
           { 
-            evento: this.props.eventId,
+            evento: value ? value : '',
             company: this.props.companyId
           },
           {
@@ -194,6 +193,15 @@ class MosaicWall extends Component {
                             ?
                               <h1 className="text-center text-white">
                                 Mosaico no disponible
+                              </h1>
+                              : 
+                              ''
+                        }
+                        {
+                          this.state.mosaic == 'generando' 
+                            ?
+                              <h1 className="text-center text-white">
+                                Generando Mosaico
                               </h1>
                             :
                               <img 

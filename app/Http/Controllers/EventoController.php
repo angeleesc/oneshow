@@ -739,7 +739,7 @@ class EventoController extends Controller
         $eve = Evento::borrado(false)->get();
         foreach ($eve as $e) {
             if (!$e->SeatsSubAccount_id) {
-                $seatsio = new \Seatsio\SeatsioClient("f4b8068e-031f-4035-a6c2-c56eca47ced9");
+                $seatsio = new \Seatsio\SeatsioClient("511530e9-7e65-4c05-86ac-921428ffc034");
                 $dato = $seatsio->subaccounts->create($e->Nombre);
                 $e->secretKey = $dato->secretKey;
                 $e->publicKey = $dato->publicKey;
@@ -849,7 +849,7 @@ class EventoController extends Controller
 
 
 
-        $seatsio = new \Seatsio\SeatsioClient("f4b8068e-031f-4035-a6c2-c56eca47ced9");
+        $seatsio = new \Seatsio\SeatsioClient("511530e9-7e65-4c05-86ac-921428ffc034");
         $dato = $seatsio->subaccounts->create($input["nombre"]);
         //procedo a guardarlos en la bd
         $registro = new Evento;
