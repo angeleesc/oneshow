@@ -3,6 +3,7 @@ import axios from "axios";
 import Menu from "../../../components/Menu";
 import Header from "../../../components/Header";
 import { Link } from "react-router-dom";
+import { Line } from 'rc-progress';
 
 import "../../css/configuracion/Biblioteca.css";
 
@@ -22,7 +23,8 @@ export default class Add extends React.Component {
             categoriaSeleccionada: "",
             estados: [],
             fileText: 'Elegir Archivo',
-            isLoading: true
+            isLoading: true,
+            progress: 0
         };
         /** declaro las funciones que haran uso del state */
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -133,6 +135,16 @@ export default class Add extends React.Component {
       axios.post('api/biblioteca/evento/add-files', formData, {
         headers: {
           Authorization: this.state.api_token
+        },
+
+        onUploadProgress: (progressEvent) => {
+          document.getElementById("progressBar").style.display = "";
+          const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
+          console.log("onUploadProgress", totalLength);
+          if (totalLength !== null) {
+            let uploadProgress = Math.round( (progressEvent.loaded * 100) / totalLength );
+            this.setState({progress:uploadProgress});
+          }
         }
       })
       .then((res) => {
@@ -354,6 +366,9 @@ export default class Add extends React.Component {
                                     </div>
                                 </div>
                             </form>
+                        </div>
+                        <div id="progressBar" className="mx-auto" style={{width: '500px', display: 'none'}}>
+                            <Line percent={this.state.progress} strokeWidth="4" trailWidth="4" strokeColor="#2db7f5" />
                         </div>
                     </div>
                 </div>
