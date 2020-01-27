@@ -25,7 +25,7 @@ export default function FormPlantilla(props) {
         const $contenedorPlantillas = document.querySelector("#contenedor-plantilla");
         if (id !== "0") {
 
-            const template = await fetch(`${url}/plantillas/${id}/index.html`, {
+            const template = await fetch(`https://consola.oneshow.com.ar/plantillas/${id}/index.html`, {
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }

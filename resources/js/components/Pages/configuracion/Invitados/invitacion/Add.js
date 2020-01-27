@@ -143,7 +143,7 @@ class Show extends Component {
                  this.props.handleInputPlantillaPdfInvitacion(pdfIPlantillainvitacion.files[0])
             } else {
                 sweetalert(
-                    "Archivo no soportado debe se run archivo PDF",
+                    "Archivo no soportado debe ser un archivo PDF",
                     "error",
                     "sweet"
                 );
