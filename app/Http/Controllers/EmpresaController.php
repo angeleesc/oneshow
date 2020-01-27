@@ -398,7 +398,7 @@ class EmpresaController extends Controller
             'logo'             => $base64,
             'borrado'          => false
         ];
-        $seatsio = new \Seatsio\SeatsioClient("f4b8068e-031f-4035-a6c2-c56eca47ced9");
+        $seatsio = new \Seatsio\SeatsioClient("511530e9-7e65-4c05-86ac-921428ffc034");
         $dato = $seatsio->subaccounts->create($input["nombre"]);
 
         //procedo a guardarlos en la bd

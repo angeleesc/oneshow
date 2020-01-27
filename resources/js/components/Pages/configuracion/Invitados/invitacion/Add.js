@@ -32,7 +32,7 @@ class Show extends Component {
             tipo: "",
             opcion: "Invitacion",
             footer: "Footer",
-            url: process.env.MIX_HOST
+            url: process.env.MIX_CONSOLE_URL
         };
         this.templateSelect = createRef();
         this.imagenRef = createRef();

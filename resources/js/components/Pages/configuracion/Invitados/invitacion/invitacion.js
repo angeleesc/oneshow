@@ -22,6 +22,7 @@ class Invitacion extends Component {
             selectE: false
         };
         this.changeEmpresa = createRef();
+        this.changeEvento = createRef();
         this.handleChange = this.handleChange.bind(this);
         this.selectDeEmpresas = this.selectDeEmpresas.bind(this);
         this.mostrarTabla = this.mostrarTabla.bind(this);
@@ -48,12 +49,26 @@ class Invitacion extends Component {
 
     handleChange() {
         const { eventos } = this.props.eventos
-        const id = this.changeEmpresa.current.value
+        const id =
+            this.changeEmpresa.current != null
+                ? this.changeEmpresa.current.value //seleccionamos el id de la empresa
+                : 0;
+        let idEvento = this.changeEvento.current.value;
+        let eventosEmpresa = null;
 
+        if (idEvento != 0) {
+            //si el evento esta seleccionado buscamos por evento
+            eventosEmpresa = eventos.filter(
+                e => e._id == idEvento
+            );
+        } else {
+            //si no por la empresa
+            eventosEmpresa = eventos.filter(
+                e => e.Empresa_id == id
+            );
+        }
 
-        const eventosEmpresa = eventos.filter(e => e.Empresa_id == id)
-
-        if (id == 0) {
+        if (id == 0 && idEvento == 0) {
             return eventos.map((e, i) => (
                 this.mostrarInvitaciones(e, i)
             ))
@@ -63,6 +78,30 @@ class Invitacion extends Component {
             ))
         }
 
+    }
+    handleChangeOption() {
+        const { eventos } = this.props.eventos;
+        const id =
+            this.changeEmpresa.current != null
+                ? this.changeEmpresa.current.value
+                : 0;
+        const eventosEmpresa = eventos.filter(e => e.Empresa_id == id);
+
+        if (id == 0) {
+            // si el el valor de la empresa en 0 colocamos todos los eventos
+            return eventos.map((e, index) => (
+                <option value={e._id} key={index}>
+                    {e.Evento}
+                </option>
+            ));
+        } else {
+            // solo colocamos los evento de la empresa seleccionada
+            return eventosEmpresa.map((e, index) => (
+                <option value={e._id} key={index}>
+                    {e.Evento}
+                </option>
+            ));
+        }
     }
     selectDeEmpresas() {
         if (this.props.empresas.cargando) {
@@ -124,6 +163,46 @@ class Invitacion extends Component {
                                 )}
                         </select>
                         )}
+                </div>
+                <div className="col-3">
+                    <label className="my-1 mr-2 form-control-sm label-invitado">
+                        <strong>Evento</strong>
+                    </label>
+                    {this.state.permisoUsuario.nombre === "ADMINISTRADOR" ||
+                    this.state.permisoUsuario.nombre === "EMPRESA" ? (
+                        <select
+                            name="evento"
+                            id="pro-find-empresa"
+                            className="form-control form-control-sm my-1 mr-sm-2 col-12 select-invitado"
+                            ref={this.changeEvento}
+                            onChange={() => this.setState({ selectE: true })}
+                        >
+                            <option value="0">Todas</option>
+                            {this.state.selectE
+                                ? this.handleChangeOption()
+                                : this.props.eventos.eventos.map((e, index) => (
+                                      <option value={e._id} key={index}>
+                                          {e.Evento}
+                                      </option>
+                                  ))}
+                        </select>
+                    ) : (
+                        <select
+                            name="evento"
+                            id="pro-find-empresa"
+                            className="form-control form-control-sm my-1 mr-sm-2 col-12 select-invitado"
+                            // onChange={this.handleFiltroEvento}
+                            disabled
+                        >
+                            {this.state.selectE
+                                ? this.handleChangeOption()
+                                : this.props.eventos.eventos.map((e, index) => (
+                                      <option value={e._id} key={index}>
+                                          {e.Evento}
+                                      </option>
+                                  ))}
+                        </select>
+                    )}
                 </div>
             </div>
         )
