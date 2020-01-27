@@ -143,15 +143,15 @@ class Menu extends Component {
               <div className={'collapse multi-collapse offset-1' + (guests.open ? ' show' : '')}>
                 <ul className="sidebar-nav">
                   <li className="sidebar-nav-link">
-                    <Link to="/invitacion">
-                      <i className="fas fa-envelope-open-text sidebar-nav-link-logo" />{" "}
-                      Invitación
-                    </Link>
-                  </li>
-                  <li className="sidebar-nav-link">
                     <Link to="/invitados">
                       <i className="fas fa-user-friends sidebar-nav-link-logo" />{" "}
                       Invitados
+                    </Link>
+                  </li>
+                  <li className="sidebar-nav-link">
+                    <Link to="/invitacion">
+                      <i className="fas fa-envelope-open-text sidebar-nav-link-logo" />{" "}
+                      Invitación
                     </Link>
                   </li>
                   <li className="sidebar-nav-link">
@@ -165,6 +165,12 @@ class Menu extends Component {
                           <i className="fas fa-gift sidebar-nav-link-logo" />{" "}
                           Regalos
                       </Link>
+                  </li>
+                  <li className="sidebar-nav-link"> 
+                      <Link to="/acceso"> 
+                          <i className="fas fa-tasks sidebar-nav-link-logo" />{" "} 
+                          Control de Acceso 
+                      </Link> 
                   </li>
                 </ul>
               </div>

@@ -55,6 +55,8 @@ import PlanosEdit from "../Pages/configuracion/Planos/Edit";
 import Asientos from "../Pages/configuracion/Invitados/asientos/Asientos";
 import SeleccionPlanos from "../Pages/configuracion/Invitados/asientos/SeleccionPlanos";
 import SeleccionAsientos from "../Pages/configuracion/Invitados/invitados/SeleccionAsientos";
+import Qr from "../Pages/configuracion/Invitados/acceso/Qr";
+import AccesoInvitado from "../Pages/configuracion/Invitados/acceso/index";
 import PlanoBase from "../Pages/configuracion/PlanoBase/PlanoBase";
 import PlanoBaseAdd from "../Pages/configuracion/PlanoBase/Add";
 import PlanoBaseEdit from "../Pages/configuracion/PlanoBase/Edit";
@@ -292,6 +294,12 @@ function App() {
                             path="/regalos/edit/regalo/:id/:regalo"
                             component={RegalosGuardar}
                         />
+                        <Route
+                            exact
+                            path="/acceso"
+                            component={AccesoInvitado}
+                        />
+                        <Route exact path="/qr" component={Qr} />
                         <Route exact path="/grupos" component={Grupos} />
                         <Route exact path="/grupos/add" component={GruposAdd} />
                         <Route

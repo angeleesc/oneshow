@@ -3,117 +3,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Euphoria+Script&display=swap" rel="stylesheet">
 
 </head> 
 
 <style>
-    #plantilla-contenedor {
-        font-size: 1em;
-        height: 100vh;
-        background-color: #f8f4f1;
-        color: #282d2f;
-        font-family: 'Open Sans', sans-serif;
-    }
 
-    #plantilla-contenedor #conent {
+	#conent{
+		width: 90%;
+		height: 550px;
+		margin-left: 5%;
+		margin-right: 5%;
+		margin-top: 100px;
+		background-color: white;
+	}
+	
+	#anfrition1{
+		font-size: 40px;
+		margin-bottom: 30px;
+		text-align: center;
+		padding-top: 17px;
+		font-family: Euphoria Script;
+	}
 
-        background-image: url('http://localhost:8001/plantillas/1/img/marco-mobile.svg');
-        background-size: cover;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        height: 100%;
-    }
+	#nombre{
+		font-size: 25px;font-weight:
+		font-weight: bold;
+		text-align: center;
+		font-family: open sans;
+	}
 
-    #plantilla-contenedor #conent p {
-        margin: 0;
-        padding: 0;
-    }
+	#fecha{
+		width: 50%;
+		margin-left: 23%;
+		margin-right: 25%;
+		text-align: center;
+		font-family: open sans;
+	}
 
-    #plantilla-contenedor #conent #evento {
-        display: flex;
-        width: 100%;
-        flex-direction: row-reverse;
-        justify-content: center;
-    }
+	#fecha-mes{
+		width: 33%;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
 
-    #plantilla-contenedor #conent #evento figure {
-        position: absolute;
-        width: 110px;
-        top: 25px;
-        left: 0px;
-    }
+	#fecha-dia{
+		width: 33%;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
 
-    #plantilla-contenedor #conent #evento #nombre {
-        margin-bottom: 50px;
-        margin-top: 50px;
-    }
+	#fecha-anio{
+		width: 33%;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
 
-    #plantilla-contenedor #conent #evento figure img {
-        width: 100%;
-        border-radius: 50%;
-        box-shadow: 2px 3px 5px rgba(0, 0, 0, .6);
-    }
+	#container-hora{
+		width: 50%;
+		margin-left: 25%;
+		margin-right: 25%;
+		text-align: center;
+	}
 
-    #plantilla-contenedor #conent #fecha {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-    }
-    
+	#hora{
+		width: 100%;
+		text-align: center;
+		font-family: open sans;
+	}
 
-    #plantilla-contenedor #conent #fecha {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 70%;
-    }
+	.texto{
+		width: 100%;
+		text-align: center;
+		margin-top: 25px;
+		font-family: open sans;
+	}
 
-    #plantilla-contenedor #conent #fecha p {
-        border-top: solid #dedbd8 1px;
-        border-bottom: solid #dedbd8 1px;
-        padding-top: 15px;
-        padding-bottom: 15px;
-        width: 40%;
-        text-align: center;
-    }
-    #plantilla-contenedor #conent .container-hora {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        justify-content: space-evenly;
-    }
+	.barra{
+		width: 80%; 
+		padding-top: 10px;
+		padding-right: 10%; 
+		padding-left: 10%;
+	}
 
-    #plantilla-contenedor #conent #dir2 {
-        width: 70%;
-        text-align: center;
-    }
 </style>
 
-<div id="plantilla-contenedor">
-    <div id="conent">
-        <div id="evento">
-            <!-- <figure>
-                <img src="http://localhost:8001/plantillas/1/img/quiencefoto.jpg" alt="foto-quinceañera">
-            </figure> -->
-            <p id="nombre"></p>
-        </div>
-        <h1 id="anfrition1"></h1>
-        <div id="fecha">
-            <p id="fecha-mes"></p>
-            <h3 id="fecha-dia"></h3>
-            <p id="fecha-anio"></p>
-        </div>
-        <br>
-        <div class="container-hora">
-            -<p id="hora"><span></span></p>-
-        </div>
+<body">
 
-        <h4 id="dir1"></h4>
-        <p id="dir2"></p>
-        <h5 id="vestimenta"></h5>
+<div id="plantilla-contenedor">
+    <div id="conent" style="background-color: blue; background-image: url(https://consola.oneshow.com.ar/plantillas/1/img/fondo1.jpg);>
+
+    		<img class="barra" src="https://consola.oneshow.com.ar/plantillas/1/img/linead1.png">
+        	<div id="evento">
+            <!-- <figure>
+                <img src="http://127.0.0.1:8001/plantillas/1/img/quiencefoto.jpg" alt="foto-quinceañera">
+            </figure> -->
+            	<div id="anfrition1"></div>
+            
+        	</div>
+        		<p id="nombre"></p>
+        	<div id="fecha"><a id="fecha-mes"></a><a></a><a id="fecha-dia"></a><a></a><a id="fecha-anio"></a></div>
+        	<br>
+        	<div class="container-hora">
+            	<p id="hora"><span></span></p>
+        	</div>
+
+        	<div id="dir1" class="texto"></div>
+        	<div id="dir2" class="texto"></div>
+        	<div id="vestimenta" class="texto"></div>
+
+        	<img class="barra" style="padding-top: 40px;" src="https://consola.oneshow.com.ar/plantillas/1/img/linead1.png">
+
     </div>
 </div>
+
+</body>

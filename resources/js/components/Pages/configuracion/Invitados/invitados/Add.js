@@ -39,16 +39,41 @@ export default class Add extends Component {
     }
 
     componentDidMount() {
-        axios.get("api/eventos",{
+
+        if (this.state.permisoUsuario.nombre == "EVENTO") {
+            axios
+                .get("api/eventos/one/" + this.state.usuario.Evento_id, {
+                    headers: {
+                        Authorization: this.state.api_token
+                    }
+                })
+                .then(res => {
+                    console.log(res);
+                    this.setState({
+                        eventos: [res.data.evento.evento],
+                        evento: res.data.evento.evento._id
+                    });
+                });
+        } else {
+            axios.post("api/eventos/empresa",{ 
+                idEmpresa: this.state.usuario.Empresa_id,
+                idEvento: this.state.usuario.Evento_id,
+                rol: this.state.permisoUsuario.nombre
+          },
+          {
             headers: {
                 Authorization: this.state.api_token
-            }
+            },
+
         }).then(res => {
             console.log(res)
             this.setState({
                 eventos:res.data.eventos,
                 evento:res.data.eventos[0]._id
+                });
             });
+        }
+        
             axios.get("api/grupos",{
                 headers: {
                     Authorization: this.state.api_token
@@ -83,8 +108,6 @@ export default class Add extends Component {
 
                 });
             });
-            
-        });
     }
 
 

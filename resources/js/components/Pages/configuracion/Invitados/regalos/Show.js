@@ -79,6 +79,7 @@ class Show extends Component {
                         <th className="text-center">TIPO DE REGALO</th>
                         <th className="text-center">REGALO</th>
                         <th className="text-center">ADQUIRIDO</th>
+                        <th className="text-center">REGALADO POR:</th>
                         <th className="text-center">
                             ACCIONES
                     </th>
@@ -166,6 +167,13 @@ class Show extends Component {
                                 className="fa fa-times fa-lg"
                                 aria-hidden="true"
                             />
+                        }
+                    </td>
+                    <td className="text-center">
+                        {e.Adquirido ?
+                            <h4>{e.InvitadoNombre}</h4>
+                            :
+                            ''
                         }
                     </td>
                     <td className="text-center">

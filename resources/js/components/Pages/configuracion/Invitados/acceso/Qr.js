@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import QrReader from "react-qr-reader";
+import QrScanner from "react-qr-scanner";
 import Menu from "../../../../components/Menu";
 import Header from "../../../../components/Header";
 import { connect } from "react-redux";
@@ -8,14 +8,13 @@ import { Redirect } from "react-router-dom";
 import * as invitadosActions from "../../../../../redux/actions/invitados";
 
 export const Qr = props => {
-    const [c, setC] = useState(0);
     const handleScan = data => {
 
-        if (data && c == 0) {
-            setC(1);
+        if (data) {
             const id = data.split('/')[0]
             const idevento = data.split('/')[1]
             props.checkInQr(id,idevento);
+            console.log(data);
         }
     };
     const handleError = err => {
@@ -46,8 +45,8 @@ export const Qr = props => {
                 <div id="sweet" className="container-fluid">
                     <div className="row">
                         <div className="col-6 offset-3">
-                            <QrReader
-                                delay={300}
+                            <QrScanner
+                                delay={1000}
                                 onError={handleError}
                                 onScan={handleScan}
                                 style={{ width: "100%" }}
