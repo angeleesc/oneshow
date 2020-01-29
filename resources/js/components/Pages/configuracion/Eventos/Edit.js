@@ -46,7 +46,7 @@ export default class Edit extends React.Component {
             fotoAnfitrion3: "",
             api_token: localStorage.getItem("api_token"),
             isLoading: true,
-            url: 'http://127.0.0.1:8001',
+            url: 'https://consola.oneshow.com.ar',
         };
 
         this.configuracionRedesSociales = React.createRef();
