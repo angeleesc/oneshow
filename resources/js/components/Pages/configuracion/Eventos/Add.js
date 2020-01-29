@@ -47,7 +47,7 @@ export default class Add extends Component {
             fotoAnfitrion3: "",
             loading: true,
             selectedItems: [],
-            url: 'http://127.0.0.1:8001',
+            url: 'https://consola.oneshow.com.ar',
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -591,9 +591,10 @@ export default class Add extends Component {
 </div>
 
                                         <div class="row justify-content-end">
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-5" style={{marginRight: '100px'}}>
                                                 <div className="text-center btn-upload-image mb-8">
-                                                    <span className="btn btn-dark btn-file">Subir Imagen anfitrión 1<input type="file" id="fotoAnfitrion-1" name="fotoAnfitrion-1" onChange={this.handleFotografia} /></span>
+                                                    <input type="file" id="fotoAnfitrion-1" name="fotoAnfitrion-1" className="custom-file-input" onChange={this.handleFotografia} />
+                                                    <label className="custom-file-label" for="fotoAnfitrion-1">Elegir Archivo</label>
                                                 </div>
                                                 <div id="div-edit-emp-img-preview-1" className="text-center">
                                                     <img id="foto-anfitrion-1" src={this.state.fotoAnfitrion1 ? this.state.fotoAnfitrion1 : `${this.state.url}/images/example.png`} className="rounded img-fotografia preview-emp-logo-edit" alt="" />
@@ -607,9 +608,10 @@ export default class Add extends Component {
                                                 <input type="hidden" id="add-1-w" />
                                                 <input type="hidden" id="add-1-h" />
                                             </div>
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-5">
                                                 <div className="text-center btn-upload-image mb-8">
-                                                    <span className="btn btn-dark btn-file">Subir Imagen anfitrión 2<input type="file" id="fotoAnfitrion-2" name="fotoAnfitrion-2" onChange={this.handleFotografia} /></span>
+                                                    <input type="file" id="fotoAnfitrion-2" name="fotoAnfitrion-2" className="custom-file-input" onChange={this.handleFotografia} />
+                                                    <label className="custom-file-label" for="fotoAnfitrion-2">Elegir Archivo</label>
                                                 </div>
                                                 <div id="div-edit-emp-img-preview-2" className="text-center">
                                                     <img id="foto-anfitrion-2" src={this.state.fotoAnfitrion2 ? this.state.fotoAnfitrion2 : `${this.state.url}/images/example.png`} className="rounded img-fotografia preview-emp-logo-edit" alt="" />
@@ -623,9 +625,10 @@ export default class Add extends Component {
                                                 <input type="hidden" id="add-2-w" />
                                                 <input type="hidden" id="add-2-h" />
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-sm-5 mx-auto">
                                                 <div className="text-center btn-upload-image mb-8">
-                                                    <span className="btn btn-dark btn-file">Subir Imagen juntos<input type="file" id="fotoAnfitrion-3" name="fotoAnfitrion-3" onChange={this.handleFotografia} /></span>
+                                                    <input type="file" id="fotoAnfitrion-3" name="fotoAnfitrion-3" className="custom-file-input" onChange={this.handleFotografia} />
+                                                    <label className="custom-file-label" for="fotoAnfitrion-3">Elegir Archivo</label>
                                                 </div>
                                                 <div id="div-edit-emp-img-preview-3" className="text-center">
                                                     <img id="foto-anfitrion-3-edit" src={this.state.fotoAnfitrion3 ? this.state.fotoAnfitrion3 : `${this.state.url}/images/example.png`} className="rounded img-fotografia preview-emp-logo-edit" alt="" />
