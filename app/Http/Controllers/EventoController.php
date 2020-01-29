@@ -832,8 +832,8 @@ class EventoController extends Controller
             'dir2' => $input['dir2'] ? $input['dir2'] : '',
             'fecha' => $input['fecha'],
             'hora' => $input['hora'],
-            'estatus' => $input['estatus'],
-            'app' => $input['app'],
+            'app' => $input['app'] === "true"? true : false,
+            'estatus' => $input['estatus'] === "true"? true : false,
             'licencias' => $input['licencias'],
             'pais' => new ObjectID($input['pais']),
             'latitud' => $input['latitud'],
@@ -864,8 +864,8 @@ class EventoController extends Controller
         $registro->Dir2 = $data['dir2'];
         $registro->Fecha = $data['fecha'];
         $registro->Hora = $data['hora'];
-        $registro->Activo = (boolean) $data['estatus'];
         $registro->App = (boolean) $data['app'];
+        $registro->Activo = (boolean) $data['estatus'];
         $registro->Licencias = $data['licencias'];
         $registro->Pais_id = $data['pais'];
         $registro->Latitud = $data['latitud'];
@@ -1071,7 +1071,8 @@ class EventoController extends Controller
             'dir2' => $input['dir2'] ? $input['dir2'] : '',
             'fecha' => $input['fecha'],
             'hora' => $input['hora'],
-            'estatus' => $input['estatus'],
+            'app' => $input['app'] === "true"? true : false,
+            'estatus' => $input['estatus'] === "true"? true : false,
             'licencias' => $input['licencias'],
             'pais' => new ObjectID($input['pais']),
             'latitud' => $input['latitud'],
@@ -1095,6 +1096,7 @@ class EventoController extends Controller
         $registro->Dir2 = $data['dir2'];
         $registro->Fecha = $data['fecha'];
         $registro->Hora = $data['hora'];
+        $registro->App = (boolean) $data['app'];
         $registro->Activo = (boolean) $data['estatus'];
         $registro->Licencias = $data['licencias'];
         $registro->Pais_id = $data['pais'];
@@ -1110,7 +1112,7 @@ class EventoController extends Controller
         //verifico si fue exitoso el insert en la bd
         if ($registro->update()) {
 
-            return response()->json(['code' => 200]);
+            return response()->json(['code' => 200, 'prut' => $data]);
 
         } else {
             return response()->json(['code' => 500]);

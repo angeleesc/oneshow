@@ -239,8 +239,8 @@ export default class Eventos extends Component {
                                         </th>
                                         <th className="text-center">FECHA</th>
                                         <th className="text-center">PAÍS</th>
+                                        <th className="text-center">EVENTO</th>
                                         <th className="text-center">APP</th>
-                                        <th className="text-center">ESTADO</th>
                                         <th className="text-center">
                                             ACCIONES
                                         </th>
@@ -357,7 +357,7 @@ export default class Eventos extends Component {
                                                                             data-toggle="tooltip"
                                                                             data-placement="top"
                                                                             title="Etapas"
-                                                                            className="fas fa-ticket-alt icono-ver"
+                                                                            className="fas fa-clipboard-list icono-ver"
                                                                         />
                                                                     </Link>
                                                                 ) : (

@@ -30,6 +30,7 @@ class ConfirmacionDatos extends Mailable
      */
     public function build()
     {
-        return $this->view('Mail.correo-confirmacion-datos');
+        return $this->from('invitacion@oneshow.com.ar', 'ONE Show')
+        ->view('Mail.correo-confirmacion-datos');
     }
 }
