@@ -210,7 +210,7 @@ export default class Edit extends React.Component {
 
         // console.log(formData.get(""));
 
-        // $('#update-evento').prepend("<i class='fa fa-spinner fa-spin'></i> ");
+        $('#update-evento').prepend("<i class='fa fa-spinner fa-spin'></i> ");
         axios.post("api/eventos/edit", formData, {
             headers: {
                 Authorization: this.state.api_token

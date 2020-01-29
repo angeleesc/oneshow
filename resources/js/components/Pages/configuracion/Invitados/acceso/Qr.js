@@ -43,7 +43,7 @@ export const Qr = props => {
                                     <i className="fas fa-qrcode sidebar-nav-link-logo" />
                                     &nbsp; Escanear Qr
                                 </h1>
-                                <span style={{ cursor: 'pointer', }} >
+                                <span style={{ cursor: 'pointer', float: 'right'}} >
                                     <FontAwesomeIcon
                                       onClick={() => setShowFullScreen(!showFullScreen)}
                                       icon="expand-arrows-alt"
