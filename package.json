@@ -55,6 +55,7 @@
         "react-datepicker": "^2.10.1",
         "react-dom": "^16.8.6",
         "react-full-screen": "^0.2.4",
+        "react-hooks-full-screen": "0.0.1",
         "react-input-color": "^2.0.17",
         "react-live-clock": "^3.1.0",
         "react-mobile-datepicker": "^4.0.1",

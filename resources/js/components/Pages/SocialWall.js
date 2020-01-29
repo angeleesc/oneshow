@@ -737,7 +737,7 @@ class SocialWall extends Component {
                     </div>
                   </div>
                   <div className="col-md-3">
-                    <div className="col-md-1 text-center">
+                    <div className="col-md-9 text-center">
                       <span style={{ cursor: 'pointer' }}>
                         <FontAwesomeIcon
                           onClick={() => this.props.toggleFullscreen()}
@@ -750,11 +750,11 @@ class SocialWall extends Component {
                 </div>
               </div>
             </header>
-            <Fullscreen 
-            enabled={this.props.fullscreen}
-            onChange={isFull => this.props.setFullscreenState(isFull)}
-            >
             <div id="sweet" className="container-fluid">
+              <Fullscreen 
+                enabled={this.props.fullscreen}
+                onChange={isFull => this.props.setFullscreenState(isFull)}
+                >
               {isLoading &&
                 <div className="text-center">
                   <FontAwesomeIcon color="#fff" icon="sync" spin />
@@ -782,8 +782,9 @@ class SocialWall extends Component {
                   </iframe>
                 }
               </React.Fragment> */}
+              </Fullscreen>  
             </div>
-            </Fullscreen>
+            
           </div>
         </div>
       );

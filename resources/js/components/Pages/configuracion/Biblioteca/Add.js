@@ -62,7 +62,7 @@ export default class Add extends React.Component {
     ChromaSelect() {
         return(
         <div className="form-group row">
-            <label className="col-sm-2 col-form-label col-form-label-sm">Efecto Chroma</label>
+            <label className="col-sm-2 col-form-label col-form-label-sm">Efecto Croma</label>
             <div className="col-sm-4">
                 <select className="form-control form-control-sm" id="categoriaChroma" name="categoriaChroma" value={this.state.value} onChange={this.handleInputChange} required>
                     <option value="">Seleccione</option>
@@ -350,7 +350,7 @@ export default class Add extends React.Component {
                                                 </select>
                                             </div>
                                         </div>
-                                    {this.state.categoriaSeleccionada == 'ChromaStudios' ? <this.ChromaSelect /> : ""}    
+                                    {this.state.categoriaSeleccionada == 'Croma Estudio' ? <this.ChromaSelect /> : ""}    
                                     </div>
                                 </div>
                                 

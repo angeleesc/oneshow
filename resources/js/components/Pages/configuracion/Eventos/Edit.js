@@ -149,7 +149,7 @@ export default class Edit extends React.Component {
         }
         const name = target.name;
         this.setState({
-            [name]: value
+            [name]: value 
         })
     }
 
@@ -183,8 +183,8 @@ export default class Edit extends React.Component {
         formData.append("latitud", s.latitud);
         formData.append("longitud", s.longitud);
         formData.append("ubicacion", ubicacion === undefined ? '' : ubicacion);
-        formData.append("app", s.app);
-        formData.append("estatus", s.estado);
+        formData.append("app", s.app === "5b7e4c3b589bd25309f878ca" ? true : false);
+        formData.append("estatus", s.estado === "5b7e4c3b589bd25309f878ca" ? true : false);            
         formData.append("logo", $('#form-add-evento input[name=logo]')[0].files[0]);
         formData.append("x", $('#add-x').val());
         formData.append("y", $('#add-y').val());
@@ -210,7 +210,7 @@ export default class Edit extends React.Component {
 
         // console.log(formData.get(""));
 
-        $('#update-evento').prepend('<i className="fa fa-spinner fa-spin"></i>');
+        $('#update-evento').prepend("<i class='fa fa-spinner fa-spin'></i> ");
         axios.post("api/eventos/edit", formData, {
             headers: {
                 Authorization: this.state.api_token
@@ -555,39 +555,39 @@ export default class Edit extends React.Component {
 
 
                                         </div>
-
                                         <div className="form-group row">
                                             <label className="col-sm-2 col-form-label col-form-label-sm" >App &nbsp;</label>
                                             <div className="col-sm-4">
                                                 <select className="form-control form-control-sm" id="app" name="app" value={this.state.app} onChange={this.handleChange} >
                                                     <option value="">Seleccione</option>
                                                     {this.state.estados.map(
-                                                        (e, index) => {
-                                                            return (
-                                                                <option value={e._id} key={index}>{e.Nombre}</option>
-                                                            )
-                                                        }
-                                                    )}
+                                                            (e, index) => {
+                                                                return (
+                                                                    <option value={e._id} key={index}>{e.Nombre}</option>
+                                                                )
+                                                            }
+                                                        )
+                                                    }
                                                 </select>
                                             </div>
                                         </div>
-
-                                        <div className="form-group row">
-                                            <label className="col-sm-2 col-form-label col-form-label-sm">Estado</label>
-                                            <div className="col-sm-4">
-                                                <select className="form-control form-control-sm" id="estatus" name="estado" value={this.state.estado} onChange={this.handleChange}>
-                                                    <option value="">Seleccione</option>
-                                                    {this.state.estados.map(
-                                                        (e, index) => {
-                                                            return (
-                                                                <option value={e._id} key={index}>{e.Nombre}</option>
-                                                            )
-                                                        }
-                                                    )}
-                                                </select>
+                                        {this.state.permisoUsuario.nombre === "ADMINISTRADOR" &&
+                                            <div className="form-group row">
+                                                <label className="col-sm-2 col-form-label col-form-label-sm">Estado</label>
+                                                <div className="col-sm-4">
+                                                    <select className="form-control form-control-sm" id="estatus" name="estado" value={this.state.estado} onChange={this.handleChange}>
+                                                        <option value="">Seleccione</option>
+                                                        {this.state.estados.map(
+                                                            (e, index) => {
+                                                                return (
+                                                                    <option value={e._id} key={index}>{e.Nombre}</option>
+                                                                )
+                                                            }
+                                                        )}
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
-
+                                        }
                                     </div>
 
 
@@ -665,9 +665,10 @@ export default class Edit extends React.Component {
                                         </div>
 
                                         <div class="row justify-content-end">
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-5" style={{marginRight: '100px'}}>
                                                 <div className="text-center btn-upload-image mb-8">
-                                                    <span className="btn btn-dark btn-file">Subir Imagen anfitrión 1<input type="file" id="fotoAnfitrion-1" name="fotoAnfitrion-1" onChange={this.handleFotografia} /></span>
+                                                    <input type="file" id="fotoAnfitrion-1" name="fotoAnfitrion-1" className="custom-file-input" onChange={this.handleFotografia} />
+                                                    <label className="custom-file-label" for="fotoAnfitrion-1">Elegir Archivo</label>
                                                 </div>
                                                 <div id="div-edit-emp-img-preview-1" className="text-center">
                                                     <img id="foto-anfitrion-1" src={this.state.fotoAnfitrion1 ? this.state.fotoAnfitrion1 : `${this.state.url}/images/example.png`} className="rounded img-fotografia preview-emp-logo-edit" alt="" />
@@ -681,9 +682,10 @@ export default class Edit extends React.Component {
                                                 <input type="hidden" id="add-1-w" />
                                                 <input type="hidden" id="add-1-h" />
                                             </div>
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-5">
                                                 <div className="text-center btn-upload-image mb-8">
-                                                    <span className="btn btn-dark btn-file">Subir Imagen anfitrión 2<input type="file" id="fotoAnfitrion-2" name="fotoAnfitrion-2" onChange={this.handleFotografia} /></span>
+                                                    <input type="file" id="fotoAnfitrion-2" name="fotoAnfitrion-2" className="custom-file-input" onChange={this.handleFotografia} />
+                                                    <label className="custom-file-label" for="fotoAnfitrion-2">Elegir Archivo</label>
                                                 </div>
                                                 <div id="div-edit-emp-img-preview-2" className="text-center">
                                                     <img id="foto-anfitrion-2" src={this.state.fotoAnfitrion2 ? this.state.fotoAnfitrion2 : `${this.state.url}/images/example.png`} className="rounded img-fotografia preview-emp-logo-edit" alt="" />
@@ -697,9 +699,10 @@ export default class Edit extends React.Component {
                                                 <input type="hidden" id="add-2-w" />
                                                 <input type="hidden" id="add-2-h" />
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-sm-5 mx-auto">
                                                 <div className="text-center btn-upload-image mb-8">
-                                                    <span className="btn btn-dark btn-file">Subir Imagen juntos<input type="file" id="fotoAnfitrion-3" name="fotoAnfitrion-3" onChange={this.handleFotografia} /></span>
+                                                    <input type="file" id="fotoAnfitrion-3" name="fotoAnfitrion-3" className="custom-file-input" onChange={this.handleFotografia} />
+                                                    <label className="custom-file-label" for="fotoAnfitrion-3">Elegir Archivo</label>
                                                 </div>
                                                 <div id="div-edit-emp-img-preview-3" className="text-center">
                                                     <img id="foto-anfitrion-3-edit" src={this.state.fotoAnfitrion3 ? this.state.fotoAnfitrion3 : `${this.state.url}/images/example.png`} className="rounded img-fotografia preview-emp-logo-edit" alt="" />

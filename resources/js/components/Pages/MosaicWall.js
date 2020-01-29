@@ -187,7 +187,7 @@ class MosaicWall extends Component {
                   )
                 :
                   (
-                    <div className="section-empty mt-5 mb-5">
+                    <div className="section-empty">
                         {
                           this.state.mosaic == '' 
                             ?

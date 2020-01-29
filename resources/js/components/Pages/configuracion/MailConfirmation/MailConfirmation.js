@@ -94,7 +94,9 @@ export default class Edit extends Component {
                 formData.append("correo_adicional_"+i, this.state["correo_adicional_"+i]);
                 formData.append("telefono_adicional_"+i, this.state["telefono_adicional_"+i]);
             }
-        }
+        }else{
+                formData.append("cantidad_adicionales",0);
+            }
         $('#save-invitado').prepend('<i class="fa fa-spinner fa-spin"></i> ');
         axios.post("api/mail-confirmacion/datos",formData).then(res=>{
             console.log(res)

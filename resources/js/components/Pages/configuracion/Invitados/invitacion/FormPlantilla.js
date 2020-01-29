@@ -20,7 +20,7 @@ export default function FormPlantilla(props) {
     }
 
     async function handlChaneSelectTemplate() {
-
+        
         const id = selectRef.current.value
         const $contenedorPlantillas = document.querySelector("#contenedor-plantilla");
         if (id !== "0") {

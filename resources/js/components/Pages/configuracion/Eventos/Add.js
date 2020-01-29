@@ -34,7 +34,7 @@ export default class Add extends Component {
             latitud: "",
             longitud: "",
             ubicacion: "",
-            estado: "",
+            estado: "5b7e4c90eaf5685309c47a4f",
             app: "",
             logo: "",
             api_token: localStorage.getItem("api_token"),
@@ -143,8 +143,8 @@ export default class Add extends Component {
         formData.append("latitud", s.latitud);
         formData.append("longitud", s.longitud);
         formData.append("ubicacion", ubicacion === undefined ? '' : ubicacion);
-        formData.append("app", s.app);
-        formData.append("estatus", s.estado);
+        formData.append("app", s.app === "5b7e4c3b589bd25309f878ca" ? true : false);
+        formData.append("estatus", s.estado === "5b7e4c3b589bd25309f878ca" ? true : false);
         formData.append("logo", $('#form-add-evento input[name=logo]')[0].files[0] === undefined ? '' : $('#form-add-evento input[name=logo]')[0].files[0]);
         formData.append("x", $('#add-x').val());
         formData.append("y", $('#add-y').val());
@@ -521,23 +521,23 @@ export default class Add extends Component {
                                                 </select>
                                             </div>
                                         </div>
-
-                                        <div className="form-group row">
-                                            <label className="col-sm-2 col-form-label col-form-label-sm">Estado</label>
-                                            <div className="col-sm-4">
-                                                <select className="form-control form-control-sm" id="estatus" name="estado" value={this.state.estado} onChange={this.handleChange}>
-                                                    <option value="">Seleccione</option>
-                                                    {this.state.estados.map(
-                                                        (e, index) => {
-                                                            return (
-                                                                <option value={e._id} key={index}>{e.Nombre}</option>
-                                                            )
-                                                        }
-                                                    )}
-                                                </select>
+                                        {this.state.permisoUsuario.nombre === "ADMINISTRADOR" &&
+                                            <div className="form-group row">
+                                                <label className="col-sm-2 col-form-label col-form-label-sm">Estado</label>
+                                                <div className="col-sm-4">
+                                                    <select className="form-control form-control-sm" id="estatus" name="estado" value={this.state.estado} onChange={this.handleChange}>
+                                                        <option value="">Seleccione</option>
+                                                        {this.state.estados.map(
+                                                            (e, index) => {
+                                                                return (
+                                                                    <option value={e._id} key={index}>{e.Nombre}</option>
+                                                                )
+                                                            }
+                                                        )}
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
-
+                                        }
                                     </div>
 
 

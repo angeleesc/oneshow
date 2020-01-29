@@ -290,7 +290,7 @@ export default class Biblioteca extends Component {
                                                             />
                                                         ) : (
                                                             <i
-                                                                style="color: #d9534f"
+                                                                style={{color: '#d9534f'}}
                                                                 className="fa fa-times fa-lg"
                                                                 aria-hidden="true"
                                                             />
