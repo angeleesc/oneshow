@@ -1,9 +1,9 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from "react";
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Link, withRouter } from "react-router-dom";
+import { compose } from 'redux';
 import { getUserScope } from './../../redux/actions/auth';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Menu extends Component {
   constructor(props) {
@@ -176,6 +176,8 @@ class Menu extends Component {
               </div>
             </div>
           </li>
+
+          
           <li className={'sidebar-nav-link' + this.isActive('/social-wall')}>
             <Link
               to={{
@@ -192,6 +194,8 @@ class Menu extends Component {
               Social Wall
             </Link>
           </li>
+
+
           <li className={'sidebar-nav-link' + this.isActive('/mosaic-wall')}>
             <Link
               to={{
