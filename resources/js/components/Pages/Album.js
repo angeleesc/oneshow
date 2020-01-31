@@ -10,7 +10,6 @@ import { setFullscreenState, toggleFullscreen } from './../../redux/actions/app'
 import { mostrarElementoDeCarga, ocultarElementoDeCarga } from "./../../redux/actions/loader";
 import { cleanHashtags, getEventHashtags } from './../../redux/actions/social-wall';
 import Wall from './../organisms/Wall';
-
 class SocialWall extends Component {
 
     constructor(props) {
@@ -19,6 +18,7 @@ class SocialWall extends Component {
         this.mostrarFiltros = true;
 
         this.state = {
+            pictures: [],   //datos
           companies: [],
           companyId: '',
           events: [],
@@ -51,6 +51,7 @@ class SocialWall extends Component {
           moderarContenido : true
         };
 
+        this.onDrop = this.onDrop.bind(this);
         this.handleCompanyChange = this.handleCompanyChange.bind(this);
         this.handleEventChange = this.handleEventChange.bind(this);
         this.consultarHashtagsDelEvento = this.consultarHashtagsDelEvento.bind(this);
@@ -681,6 +682,22 @@ class SocialWall extends Component {
             .scrollTop;
     }
 
+    /* funciones del album */
+
+    /* tomar foto */
+
+    fileselect (event){
+        console.log(event);
+    }
+
+    onDrop(pictureFiles, pictureDataURLs) {
+		this.setState({
+            pictures: this.state.pictures.concat(pictureFiles),
+        });
+	}
+
+
+
     render() {
       const { companies, events, companyId, eventId, isLoading } = this.state;
 
@@ -692,13 +709,23 @@ class SocialWall extends Component {
             <header className="page-header">
               <div className="container-fluid">
                 <div className="row">
-                  <div className="col-sm-2">
+                  <div className="col-md-2">
                     <h5>
                       <FontAwesomeIcon icon="photo-video" color="#fff"/> 
                       {` `} Album
                     </h5>
                   </div>
-                  <div className="col-sm-7">
+                 
+                 <div className="clo-md-1" >
+
+                 <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                 <i class="fas fa-cloud-upload-alt"></i>
+                </button>
+
+                
+                      </div>
+                 
+                  <div className="col-md-6">
                     <div className="row">
                       <div className="col-md-6">
                         <select
@@ -747,6 +774,34 @@ class SocialWall extends Component {
               </div>
             </header>
             <div id="sweet" className="container-fluid">
+
+                            {/*modal-album  */}
+
+                            
+<div className="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div className="modal-dialog modal-dialog-centered" role="document">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h5 className="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div className="modal-body">
+        <input type="file" onChange={this.fileselect}/>
+        
+      
+      </div>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" className="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
               <Fullscreen 
                 enabled={this.props.fullscreen}
                 onChange={isFull => this.props.setFullscreenState(isFull)}
@@ -762,22 +817,7 @@ class SocialWall extends Component {
                   eventId={eventId}
                 />
               }
-              {/* <React.Fragment>
-                {(this.state.mostrarIframe && !this.existenHashtagsParaEvento()) &&
-                  <Mensaje
-                    icono="fas fa-exclamation-circle"
-                    texto="No existen hashtags registrados en el evento"
-                  />
-                }
-                {(this.state.mostrarIframe && this.existenHashtagsParaEvento()) &&
-                  <iframe
-                    id="iFrameSocialWall"
-                    style={this.state.estilosIframe}
-                    onLoad={this.agregarEventoPantallaCompletaAIframe}
-                  >
-                  </iframe>
-                }
-              </React.Fragment> */}
+            
               </Fullscreen>  
             </div>
             
