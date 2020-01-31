@@ -195,6 +195,25 @@ class Menu extends Component {
             </Link>
           </li>
 
+            {/** Album */}
+          <li className={'sidebar-nav-link' + this.isActive('/album')}>
+            <Link
+              to={{
+                  pathname: "/album",
+                  state: {
+                    usuario: JSON.parse(localStorage.getItem("usuario")),
+                    api_token: localStorage.getItem("api_token")
+                  }
+              }}
+            >
+              <span className="sidebar-nav-link-logo">
+                <FontAwesomeIcon icon="photo-video" /> {" "}
+              </span>
+              Album
+            </Link>
+          </li>
+
+
 
           <li className={'sidebar-nav-link' + this.isActive('/mosaic-wall')}>
             <Link

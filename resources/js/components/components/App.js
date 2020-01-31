@@ -1,74 +1,75 @@
-import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
-import { Provider } from "react-redux";
-import store from "./../../redux";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import Alert from './../molecules/Alert';
-import Loader from "./../atoms/Loader";
+import React from "react";
+import { Provider } from "react-redux";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+/** album */
+import Album from "../Pages/Album";
+import AddEventoBiblioteca from "../Pages/configuracion/Biblioteca/Add";
+import Biblioteca from "../Pages/configuracion/Biblioteca/Biblioteca";
+import ViewEventoBiblioteca from "../Pages/configuracion/Biblioteca/Show";
+import AddEmpresa from "../Pages/configuracion/Empresas/Add";
+import EditEmpresas from "../Pages/configuracion/Empresas/Edit";
+import Empresas from "../Pages/configuracion/Empresas/Empresas";
+import ShowEmpresas from "../Pages/configuracion/Empresas/Show";
+import EventosAdd from "../Pages/configuracion/Eventos/Add";
+import EventoEdit from "../Pages/configuracion/Eventos/Edit";
+import Etapas from "../Pages/configuracion/Eventos/Etapas/Etapas";
+import { default as EtapasAdd, default as EtapasEdit } from "../Pages/configuracion/Eventos/Etapas/Guardar";
+import MenuEtapas from "../Pages/configuracion/Eventos/Etapas/menu";
+import MenuEtapasAdd from "../Pages/configuracion/Eventos/Etapas/menu/Guardar";
+import MenuEtapasShow from "../Pages/configuracion/Eventos/Etapas/Show";
+import Eventos from "../Pages/configuracion/Eventos/Eventos";
+import EventoShow from "../Pages/configuracion/Eventos/Show";
+import GruposAdd from "../Pages/configuracion/Grupos/Add";
+import GruposEdit from "../Pages/configuracion/Grupos/Edit";
+import Grupos from "../Pages/configuracion/Grupos/Grupos";
+import AccesoInvitado from "../Pages/configuracion/Invitados/acceso/index";
+import Qr from "../Pages/configuracion/Invitados/acceso/Qr";
+import Asientos from "../Pages/configuracion/Invitados/asientos/Asientos";
+import SeleccionPlanos from "../Pages/configuracion/Invitados/asientos/SeleccionPlanos";
+import InvitacionAdd from "../Pages/configuracion/Invitados/invitacion/Add";
+import Invitacion from "../Pages/configuracion/Invitados/invitacion/invitacion";
+import InvitacionShow from "../Pages/configuracion/Invitados/invitacion/Show";
+import InvitadosAdd from "../Pages/configuracion/Invitados/invitados/Add";
+import EdicionAsiento from "../Pages/configuracion/Invitados/invitados/EdicionAsiento";
+import InvitadosEdit from "../Pages/configuracion/Invitados/invitados/Edit";
+import Invitados from "../Pages/configuracion/Invitados/invitados/Invitados";
+import SeleccionAsientos from "../Pages/configuracion/Invitados/invitados/SeleccionAsientos";
+import InvitadosShow from "../Pages/configuracion/Invitados/invitados/Show";
+import Regalos from "../Pages/configuracion/Invitados/regalos";
+import RegalosGuardar from "../Pages/configuracion/Invitados/regalos/Guardar";
+import RegalosShow from "../Pages/configuracion/Invitados/regalos/Show";
+import MailAsiento from "../Pages/configuracion/MailAsiento/MailAsiento";
+import MailConfirmation from "../Pages/configuracion/MailConfirmation/MailConfirmation";
+import MenuGastronomico from "../Pages/configuracion/MenuGastronomico/MenuGastronomico";
+import PlanoBaseAdd from "../Pages/configuracion/PlanoBase/Add";
+import PlanoBaseEdit from "../Pages/configuracion/PlanoBase/Edit";
+import PlanoBase from "../Pages/configuracion/PlanoBase/PlanoBase";
+import PlanosAdd from "../Pages/configuracion/Planos/Add";
+import PlanosEdit from "../Pages/configuracion/Planos/Edit";
+import Planos from "../Pages/configuracion/Planos/Planos";
+import PlanosBaseCopia from "../Pages/configuracion/Planos/PlanosBaseCopia";
+import PlanoCopiaAdd from "../Pages/configuracion/Planos/PlanosBaseCopiaAdd";
+import UsuariosAdd from "../Pages/configuracion/Usuarios/Add";
+import UsuariosEdit from "../Pages/configuracion/Usuarios/Edit";
+import UsuariosShow from "../Pages/configuracion/Usuarios/Show";
+import Usuarios from "../Pages/configuracion/Usuarios/Usuarios";
 /**
  * A continuacion se importan todos los componentes que seran
  * utili ados como paginas y rutas del front end
  */
 import Login from "../Pages/Login";
-import Welcome from "../Pages/Welcome";
-import Multimedia from "../Pages/Multimedia";
-import Biblioteca from "../Pages/configuracion/Biblioteca/Biblioteca";
-import ViewEventoBiblioteca from "../Pages/configuracion/Biblioteca/Show";
-import AddEventoBiblioteca from "../Pages/configuracion/Biblioteca/Add";
-import Empresas from "../Pages/configuracion/Empresas/Empresas";
-import AddEmpresa from "../Pages/configuracion/Empresas/Add";
-import ShowEmpresas from "../Pages/configuracion/Empresas/Show";
-import EditEmpresas from "../Pages/configuracion/Empresas/Edit";
-import Eventos from "../Pages/configuracion/Eventos/Eventos";
-import EventosAdd from "../Pages/configuracion/Eventos/Add";
-import EventoEdit from "../Pages/configuracion/Eventos/Edit";
-import EventoShow from "../Pages/configuracion/Eventos/Show";
-import Usuarios from "../Pages/configuracion/Usuarios/Usuarios";
-import UsuariosAdd from "../Pages/configuracion/Usuarios/Add";
-import UsuariosEdit from "../Pages/configuracion/Usuarios/Edit";
-import UsuariosShow from "../Pages/configuracion/Usuarios/Show";
-import Invitacion from "../Pages/configuracion/Invitados/invitacion/invitacion";
-import InvitacionShow from "../Pages/configuracion/Invitados/invitacion/Show";
-import InvitacionAdd from "../Pages/configuracion/Invitados/invitacion/Add";
-import Invitados from "../Pages/configuracion/Invitados/invitados/Invitados";
-import InvitadosAdd from "../Pages/configuracion/Invitados/invitados/Add";
-import InvitadosShow from "../Pages/configuracion/Invitados/invitados/Show";
-import InvitadosEdit from "../Pages/configuracion/Invitados/invitados/Edit";
-import Regalos from "../Pages/configuracion/Invitados/regalos";
-import RegalosShow from "../Pages/configuracion/Invitados/regalos/Show";
-import RegalosGuardar from "../Pages/configuracion/Invitados/regalos/Guardar";
-import Grupos from "../Pages/configuracion/Grupos/Grupos";
-import GruposAdd from "../Pages/configuracion/Grupos/Add";
-import GruposEdit from "../Pages/configuracion/Grupos/Edit";
-import Etapas from "../Pages/configuracion/Eventos/Etapas/Etapas";
-import EtapasAdd from "../Pages/configuracion/Eventos/Etapas/Guardar";
-import EtapasEdit from "../Pages/configuracion/Eventos/Etapas/Guardar";
-import MenuEtapas from "../Pages/configuracion/Eventos/Etapas/menu";
-import MenuEtapasAdd from "../Pages/configuracion/Eventos/Etapas/menu/Guardar";
-import MenuEtapasShow from "../Pages/configuracion/Eventos/Etapas/Show";
-import MailConfirmation from "../Pages/configuracion/MailConfirmation/MailConfirmation";
-import MailAsiento from "../Pages/configuracion/MailAsiento/MailAsiento";
-import Planos from "../Pages/configuracion/Planos/Planos";
-import PlanosAdd from "../Pages/configuracion/Planos/Add";
-import PlanosEdit from "../Pages/configuracion/Planos/Edit";
-import Asientos from "../Pages/configuracion/Invitados/asientos/Asientos";
-import SeleccionPlanos from "../Pages/configuracion/Invitados/asientos/SeleccionPlanos";
-import SeleccionAsientos from "../Pages/configuracion/Invitados/invitados/SeleccionAsientos";
-import Qr from "../Pages/configuracion/Invitados/acceso/Qr";
-import AccesoInvitado from "../Pages/configuracion/Invitados/acceso/index";
-import PlanoBase from "../Pages/configuracion/PlanoBase/PlanoBase";
-import PlanoBaseAdd from "../Pages/configuracion/PlanoBase/Add";
-import PlanoBaseEdit from "../Pages/configuracion/PlanoBase/Edit";
-import PlanosBaseCopia from "../Pages/configuracion/Planos/PlanosBaseCopia";
-import PlanoCopiaAdd from "../Pages/configuracion/Planos/PlanosBaseCopiaAdd";
-import MenuGastronomico from "../Pages/configuracion/MenuGastronomico/MenuGastronomico";
-import EdicionAsiento from "../Pages/configuracion/Invitados/invitados/EdicionAsiento";
-import SocialWall from "../Pages/SocialWall";
 import MosaicWall from "../Pages/MosaicWall";
-import RecuperarPassword from './RecuperarPassword';
-import ChangePassword from './ChangePassword';
+import Multimedia from "../Pages/Multimedia";
+import SocialWall from "../Pages/SocialWall";
+import Welcome from "../Pages/Welcome";
+import store from "./../../redux";
+import Loader from "./../atoms/Loader";
+import Alert from './../molecules/Alert';
 import NewPassword from './../Pages/NewPassword';
+import ChangePassword from './ChangePassword';
+import RecuperarPassword from './RecuperarPassword';
 
 library.add(fas);
 
@@ -86,6 +87,7 @@ function App() {
                         <Route exact path="/welcome" component={Welcome} />
                         <Route exact path="/multimedia" component={Multimedia} />
                         <Route exact path="/social-wall" component={SocialWall} />
+                        <Route exact path="/album" component={Album} />
                         <Route exact path="/mosaic-wall" component={MosaicWall} />
                         <Route exact path="/biblioteca" component={Biblioteca} />
                         <Route exact path="/cambiar-password" component={ChangePassword} />
