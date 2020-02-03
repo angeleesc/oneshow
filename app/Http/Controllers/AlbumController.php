@@ -16,6 +16,10 @@ class AlbumController extends Controller
      return response()->json(['seccion' => 'index', 'descripcion' => 'aqui se muestra tosa las imagenes']);
     }
 
+    public function pruebaMongoDB(Request $request){
+        return response()->json([]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -37,6 +41,7 @@ class AlbumController extends Controller
        // return response()->json(['seccion' => 'store', 'descripcion' => 'aqui se guarda todas las imagenes','datos'=>$request['firstName'] ]);
 
        if ($request->hasFile('imagen')){
+
            $file = $request->file('imagen');
            $name = time().$file->getClientOriginalName();
            $file->move(public_path().'/album/',$name);

@@ -26,7 +26,7 @@ class SocialWall extends Component {
         this.mostrarFiltros = true;
 
         this.state = {
-          FilesUpload :"Maria state",
+          FilesUpload :null,
           companies: [],
           companyId: '',
           events: [],
@@ -86,7 +86,10 @@ class SocialWall extends Component {
         this.limpiarIntervaloDeActualizacion = this.limpiarIntervaloDeActualizacion.bind(this);
         this.crearIntervaloDeTransicionDeContenido = this.crearIntervaloDeTransicionDeContenido.bind(this);
         this.limpiarIntervaloDeTransicion = this.limpiarIntervaloDeTransicion.bind(this);
+
+        //funciones del albumapi
         this.UploadFiles3= this.UploadFiles3.bind(this);
+        this.TomarImagen= this.TomarImagen.bind(this);
     }
 
     /**
@@ -703,12 +706,19 @@ class SocialWall extends Component {
       })
     }
 
+
+
     TomarImagen(e){
 
-     
-      console.log(e.target.files[0]);
-      var filedelected = e.target.files[0];
-      console.log(filedelected,this.Archivo2);
+     console.log('tomando', this.state.FilesUpload)
+
+      console.log(e.target.files[0])
+      //var filedelected = e.target.files[0];
+
+      this.state.FilesUpload=e.target.files[0];
+      //console.log(filedelected,this.Archivo2);
+
+      console.log('tomado', this.state.FilesUpload ) ;
 
 
      
@@ -719,7 +729,16 @@ class SocialWall extends Component {
    
     UploadFiles3(){
      
-      console.log('hola', this.Archivo2, this.state.FilesUpload);
+      //console.log('hola', this.Archivo2,'tu imagen es', this.state.FilesUpload);
+
+      const fd = new FormData();
+      fd.append('imagen', this.state.FilesUpload, this.state.FilesUpload.name);
+
+      //console.log('fd',fd);
+      axios.post('api/album',fd).then(res=>{
+        console.log(res);
+      })
+      
 
     }
 

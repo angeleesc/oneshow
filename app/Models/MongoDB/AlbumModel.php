@@ -8,8 +8,5 @@ class AlbumModel extends Eloquent
 {
     protected $connection = 'mongodb';
     protected $table = 'Album';
-    protected $fillable = ['Titulo', 'autor', 'imagen'];
-
-
-
+    protected $fillable = ['titulo', 'autorid', 'imagen', 'email'];
 }

@@ -297,4 +297,8 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'regalos'], function () {
     Route::delete('/delete/{id}', 'RegaloController@deleteRegalo');
 });
 
+//runtas del album
+
 Route::resource('album', 'AlbumController');
+Route::post('album/test', 'AlbumController@pruebaMongoDB');
+
