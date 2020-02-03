@@ -297,4 +297,15 @@ Route::group(['middleware' => 'api_token', 'prefix' => 'regalos'], function () {
     Route::delete('/delete/{id}', 'RegaloController@deleteRegalo');
 });
 
+/** ruta encargada de administar los album */
 
+Route::resource('album-control','AlbumController');
+
+
+Route::group(['middleware' => 'api_token', 'prefix' => 'album'], function () {
+
+    Route::get('index-seguro', 'AlbumController@indexSeguro');
+    Route::post('index-seguro2', 'AlbumController@indexSegur2');
+
+   
+});

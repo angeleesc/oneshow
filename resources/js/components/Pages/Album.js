@@ -194,6 +194,9 @@ class SocialWall extends Component {
      * 
      * @return {void}
      */
+
+
+
     consultarHashtagsDelEvento() {
         // this.props.mostrarElementoDeCarga();
         
@@ -207,7 +210,8 @@ class SocialWall extends Component {
             const hashtagsInstagram = (respuesta.data.hashtagsInstagram) ? JSON.parse(respuesta.data.hashtagsInstagram) : [];
             
             if (hashtagsInstagram.length === 0 && hashtagsTwitter.length === 0) {
-              return this.setState({
+             
+                return this.setState({
                 isLoading: false,
                 mostrarIframe: true,
                 hashtagsTwitter,
@@ -535,7 +539,7 @@ class SocialWall extends Component {
     /**
      * Retirar publicaciones con contenido ofensivo
      * 
-     * @return {void}
+     * @returcn {void}
      */
     retirarPublicacionesOfensivas() {
         this.configurarFiltroParaPublicacionesSeguras();
@@ -690,13 +694,28 @@ class SocialWall extends Component {
         console.log(event);
     }
 
-    onDrop(pictureFiles, pictureDataURLs) {
-		this.setState({
-            pictures: this.state.pictures.concat(pictureFiles),
-        });
-	}
+    
+  // recibe todas las fotos
+  RecibirFotos() {
+    
+   
+}
 
 
+EnviarFotos(){
+  axios.post('api/album-control',{"nombre":"maria", "apellido":"perdomo" }).then(res=>{
+    console.log(res);
+  } );
+}
+
+
+
+Click(){
+  console.log("click");
+
+  //  GBLncE02GF6Bg1pU9svhX5g56kNCBKRSSRVqicB84fpm2M5qn1wpT2d97cOd api token1
+
+}
 
     render() {
       const { companies, events, companyId, eventId, isLoading } = this.state;
@@ -793,7 +812,7 @@ class SocialWall extends Component {
       
       </div>
       <div className="modal-footer">
-        <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.EnviarFotos} >Close</button>
         <button type="button" className="btn btn-primary">Save changes</button>
       </div>
     </div>
@@ -841,4 +860,4 @@ const mapDispatchToProps = dispatch => ({
   ocultarElementoDeCarga: () => dispatch(ocultarElementoDeCarga())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SocialWall);
+export default connect(mapStateToProps, mapDispatchToProps)(SocialWall);67
