@@ -2,12 +2,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from "react";
 import Fullscreen from "react-full-screen";
 import Clock from "react-live-clock";
-import { connect } from 'react-redux';
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import EmptyMultimedia from "../components/Multimedia/EmptyMultimedia";
-import { getTimestampDiff, setFullscreenState, toggleFullscreen } from './../../redux/actions/app';
-import { createJob, getCompanies, getEventos, getEventsFromCompany, getJobs, setCompany, setEvent } from './../../redux/actions/multimedia';
+import { getTimestampDiff } from './../../redux/actions/app';
 
 class Album extends Component {
     constructor() {
@@ -156,26 +154,7 @@ class Album extends Component {
                   />
                 </div>
 
-                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                   </button>
-                  </div>
-                   <div class="modal-body">
-        ...
-                   </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                       <button type="button" class="btn btn-primary">Save changes</button>
-                      </div>
-                     </div>
-                    </div>
-                  </div>
-
+              
                                 
 
 
