@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\MongoDB\AlbumModel as Album;
 
 class AlbumController extends Controller
 {
@@ -17,7 +18,23 @@ class AlbumController extends Controller
     }
 
     public function pruebaMongoDB(Request $request){
-        return response()->json([]);
+
+
+            
+            $album = new Album(); // instanciamos la base de datos
+
+            $album->titulo = 'ejemplo2';
+            $album->idusuario ='id de usuario2';
+            $album->imagen = 'direcion de la imagen2';
+            $album->email= 'ejemplo2@angel.com';
+
+        // guradamos el registro             
+
+            if ($album->save()) {
+                return response()->json(['code' => 200]);
+            }
+            return response()->json(['code' => 500]);
+        
     }
 
     /**
@@ -40,14 +57,23 @@ class AlbumController extends Controller
     {
        // return response()->json(['seccion' => 'store', 'descripcion' => 'aqui se guarda todas las imagenes','datos'=>$request['firstName'] ]);
 
-       if ($request->hasFile('imagen')){
+
+       /*
+       
+          if ($request->hasFile('imagen')){
 
            $file = $request->file('imagen');
            $name = time().$file->getClientOriginalName();
            $file->move(public_path().'/album/',$name);
        }
 
-       return $name;
+       
+       */
+
+      return response()->json(['email ' => $request['email'],
+                                'id de usuario' => $request['id']]);
+
+
     }
 
     /**

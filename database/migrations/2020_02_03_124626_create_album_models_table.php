@@ -14,7 +14,7 @@ class CreateAlbumModelsTable extends Migration
     public function up()
     {
         Schema::create('album_models', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            
             $table->timestamps();
         });
     }

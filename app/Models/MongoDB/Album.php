@@ -4,9 +4,11 @@ namespace App\Models\MongoDB;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 
-class AlbumModel extends Eloquent
+class Album extends Eloquent
 {
     protected $connection = 'mongodb';
     protected $table = 'Album';
-    protected $fillable = ['titulo', 'idusuario', 'imagen', 'email'];
+
+    protected $dates = ['Titulo', 'Usuario', 'IdUsuario','Imagen'];
+    
 }
