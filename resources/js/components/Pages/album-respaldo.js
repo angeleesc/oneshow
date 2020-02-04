@@ -870,7 +870,7 @@ class SocialWall extends Component {
       </div>
       <div className="modal-body">
 
-    
+    .....
 
       </div>
       <div className="modal-footer">
