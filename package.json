@@ -44,7 +44,7 @@
         "jquery": "^3.4.0",
         "jquery-cropper": "^1.0.0",
         "jquery-ui-bundle.1.12.1": "^1.12.1",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "multiple-select": "^1.2.3",
         "pc-bootstrap4-datetimepicker": "^4.17.50",
         "popper.js": "^1.15.0",
